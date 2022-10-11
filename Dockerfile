@@ -40,22 +40,21 @@ RUN apk --update --no-cache add \
 # `builder-base` stage is used to build deps + create virtual environment
 FROM base as builder-base
 
+# gcc and python3-dev will be used for proj dependencies install, not being removed here
 RUN apk add --no-cache \
         gcc \
+        python3-dev \
         curl \
         musl-dev \
         libffi-dev \
-        python3-dev \
         libressl-dev && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal && \
     source $HOME/.cargo/env && \
     pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
     apk del \
-        gcc \
         curl \
         musl-dev \
         libffi-dev \
-        python3-dev \
         libressl-dev
 
 # copy project requirement files to ensure they will be cached
@@ -63,7 +62,16 @@ WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 
 # install runtime deps, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
-RUN poetry install --without dev
+RUN apk add \
+        linux-headers \
+        libc-dev && \
+    poetry install --without dev && \
+    apk del \
+        gcc \
+        python3-dev \
+        linux-headers \
+        libc-dev
+
 
 # `development` image is used during development / testing
 FROM base as development
@@ -78,10 +86,7 @@ COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 # quicker install as runtime deps are already installed
 RUN poetry install
 
-# becomes code mountpoint
-WORKDIR /app
-
-CMD uvicorn --reload ${APP_NAME}.app:app
+ENTRYPOINT ${APP_NAME}
 
 
 # `production` image used for runtime
@@ -91,4 +96,5 @@ ENV ENV=production \
     APP_NAME="pipo"
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
-ENTRYPOINT gunicorn -k uvicorn.workers.UvicornWorker -b ${APP_HOST}:${APP_PORT} ${APP_NAME}.app:app
+
+ENTRYPOINT python -m ${APP_NAME}
