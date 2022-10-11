@@ -2,11 +2,14 @@
 
 import sys
 
+import discord
 from discord.ext import commands
 
 from .groovy import BotEvent, Groovy
 
-bot = commands.Bot(command_prefix="-", case_insensitive=True)
+bot = commands.Bot(
+    command_prefix="-", case_insensitive=True, intents=discord.Intents.default()
+)
 groovy = Groovy(bot)
 
 
