@@ -97,6 +97,6 @@ ENV ENV=production \
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
-RUN adduser -u 2000 runner
+RUN adduser -H -u 2000 runner
 USER runner
 ENTRYPOINT python -m ${APP_NAME}
