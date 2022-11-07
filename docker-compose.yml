@@ -1,0 +1,15 @@
+version: "3.8"
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  app:
+    container_name: "$APP"
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - backend

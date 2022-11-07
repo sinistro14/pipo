@@ -14,6 +14,7 @@ help:
 	$(PRINT) "    dist          package application for distribution"
 	$(PRINT) "    image         build app docker image"
 	$(PRINT) "    run_image     run app docker image in a container"
+	$(PRINT) "    run_app       run docker compose"
 
 poetry_setup:
 	curl -sSL https://install.python-poetry.org | python3 -
@@ -42,9 +43,9 @@ image:
 	docker build . -t $(APP):latest
 
 run_image:
-	docker run -d --name $(APP)
+	docker run -d --name $(APP) --env-file .env
 
-run_all:
-	docker-compose --env-file ./.env up
+run_app:
+	docker-compose up
 
-.PHONY: help poetry_setup setup dev_setup lint test dist image run_image run_all
+.PHONY: help poetry_setup setup dev_setup lint test dist image run_image run_app

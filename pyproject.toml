@@ -6,7 +6,7 @@ description = "Bot to play music in a discord channel based on user input"
 license = "MIT"
 
 authors = [
-    "André Gonçalves <TODO>",
+    "André Gonçalves <andrecg95@gmail.com>",
     "Tiago Gonçalves <tiago14_ribeiro@hotmail.com>",
 ]
 
@@ -15,7 +15,7 @@ readme = 'README.md'
 keywords = ['python', 'discord', 'music', 'bot']
 
 classifiers = [
-    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
     'Operating System :: OS Independent',
     'Natural Language :: English',
     'Topic :: Multimedia :: Sound/Audio',
