@@ -11,7 +11,7 @@ def main():
 
     while True:  # wait for internet connection
         try:
-            urllib.request.urlopen("https://www.google.pt/", timeout=5)
+            urllib.request.urlopen("https://www.discord.com/", timeout=5)
             break
         except:
             pass
