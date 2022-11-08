@@ -42,8 +42,8 @@ dist:
 image:
 	docker build . -t $(APP):latest
 
-run_image:
-	docker run -d --name $(APP) --env-file .env
+run_image: image
+	docker run -d --name $(APP) --env-file .env $(APP):latest
 
 run_app:
 	docker-compose up

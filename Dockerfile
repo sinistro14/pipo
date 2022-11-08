@@ -1,4 +1,4 @@
-FROM jrottenberg/ffmpeg:5.1.2-alpine313 as base
+FROM alpine:3.13 as base
 
     # python
 ENV PYTHON_VERSION=3.8.15 \
@@ -35,31 +35,28 @@ RUN apk --update --no-cache add \
     python3 \
     py3-pip \
     py3-psutil \
+    ffmpeg \
     && pip install --upgrade pip setuptools wheel
 
 # `builder-base` stage is used to build deps + create virtual environment
 FROM base as builder-base
 
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
-RUN apk add --no-cache \
+RUN apk add --update --no-cache \
         gcc \
         python3-dev \
-        curl \
         musl-dev \
         libffi-dev \
         libressl-dev && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal && \
-    source $HOME/.cargo/env && \
     pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
     apk del \
-        curl \
         musl-dev \
         libffi-dev \
         libressl-dev
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
-COPY poetry.lock pyproject.toml ./
+COPY pyproject.toml ./
 
 # install runtime deps, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
 RUN apk add \
@@ -97,6 +94,6 @@ ENV ENV=production \
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
-RUN adduser -H -u 2000 runner
-USER runner
+RUN addgroup -S appgroup && adduser -Hu 2000 -S appuser -G appgroup
+USER appuser
 ENTRYPOINT python -m ${APP_NAME}
