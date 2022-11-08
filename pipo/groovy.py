@@ -8,25 +8,10 @@ import pafy
 import psutil
 from pytube import Playlist
 
-
-class BotEvent:
-    JOIN = 1
-    LEAVE = 2
-    PLAY = 3
-    STOP = 4
-    PAUSE = 5
-    RESUME = 6
-    SKIP = 7
-    PLAYLIST = 8
-    SKIPLIST = 9
-    HELP = 10
-
-
-class Transition:
-    def __init__(self, event, action, nextState):
-        self.event = event
-        self.action = action
-        self.nextState = nextState
+from .bot_event import BotEvent
+from .states.context import Context
+from pipo.states.state import State
+from pipo.states.disconnected_state import DisconnectedState
 
 
 class State:
@@ -93,10 +78,13 @@ class Queue:
         return count
 
 
-class Groovy:
+class Groovy(Context):
+
+    _state: State = None
+
     def __init__(self, bot):
         self.channel_id = None
-        self._idle_duration = 60 * 30  ## 30m
+
         self._ffmpeg_options = {
             "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
             "options": "-vn",
@@ -107,38 +95,7 @@ class Groovy:
         self.musicChannel = None
         self.musicQueue = Queue()
         self.idleCounter = None
-
-        self.disconnectedState = State("Disconnected")
-        self.idleState = State("Idle")
-        self.playingState = State("Playing")
-
-        self.currentState = self.disconnectedState
-
-        self.disconnectedState.addTransition(BotEvent.JOIN, self.join, self.idleState)
-        self.disconnectedState.addTransition(
-            BotEvent.PLAY, self.joinAndPlay, self.playingState
-        )
-        self.disconnectedState.addTransition(
-            BotEvent.PLAYLIST, self.joinAndPlayList, self.playingState
-        )
-        self.idleState.addTransition(BotEvent.PLAY, self.play, self.playingState)
-        self.idleState.addTransition(
-            BotEvent.PLAYLIST, self.playList, self.playingState
-        )
-        self.idleState.addTransition(BotEvent.LEAVE, self.leave, self.disconnectedState)
-        self.idleState.addTransition(BotEvent.RESUME, self.resume, self.playingState)
-        self.playingState.addTransition(BotEvent.STOP, self.stop, self.idleState)
-        self.playingState.addTransition(BotEvent.PAUSE, self.pause, self.idleState)
-        self.playingState.addTransition(
-            BotEvent.LEAVE, self.leave, self.disconnectedState
-        )
-        self.playingState.addTransition(BotEvent.PLAY, self.play, None)
-        self.playingState.addTransition(BotEvent.PLAYLIST, self.playList, None)
-        self.playingState.addTransition(BotEvent.SKIP, self.skip, None)
-        self.playingState.addTransition(BotEvent.SKIPLIST, self.skipList, None)
-
-    def setCurrentState(self, state):
-        self.currentState = state
+        self.transition_to(DisconnectedState())
 
     async def onReady(self):
         self.musicChannel = self.bot.get_channel(self.channel_id)
@@ -148,7 +105,7 @@ class Groovy:
             return
         newState = await self.currentState.process(event, ctx)
         if newState:
-            self.currenState = self.setCurrentState(newState)
+            self.transition_to(newState)
 
     async def join(self, ctx):
         self.musicQueue.clear()
@@ -174,7 +131,7 @@ class Groovy:
         await self.join(ctx)
         await self.playList(ctx)
 
-    def playNextMusic(self, error=None):
+    def playNextMusic(self):
         nextQuery = self.musicQueue.pop()
         if not nextQuery:
             self.currentState = self.idleState
@@ -234,7 +191,7 @@ class Groovy:
             await self.voiceClient.stop()
 
     async def reboot(self):
-        self.setCurrentState(self.disconnectedState)
+        self.transition_to(DisconnectedState())
         await self.join()
 
     async def shuffle(self, ctx):
@@ -277,7 +234,7 @@ class Groovy:
             await asyncio.sleep(dT)
 
             if self.currentState.name != self.playingState.name:
-                idleTime = idleTime + dT
+                idleTime += dT
             else:
                 idleTime = 0
 
@@ -314,16 +271,3 @@ class Groovy:
             f"Disk Usage: {psutil.disk_usage('/').percent}%\n"
             f"Temperature: {psutil.sensors_temperatures()['cpu_thermal'][0][1]} ºC"
         )
-
-
-##    def addToQueue(self, ctx):
-##        query = ctx.kwargs["_query_"]
-##        url = self._getYoutubeAudio(query)
-##        self.musicQueue.add(url)
-##
-##
-##    def addListToQueue(self, playlist):
-##        audioUrls = []
-##        for music in playlist:
-##            audioUrls.append(self._getYoutubeAudio(music))
-##        self.musicQueue.add(audioUrls)
