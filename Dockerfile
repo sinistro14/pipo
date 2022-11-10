@@ -44,15 +44,20 @@ FROM base as builder-base
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
 RUN apk add --update --no-cache \
         gcc \
+        cargo \
+        rust \
         python3-dev \
         musl-dev \
         libffi-dev \
         libressl-dev && \
+    source $HOME/.cargo/env && \
     pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
     apk del \
         musl-dev \
         libffi-dev \
-        libressl-dev
+        libressl-dev \
+        cargo \
+        rust
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
