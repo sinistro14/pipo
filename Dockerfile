@@ -49,7 +49,7 @@ RUN apk add --update --no-cache \
         musl-dev \
         libffi-dev \
         libressl-dev && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && \
     source $HOME/.cargo/env && \
     pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
     apk del \
