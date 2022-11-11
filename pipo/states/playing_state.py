@@ -1,29 +1,29 @@
-from .state import State
-from pipo.states.idle_state import IdleState
 from pipo.states.disconnected_state import DisconnectedState
+from pipo.states.idle_state import IdleState
+from pipo.states.state import State
+
 
 class PlayingState(State):
-
     def stop(self) -> None:
-        self.stop
+        self.context.stop()
         self.context.transition_to(IdleState())
 
     def pause(self) -> None:
-        self.pause
+        self.context.pause()
         self.context.transition_to(IdleState())
-    
+
     def leave(self) -> None:
-        self.leave
+        self.context.leave()
         self.context.transition_to(DisconnectedState())
-    
+
     def play(self) -> None:
-        self.play
-        
+        self.context.play()
+
     def playlist(self) -> None:
-        self.playlist
+        self.context.playlist()
 
     def skip(self) -> None:
-        self.skip
+        self.context.skip()
 
     def skiplist(self) -> None:
-        self.skiplist
+        self.context.skiplist()

@@ -1,5 +1,4 @@
-import asyncio
-import random as rd
+import random
 import re
 import urllib
 
@@ -8,12 +7,10 @@ import pafy
 import psutil
 from pytube import Playlist
 
-from .bot_event import BotEvent
-from .states.context import Context
-from pipo.states.state import State
-from pipo.states.disconnected_state import DisconnectedState
+from pipo.music import MusicQueue
+from pipo.states import Context, DisconnectedState, IdleState, State
 
-
+"""
 class State:
     def __init__(self, name):
         self.name = name
@@ -33,55 +30,10 @@ class State:
                 finally:
                     return transition.nextState
         return None
-
-
-class Queue:
-    def __init__(self):
-        self.queue = []
-
-    def add(self, url):
-        self.queue.append(url)
-
-    def remove(self, index):
-        if len(self.queue) > index:
-            del self.queue[index]
-
-    def clear(self):
-        self.queue.clear()
-
-    def pop(self):
-        if not len(self.queue):
-            return None
-        elif isinstance(self.queue[0], str):
-            return self.queue.pop(0)
-        else:
-            val = self.queue[0].pop(0)
-            if not len(self.queue[0]):
-                del self.queue[0]
-            return val
-
-    def shuffle(self):
-        for item in self.queue:
-            if isinstance(item, list):
-                rd.shuffle(item)
-
-        if len(self.queue):
-            rd.shuffle(self.queue)
-
-    def isGroup(self):
-        return isinstance(self.queue[0], list)
-
-    def getLength(self):
-        count = 0
-        for item in self.queue:
-            count += len(item) if isinstance(item, list) else 1
-        return count
+"""
 
 
 class Groovy(Context):
-
-    _state: State = None
-
     def __init__(self, bot):
         self.channel_id = None
 
@@ -93,8 +45,8 @@ class Groovy(Context):
         self.bot = bot
         self.voiceClient = None
         self.musicChannel = None
-        self.musicQueue = Queue()
-        self.idleCounter = None
+        self.musicQueue = MusicQueue()
+
         self.transition_to(DisconnectedState())
 
     async def onReady(self):
@@ -121,7 +73,7 @@ class Groovy(Context):
             self.voiceClient = ctx.voice_client
             if "_query_" not in ctx.kwargs:
                 await self._moveMessage(ctx)
-            self._startIdleCounter()
+            # self._startIdleCounter()
 
     async def joinAndPlay(self, ctx):
         await self.join(ctx)
@@ -134,7 +86,7 @@ class Groovy(Context):
     def playNextMusic(self):
         nextQuery = self.musicQueue.pop()
         if not nextQuery:
-            self.currentState = self.idleState
+            self.transition_to(IdleState())
         else:
             try:
                 nextUrl = self._getYoutubeAudio(nextQuery)
@@ -156,7 +108,7 @@ class Groovy(Context):
         plist = list(Playlist(ctx.kwargs["_query_"]))
         if len(plist):
             if "_shuffle_" in ctx.kwargs and ctx.kwargs["_shuffle_"]:
-                rd.shuffle(plist)
+                random.shuffle(plist)
             self.musicQueue.add(plist)
             if not self.voiceClient.is_playing() and not self.voiceClient.is_paused():
                 self.playNextMusic()
@@ -186,9 +138,8 @@ class Groovy(Context):
 
     async def skipList(self, ctx):
         await self._moveMessage(ctx)
-        if self.musicQueue.isGroup():
-            self.musicQueue.remove(0)
-            await self.voiceClient.stop()
+        self.musicQueue.pop()
+        await self.voiceClient.stop()
 
     async def reboot(self):
         self.transition_to(DisconnectedState())
@@ -216,33 +167,6 @@ class Groovy(Context):
         content = msg.content.encode("ascii", "ignore").decode()
         await self.musicChannel.send(msg.author.name + "  " + content)
         await msg.delete()
-
-    def _startIdleCounter(self):
-        if self.idleCounter:
-            self.idleCounter.cancel()
-        self.idleCounter = asyncio.ensure_future(self._idleTimeTask())
-
-    def _stopIdleCounter(self):
-        if self.idleCounter:
-            self.idleCounter.cancel()
-            self.idleCounter = None
-
-    async def _idleTimeTask(self):
-        idleTime = 0
-        dT = 60 * 5
-        while True:
-            await asyncio.sleep(dT)
-
-            if self.currentState.name != self.playingState.name:
-                idleTime += dT
-            else:
-                idleTime = 0
-
-            if idleTime >= self._idle_duration:
-                self.setCurrentState(self.disconnectedState)
-                await self.musicChannel.send("Bye Bye !!!")
-                await self.voiceClient.disconnect()
-                break
 
     async def showCommandList(self):
         await self.musicChannel.send(

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from .context import Context
 
+
 class State(ABC):
     """
     Declares methods that all Concrete State should
@@ -21,7 +22,7 @@ class State(ABC):
     @abstractmethod
     def join(self) -> None:
         pass
-    
+
     @abstractmethod
     def play(self) -> None:
         pass
