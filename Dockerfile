@@ -1,9 +1,8 @@
-FROM alpine:3.13 as base
+FROM python:3.8-alpine3.13 as base
 
     # python
-ENV PYTHON_VERSION=3.8.15 \
-    PYTHONUNBUFFERED=1 \
-    # prevents python creating .pyc files
+ENV PYTHONUNBUFFERED=1 \
+    # prevents python from creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
     \
     # pip
@@ -32,8 +31,6 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # install required system dependencies
 RUN apk --update --no-cache add \
-    python3 \
-    py3-pip \
     py3-psutil \
     ffmpeg \
     && pip install --upgrade pip setuptools wheel
@@ -44,20 +41,15 @@ FROM base as builder-base
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
 RUN apk add --update --no-cache \
         gcc \
-        curl \
         python3-dev \
         musl-dev \
         libffi-dev \
         libressl-dev && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && \
-    source $HOME/.cargo/env && \
     pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
     apk del \
-        curl \
         musl-dev \
         libffi-dev \
-        libressl-dev && \
-    rustup self uninstall
+        libressl-dev
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
