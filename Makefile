@@ -34,7 +34,7 @@ lint:
 	-$(POETRY) run bandit .
 
 test:
-	$(POETRY) run pytest
+	$(POETRY) run coverage run -m pytest
 
 dist:
 	$(POETRY) dist
