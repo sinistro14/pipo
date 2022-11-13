@@ -34,7 +34,10 @@ RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         gcc \
         python3-dev \
+        build-essential \
+        libssl-dev \
         libffi-dev \
+        cargo \
         ffmpeg && \
     apt-get autoremove -y && \
     apt-get clean && \
