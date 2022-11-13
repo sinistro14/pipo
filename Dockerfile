@@ -33,6 +33,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         gcc \
+        libffi-dev \
         ffmpeg && \
     apt-get autoremove -y && \
     apt-get clean && \
