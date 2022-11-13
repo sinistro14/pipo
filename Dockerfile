@@ -45,7 +45,9 @@ RUN apt-get update && \
 # used to build dependencies + create virtual environment
 FROM base as builder-base
 
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN apt-get install curl && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    apt-get purge curl
 
 # copy project requirements file to ensure they will be cached
 WORKDIR $PYSETUP_PATH
