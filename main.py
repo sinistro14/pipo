@@ -7,17 +7,6 @@ import urllib.request
 import time
 
 
-"""
-ssh ubuntu@192.168.1.104
-pass: andre1995
-
-boot program = contrab (sudo crontab -e)
-path = /discordbot/
-https://help.ubuntu.com/community/SSH/TransferFiles
-https://lindevs.com/install-ffmpeg-on-raspberry-pi/
-temperatura = cat /sys/class/thermal/thermal_zone0/temp (/1000)
-"""
-
 while(True): # wait for internet connection
     try:
         urllib.request.urlopen("https://www.google.pt/")
