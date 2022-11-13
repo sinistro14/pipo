@@ -33,9 +33,8 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         gcc \
-        libffi \
+        python3-dev \
         libffi-dev \
-        py3-psutil \
         ffmpeg && \
     apt-get autoremove -y && \
     apt-get clean && \
@@ -46,7 +45,7 @@ RUN apt-get update && \
 # used to build dependencies + create virtual environment
 FROM base as builder-base
 
-RUN pip install --disable-pip-version-check poetry==${POETRY_VERSION}
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # copy project requirements file to ensure they will be cached
 WORKDIR $PYSETUP_PATH
@@ -74,7 +73,7 @@ ENTRYPOINT python -m ${APP_NAME}
 
 # `production` image used for runtime
 FROM base as production
-# app configuration  
+# app configuration
 ENV ENV=production \
     APP_NAME="pipo"
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
