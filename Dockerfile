@@ -34,7 +34,6 @@ RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         gcc \
         python3-dev \
-        curl \
         libffi-dev \
         ffmpeg && \
     apt-get autoremove -y && \
@@ -46,7 +45,7 @@ RUN apt-get update && \
 # used to build dependencies + create virtual environment
 FROM base as builder-base
 
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install --disable-pip-version-check cffi poetry==${POETRY_VERSION}
 
 # copy project requirements file to ensure they will be cached
 WORKDIR $PYSETUP_PATH
