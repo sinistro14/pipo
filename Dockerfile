@@ -32,7 +32,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 # install required system dependencies
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
-        gcc && \
+        gcc \
         ffmpeg && \
     apt-get autoremove -y && \
     apt-get clean && \
