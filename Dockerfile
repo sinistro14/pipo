@@ -33,7 +33,9 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         gcc \
+        libffi \
         libffi-dev \
+        py3-psutil \
         ffmpeg && \
     apt-get autoremove -y && \
     apt-get clean && \
@@ -44,7 +46,7 @@ RUN apt-get update && \
 # used to build dependencies + create virtual environment
 FROM base as builder-base
 
-RUN pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION}
+RUN pip install --disable-pip-version-check poetry==${POETRY_VERSION}
 
 # copy project requirements file to ensure they will be cached
 WORKDIR $PYSETUP_PATH
