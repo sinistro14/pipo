@@ -95,22 +95,6 @@ COPY pyproject.toml ./
 RUN poetry install --without dev
 
 
-# `development` image used during development / testing
-FROM base as development
-ENV ENV=development \
-    APP_NAME="pipo"
-WORKDIR $PYSETUP_PATH
-
-# copy built poetry + venv
-COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-
-# quicker install as runtime deps are already installed
-RUN poetry install
-
-ENTRYPOINT python -m ${APP_NAME}
-
-
 # `production` image used for runtime
 FROM base as production
 
