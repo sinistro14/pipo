@@ -1,8 +1,9 @@
-FROM python:3.8-slim-bullseye as base
+FROM python:alpine3.16 as base
 
     # python
-ENV PYTHONUNBUFFERED=1 \
-    # prevents python from creating .pyc files
+ENV PYTHON_VERSION=3.8.15 \
+    PYTHONUNBUFFERED=1 \
+    # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
     \
     # pip
@@ -24,37 +25,76 @@ ENV PYTHONUNBUFFERED=1 \
     # paths
     # where requirements + virtual environment will be
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
-
-# prepend poetry and venv to path
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+    VENV_PATH="/opt/pysetup/.venv" \
+    \
+    # prepend poetry and venv to path
+    PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # install required system dependencies
-RUN apt-get update && \
-    apt-get -y --no-install-recommends install \
+RUN apk --update --no-cache add \
+    python3 \
+    py3-pip \
+    py3-psutil \
+    ffmpeg \
+    && pip install --upgrade pip setuptools wheel
+
+
+# `builder-base` stage is used to build deps + create virtual environment
+#FROM base as builder-base
+FROM rust:alpine3.16 as builder-base
+
+    # python
+ENV PYTHON_VERSION=3.8.15 \
+    PYTHONUNBUFFERED=1 \
+    # prevents python creating .pyc files
+    PYTHONDONTWRITEBYTECODE=1 \
+    \
+    # pip
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    \
+    # poetry
+    # https://python-poetry.org/docs/configuration/#using-environment-variables
+    POETRY_VERSION=1.2.2 \
+    # make poetry install to this location
+    POETRY_HOME="/opt/poetry" \
+    # make poetry create the virtual environment in the project's root
+    # it gets named `.venv`
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    # do not ask interactive questions
+    POETRY_NO_INTERACTION=1 \
+    \
+    # paths
+    # where requirements + virtual environment will be
+    PYSETUP_PATH="/opt/pysetup" \
+    VENV_PATH="/opt/pysetup/.venv" \
+    \
+    # prepend poetry and venv to path
+    PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+# gcc and python3-dev will be used for proj dependencies install, not being removed here
+RUN apk add --no-cache \
         gcc \
+        python3 \
+        py3-pip \
         python3-dev \
-        build-essential \
-        libssl-dev \
+        musl-dev \
         libffi-dev \
-        cargo \
-        ffmpeg && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip install --upgrade pip setuptools wheel
+        libressl-dev \
+        linux-headers \
+        libc-dev && \
+    pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
+    apk del \
+        musl-dev \
+        libffi-dev \
+        libressl-dev
 
-
-# used to build dependencies + create virtual environment
-FROM base as builder-base
-
-RUN pip install --disable-pip-version-check cffi poetry==${POETRY_VERSION}
-
-# copy project requirements file to ensure they will be cached
+# copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
 COPY pyproject.toml ./
 
-# install runtime dependencies, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
+# install runtime deps, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
 RUN poetry install --without dev
 
 
@@ -82,6 +122,6 @@ ENV ENV=production \
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
-RUN groupadd -r appuser && useradd -r -g appuser appuser && chown -R appuser /${APP_NAME}
+RUN addgroup -g 1000 appuser && adduser -u 1000 -G appuser -D appuser && chown -R appuser /${APP_NAME}
 USER appuser
 ENTRYPOINT python -m ${APP_NAME}
