@@ -35,8 +35,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
         ffmpeg \
-    && apt-get clean \
-    && pip install --upgrade pip setuptools wheel
+    && pip install --upgrade pip setuptools wheel \
+    && apt-get clean
 
 
 # `builder-base` stage is used to build deps + create virtual environment
@@ -104,6 +104,7 @@ ARG USER_GID=$USER_UID
 # app configuration
 ENV ENV=production \
     APP_NAME="pipo"
+
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
@@ -111,4 +112,4 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && chown -R $USERNAME /${APP_NAME}
 USER $USERNAME
-ENTRYPOINT python -m ${APP_NAME}
+ENTRYPOINT ${PYSETUP_PATH}/.venv/bin/python -m /${APP_NAME}
