@@ -11,6 +11,7 @@ from pytube import Playlist
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 TOKEN = 'ODg4NTM2NzY2ODU0ODY5MDMy.YUUIWQ.4mgXJv5ufyoP4xjHQaahytVfyl0'
 MUSIC_CHANNEL = 667500086435119114
+VOICE_CHANNEL = 691285532805955605
 IDLE_DURATION = 60 * 30  ## 30m
 
 
@@ -147,6 +148,8 @@ class Groovy:
     async def join(self, ctx):
         self.musicQueue.clear()
         channel = ctx.author.voice.channel
+        if(channel == None):
+            channel = self.bot.get_channel(VOICE_CHANNEL) # default channel
         try:
             await channel.connect()
             await ctx.guild.change_voice_state(channel=channel, self_mute=True, self_deaf=True)
