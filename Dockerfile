@@ -1,4 +1,4 @@
-FROM python:alpine3.16 as base
+FROM python:3.8-slim-bullseye as base
 
     # python
 ENV PYTHON_VERSION=3.8.15 \
@@ -31,17 +31,17 @@ ENV PYTHON_VERSION=3.8.15 \
     PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # install required system dependencies
-RUN apk --update --no-cache add \
-    python3 \
-    py3-pip \
-    py3-psutil \
-    ffmpeg \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        ffmpeg \
+    && apt-get clean \
     && pip install --upgrade pip setuptools wheel
 
 
 # `builder-base` stage is used to build deps + create virtual environment
 #FROM base as builder-base
-FROM rust:alpine3.16 as builder-base
+FROM rust:1.65-slim-bullseye as builder-base
 
     # python
 ENV PYTHON_VERSION=3.8.15 \
@@ -74,21 +74,18 @@ ENV PYTHON_VERSION=3.8.15 \
     PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
-RUN apk add --no-cache \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
         gcc \
         python3 \
-        py3-pip \
+        python3-pip \
         python3-dev \
-        musl-dev \
         libffi-dev \
-        libressl-dev \
-        linux-headers \
-        libc-dev && \
-    pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION} && \
-    apk del \
-        musl-dev \
-        libffi-dev \
-        libressl-dev
+        libssl-dev \
+        libc-dev \
+    && apt-get clean \
+    && pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION}
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
@@ -116,12 +113,18 @@ ENTRYPOINT python -m ${APP_NAME}
 
 # `production` image used for runtime
 FROM base as production
+
+ARG USERNAME=appuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 # app configuration
 ENV ENV=production \
     APP_NAME="pipo"
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
-RUN addgroup -g 1000 appuser && adduser -u 1000 -G appuser -D appuser && chown -R appuser /${APP_NAME}
-USER appuser
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && chown -R $USERNAME /${APP_NAME}
+USER $USERNAME
 ENTRYPOINT python -m ${APP_NAME}
