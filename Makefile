@@ -46,6 +46,6 @@ run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
 
 run_app:
-	docker-compose up
+	docker compose up
 
 .PHONY: help poetry_setup setup dev_setup lint test dist image run_image run_app
