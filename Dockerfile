@@ -115,6 +115,11 @@ USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH/dist/ /$APP_NAME/
 
-RUN pip install /$APP_NAME/*.whl
+RUN apt-get install -y \
+        gcc \
+        libffi-dev \
+    && pip install /$APP_NAME/*.whl \
+    && ap-get purge gcc libffi-dev \
+    && apt-get clean
 
 ENTRYPOINT python -m $APP_NAME
