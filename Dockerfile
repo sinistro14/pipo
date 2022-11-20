@@ -1,7 +1,8 @@
 FROM python:3.8-slim-bullseye as base
 
     # python
-ENV PYTHON_VERSION=3.8.15 \
+ENV APP_NAME="pipo" \
+    PYTHON_VERSION=3.8.15 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -18,17 +19,17 @@ ENV PYTHON_VERSION=3.8.15 \
     POETRY_HOME="/opt/poetry" \
     # make poetry create the virtual environment in the project's root
     # it gets named `.venv`
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_VIRTUALENVS_CREATE=false \
     # do not ask interactive questions
     POETRY_NO_INTERACTION=1 \
     \
     # paths
     # where requirements + virtual environment will be
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv" \
-    \
+    VENV_PATH="/opt/pysetup/.venv"
+
     # prepend poetry and venv to path
-    PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # install required system dependencies
 RUN apt-get update \
@@ -68,10 +69,10 @@ ENV PYTHON_VERSION=3.8.15 \
     # paths
     # where requirements + virtual environment will be
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv" \
-    \
+    VENV_PATH="/opt/pysetup/venv"
+
     # prepend poetry and venv to path
-    PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
 RUN apt-get update \
@@ -81,35 +82,39 @@ RUN apt-get update \
         python3 \
         python3-pip \
         python3-dev \
+        python3-venv \
         libffi-dev \
         libssl-dev \
         libc-dev \
     && apt-get clean \
-    && pip install --ignore-installed distlib --disable-pip-version-check poetry==${POETRY_VERSION}
+    && pip install --ignore-installed distlib --disable-pip-version-check poetry==$POETRY_VERSION
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
 COPY pyproject.toml ./
 
-# install runtime deps, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
-RUN poetry install --without dev
+# install runtime deps
+RUN poetry export -f requirements.txt
+
+COPY ./$APP_NAME $PYSETUP_PATH/
+RUN poetry build
 
 
 # `production` image used for runtime
 FROM base as production
 
-ARG USERNAME=appuser
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
 # app configuration
 ENV ENV=production \
-    APP_NAME="pipo"
-
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-COPY ./${APP_NAME} /${APP_NAME}/
+    USERNAME=appuser \
+    USER_UID=1000
+ENV USER_GID=$USER_UID
 
 RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    && chown -R $USERNAME /${APP_NAME}
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 USER $USERNAME
-ENTRYPOINT ${PYSETUP_PATH}/.venv/bin/python -m /${APP_NAME}
+
+COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH/dist/ /$APP_NAME/
+
+RUN pip install /$APP_NAME/*.whl
+
+ENTRYPOINT python -m $APP_NAME
