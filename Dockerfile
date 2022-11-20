@@ -35,6 +35,8 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
+        gcc \
+        libffi-dev \
         ffmpeg \
     && pip install --upgrade pip setuptools wheel \
     && apt-get clean
@@ -115,11 +117,6 @@ USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH/dist/ /$APP_NAME/
 
-RUN apt-get install -y \
-        gcc \
-        libffi-dev \
-    && pip install /$APP_NAME/*.whl \
-    && ap-get purge gcc libffi-dev \
-    && apt-get clean
+RUN pip install /$APP_NAME/*.whl
 
 ENTRYPOINT python -m $APP_NAME
