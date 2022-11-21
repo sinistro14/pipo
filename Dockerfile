@@ -117,6 +117,7 @@ USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH/dist/ /$APP_NAME/
 
-RUN pip install pynacl /$APP_NAME/*.whl
+RUN pip install pynacl -i https://www.piwheels.org/simple \
+    && pip install /$APP_NAME/*.whl
 
 ENTRYPOINT python -m $APP_NAME
