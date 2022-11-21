@@ -117,6 +117,6 @@ USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH/dist/ /$APP_NAME/
 
-RUN pip install --no-use-pep517 /$APP_NAME/*.whl
+RUN pip install pynacl /$APP_NAME/*.whl
 
 ENTRYPOINT python -m $APP_NAME
