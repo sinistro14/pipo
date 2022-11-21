@@ -1,7 +1,5 @@
 #!usr/bin/env python3
 
-import sys
-
 import discord
 from discord.ext import commands
 
@@ -39,6 +37,7 @@ async def play(ctx, *query):
 async def playlist(ctx, *query):
     ctx.kwargs["_query_"] = " ".join(query)
     await groovy.process(BotEvent.PLAYLIST, ctx)
+    # PlayList(bot, ctx, query, False)
 
 
 @bot.command(pass_context=True)
@@ -46,6 +45,7 @@ async def playlistshuffle(ctx, *query):
     ctx.kwargs["_query_"] = " ".join(query)
     ctx.kwargs["_shuffle_"] = True
     await groovy.process(BotEvent.PLAYLIST, ctx)
+    # PlayList(bot, ctx, query, True)
 
 
 @bot.command(pass_context=True)
@@ -80,13 +80,12 @@ async def shuffle(ctx):
 
 @bot.command(pass_context=True)
 async def status(ctx):
-    await groovy.showStatus(ctx)
+    await groovy.status(ctx)
 
 
 @bot.command(pass_context=True)
 async def reboot(ctx):
-    sys.exit()
-    # await groovy.reboot()
+    await groovy.reboot()
 
 
 @bot.event
