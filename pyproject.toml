@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"  # compatible python versions must be declared here
+python = "^3.9"  # compatible python versions must be declared here
 psutil = "~5.9.0"
 discord-py = {version = "~2.0.0", extras = ["voice"]}
 pytube = "~12.1.0"
