@@ -52,10 +52,12 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         gcc \
+        libc-dev \
+        libssl-dev \
+        # discord.py[voice] dependencies
         python3-dev \
         libffi-dev \
-        libssl-dev \
-        libc-dev \
+        libnacl-dev \
     && apt-get clean \
     && pip3 install --ignore-installed distlib --disable-pip-version-check poetry==$POETRY_VERSION
 
