@@ -15,7 +15,7 @@ readme = 'README.md'
 keywords = ['python', 'discord', 'music', 'bot']
 
 classifiers = [
-    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Operating System :: OS Independent',
     'Natural Language :: English',
     'Topic :: Multimedia :: Sound/Audio',
@@ -48,7 +48,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 
