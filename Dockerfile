@@ -57,7 +57,7 @@ RUN apt-get update \
         libssl-dev \
         libc-dev \
     && apt-get clean \
-    && pip install --ignore-installed distlib --disable-pip-version-check poetry==$POETRY_VERSION
+    && pip3 install --ignore-installed distlib --disable-pip-version-check poetry==$POETRY_VERSION
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
