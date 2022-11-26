@@ -14,7 +14,9 @@ def main():
             urllib.request.urlopen("https://www.discord.com/", timeout=5)
             break
         except:
+            print("No internet connection")
             pass
+    print("Internet connection available")
     groovy.channel_id = channel
     bot.run(token)
 
