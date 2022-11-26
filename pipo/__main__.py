@@ -1,6 +1,7 @@
 #!usr/bin/env python3
 import os
-import urllib
+import time
+import urllib.request
 
 from .bot import bot, groovy
 
@@ -11,12 +12,12 @@ def main():
 
     while True:  # wait for internet connection
         try:
-            urllib.request.urlopen("https://www.discord.com/", timeout=5)
+            urllib.request.urlopen("https://www.google.com/", timeout=5)
             break
         except:
             print("No internet connection")
+            time.sleep(5)
             pass
-    print("Internet connection available")
     groovy.channel_id = channel
     bot.run(token)
 
