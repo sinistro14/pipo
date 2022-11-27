@@ -11,6 +11,7 @@ intents = discord.Intents.default()
 intents.typing = True
 intents.presences = True
 intents.members = True
+intents.message_content = True
 
 bot = commands.Bot(
     command_prefix="-", case_insensitive=True, intents=intents
