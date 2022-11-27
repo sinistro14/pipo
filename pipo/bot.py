@@ -7,8 +7,13 @@ from discord.ext import commands
 
 from .groovy import BotEvent, Groovy
 
+intents = discord.Intents.default()
+intents.typing = True
+intents.presences = True
+intents.members = True
+
 bot = commands.Bot(
-    command_prefix="-", case_insensitive=True, intents=discord.Intents.default()
+    command_prefix="-", case_insensitive=True, intents=intents
 )
 groovy = Groovy(bot)
 

@@ -158,7 +158,8 @@ class Groovy:
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )
-        except:
+        except Exception as e:
+            print(str(e))
             pass
         finally:
             self.voiceClient = ctx.voice_client
@@ -185,7 +186,8 @@ class Groovy:
                     discord.FFmpegPCMAudio(nextUrl, **self._ffmpeg_options),
                     after=self.playNextMusic,
                 )
-            except:
+            except Exception as e:
+                print(str(e))
                 self.musicChannel.send("Can not play next music. Skipping...")
                 self.playNextMusic()
 
