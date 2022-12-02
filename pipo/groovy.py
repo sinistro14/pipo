@@ -12,6 +12,7 @@ from pytube import Playlist
 
 
 logger = logging.getLogger("groovy")
+logging.basicConfig(level = logging.INFO) 
 
 class BotEvent:
     JOIN = 1
