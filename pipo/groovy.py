@@ -144,7 +144,7 @@ class Groovy:
 
     def setCurrentState(self, state):
         self.currentState = state
-        logger.info("Set Current State = " + self.currenState.name)
+        logger.info("Set Current State = " + self.currentState.name)
 
 
     async def onReady(self):
@@ -154,8 +154,8 @@ class Groovy:
     async def process(self, event, ctx):
         newState = await self.currentState.process(event, ctx)
         if newState:
-            self.currenState = self.setCurrentState(newState)
-        logger.info("Current State = " + self.currenState.name)
+            self.setCurrentState(newState)
+        logger.info("Current State = " + self.currentState.name)
 
     async def join(self, ctx):
         self.musicQueue.clear()
