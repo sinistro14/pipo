@@ -2,12 +2,16 @@ import asyncio
 import random as rd
 import re
 import urllib
+import logging
+
 
 import discord
 import pafy
 import psutil
 from pytube import Playlist
 
+
+logger = logging.getLogger("groovy")
 
 class BotEvent:
     JOIN = 1
@@ -96,12 +100,13 @@ class Queue:
 class Groovy:
     def __init__(self, bot):
         self.channel_id = None
+        self.voiceChannel_id = None
         self._idle_duration = 60 * 30  ## 30m
         self._ffmpeg_options = {
             "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
             "options": "-vn",
         }
-
+        
         self.bot = bot
         self.voiceClient = None
         self.musicChannel = None
@@ -139,27 +144,32 @@ class Groovy:
 
     def setCurrentState(self, state):
         self.currentState = state
+        logger.info("Set Current State = " + self.currenState.name)
+
 
     async def onReady(self):
+        logger.info('Pipo do Arraial is ready!')
         self.musicChannel = self.bot.get_channel(self.channel_id)
 
     async def process(self, event, ctx):
-        if not ctx.author.voice:
-            return
         newState = await self.currentState.process(event, ctx)
         if newState:
             self.currenState = self.setCurrentState(newState)
+        logger.info("Current State = " + self.currenState.name)
 
     async def join(self, ctx):
         self.musicQueue.clear()
         channel = ctx.author.voice.channel
+        if(channel == None):
+            channel = self.bot.get_channel(self.voiceChannel_id) # default channel
         try:
             await channel.connect()
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )
+            logger.debug("Joined successfully")
         except Exception as e:
-            print(str(e))
+            logger.warning("Error on joining a channel | " + str(e))
             pass
         finally:
             self.voiceClient = ctx.voice_client
@@ -177,8 +187,9 @@ class Groovy:
 
     def playNextMusic(self, error=None):
         nextQuery = self.musicQueue.pop()
+        logger.debug("Next music = {} | In queue = {}".format(nextQuery, self.musicQueue.getLength()))
         if not nextQuery:
-            self.currentState = self.idleState
+            self.setCurrentState(self.idleState)
         else:
             try:
                 nextUrl = self._getYoutubeAudio(nextQuery)
@@ -187,7 +198,7 @@ class Groovy:
                     after=self.playNextMusic,
                 )
             except Exception as e:
-                print(str(e))
+                logger.warning("Can not play next music | " + str(e))
                 self.musicChannel.send("Can not play next music. Skipping...")
                 self.playNextMusic()
 

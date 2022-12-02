@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from .groovy import BotEvent, Groovy
 
+
 intents = discord.Intents.default()
 intents.typing = True
 intents.presences = True
@@ -21,7 +22,6 @@ groovy = Groovy(bot)
 
 @bot.event
 async def on_ready():
-    print("Putos Groovy is ready!")
     await groovy.onReady()
 
 
