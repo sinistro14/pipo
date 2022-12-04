@@ -7,8 +7,8 @@ from .bot import bot, groovy
 
 
 def main():
-    channel = os.environ["CHANNEL"]
-    voiceChannel = os.environ["VOICE_CHANNEL"]
+    channel = int(os.environ["CHANNEL"])
+    voiceChannel = int(os.environ["VOICE_CHANNEL"])
     token = os.environ["TOKEN"]
 
     while True:  # wait for internet connection
