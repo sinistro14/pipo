@@ -39,7 +39,6 @@ RUN apt-get update \
         ffmpeg \
         python3 \
         python3-pip \
-        youtube-dl \
     && pip install --upgrade pip setuptools wheel \
     && apt-get clean
 

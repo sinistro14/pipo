@@ -27,7 +27,10 @@ python = "^3.9"  # compatible python versions must be declared here
 psutil = "~5.9.0"
 discord-py = { version = "~2.0.0", extras = ["voice"] }
 pytube = "~12.1.0"
-pafy = { git="https://github.com/ytdl-org/youtube-dl.git", branch="develop" } # using dev branch until 0.5.6 or later
+pafy = "~0.5.5"
+# cannot be updated due to 'dislike count error'
+# should be fixed in https://github.com/mps-youtube/pafy/pull/305
+youtube_dl = "2020.12.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
