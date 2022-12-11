@@ -6,9 +6,8 @@ import logging
 
 
 import discord
-import pafy
 import psutil
-from pytube import Playlist
+from pytube import Playlist, YouTube
 
 
 logger = logging.getLogger("groovy")
@@ -262,10 +261,9 @@ class Groovy:
                 f"https://www.youtube.com/results?search_query={query}"
             )
             video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-            query = video_ids[0]
+            query = "https://www.youtube.com/watch?v=" + video_ids[0]
 
-        pafyObj = pafy.new(query)
-        audioUrl = pafyObj.getbestaudio().url
+        audioUrl = YouTube(query).streams.get_audio_only().url
         return audioUrl
 
     async def _moveMessage(self, ctx):
