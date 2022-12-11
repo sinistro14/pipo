@@ -13,17 +13,17 @@ on:
     types:
       - completed
   push: # TODO add other branches later if required, like dev
-    branches: [ "main", "cicd" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   docker:
-    name: Build/Publish Docker Images
+    name: Build + Publish Docker Images
     runs-on: ubuntu-latest
     env:
       DOCKER_REGISTRY: TODO
-      DOCKER_IMAGE: ${{ github.event.repository.name }}
+      DOCKER_IMAGE: ${{ GITHUB_REPOSITORY }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       DOCKER_TARGET_PLATFORM: linux/arm/v7
