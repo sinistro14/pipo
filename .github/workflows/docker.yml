@@ -50,21 +50,6 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Build image
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: false
-        tags: ${{ steps.prepare.outputs.tag }}
-        platform: ${{ steps.prepare.outputs.docker_platform }}
-    - name: Manual push to registry confirmation
-      uses: trstringer/manual-approval@v1
-      with:
-        secret: ${{ github.TOKEN }}
-        approvers: andrecg95,sinistro14
-        minimum-approvals: 1
-        issue-title: "Pushing ${{ steps.prepare.outputs.tag }} to Docker registry"
-        exclude-workflow-initiator-as-approver: false
     - name: Build and push (new release)
       uses: docker/build-push-action@v3
       with:
