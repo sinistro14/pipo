@@ -1,11 +1,12 @@
 # This workflow will
-#  - setup an environment similar to a Raspberry Pi 4 Model B;
-#  - install Python dependencies, lint and run tests with a variety of Python versions
+# - install Python dependencies, lint and run tests with a variety of Python versions;
+# - build the docker image with arm7 as target (as used by Raspberry Pi 4 Model B);
+# - push the image to a repository.
 # For more information see:
 # https://github.com/pguyot/arm-runner-action
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Build/Publish Docker Image
 
 on:
   push:
@@ -15,40 +16,39 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [armv7l-latest, armv7l-v2204]
-        include:
-        - arch: armv7l-latest
-          cpu: cortex-a7
-          base_image: raspios_lite:latest
-          python-version: '3.9'
-        - arch: armv7l-v2204
-          cpu: cortex-a7
-          base_image: raspios_lite:2022-04-04
-          python-version: '3.9'
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_REGISTRY: TODO
+      DOCKER_IMAGE: andrecg95/Pipo-do-Arraial
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_TARGET_PLATFORM: linux/arm/v7
     steps:
     - uses: actions/checkout@v3
-    - name: Setup architecture image
-      uses: pguyot/arm-runner-action@v2
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      # Add support for more platforms with QEMU
+      # https://github.com/docker/setup-qemu-action
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
       with:
-        cpu: ${{ matrix.cpu }}
-        base_image: ${{ matrix.base_image }}
-        commands: |
-            commands to run tests
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+        version: latest
+    - name: Set variables
+      if: success()
+      id: prepare
       run: |
-        make poetry_setup
-        make dev_setup
-    - name: Lint
+        echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}
+        echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}
+        echo ::set-output name=version::${GITHUB_RUN_NUMBER}
+    - name: Docker Login
+      if: success()
       run: |
-        make lint
-    - name: Test with pytest
+        echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin
+    - name: Push image
+      if: success()
       run: |
-        make test
+        docker buildx build \
+        --platform ${{ steps.prepare.outputs.docker_platform }} \
+        --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
+        --file ./Dockerfile \
+        --output type=image,push=true .
