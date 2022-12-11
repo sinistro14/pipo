@@ -12,10 +12,10 @@ on:
     workflows: ["Test Application"]
     types:
       - completed
-  push:
-    branches: [ "main", "dev", "cicd" ]
+  push: # TODO add other branches later if required, like dev
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "dev"]
+    branches: [ "main" ]
 
 jobs:
   build:
