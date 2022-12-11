@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_REGISTRY: TODO
-      DOCKER_IMAGE: ${{ GITHUB_REPOSITORY }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       DOCKER_TARGET_PLATFORM: linux/arm/v7
@@ -41,6 +40,7 @@ jobs:
       if: success()
       id: prepare
       run: |
+        export DOCKER_IMAGE=${{ github.event.repository.name }}
         echo docker_platform=${DOCKER_TARGET_PLATFORM} >> $GITHUB_OUTPUT
         echo docker_image=${DOCKER_REGISTRY}/${DOCKER_IMAGE} >> $GITHUB_OUTPUT
         echo version=${GITHUB_RUN_NUMBER} >> $GITHUB_OUTPUT
