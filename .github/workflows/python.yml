@@ -1,0 +1,54 @@
+# This workflow will
+#  - setup an environment similar to a Raspberry Pi 4 Model B;
+#  - install Python dependencies, lint and run tests with a variety of Python versions
+# For more information see:
+# https://github.com/pguyot/arm-runner-action
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "cicd" ]
+  pull_request:
+    branches: [ "cicd" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [armv7l-latest, armv7l-v2204]
+        include:
+        - arch: armv7l-latest
+          cpu: cortex-a7
+          base_image: raspios_lite:latest
+          python-version: '3.9'
+        - arch: armv7l-v2204
+          cpu: cortex-a7
+          base_image: raspios_lite:2022-04-04
+          python-version: '3.9'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup architecture image
+      uses: pguyot/arm-runner-action@v2
+      with:
+        cpu: ${{ matrix.cpu }}
+        base_image: ${{ matrix.base_image }}
+        commands: |
+            commands to run tests
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        make poetry_setup
+        make dev_setup
+    - name: Lint
+      run: |
+        make lint
+    - name: Test with pytest
+      run: |
+        make test
