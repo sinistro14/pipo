@@ -9,11 +9,11 @@ name: Build/Publish Docker Images
 
 on:
   workflow_run:
-    workflows: ["Test Application"]
+    workflows: [ "Test Application" ]
     types:
       - completed
   push: # TODO add other branches later if required, like dev
-    branches: [ "main" ]
+    branches: [ "main", "cicd" ]
   pull_request:
     branches: [ "main" ]
 
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_REGISTRY: TODO
-      DOCKER_IMAGE: andrecg95/Pipo-do-Arraial
+      DOCKER_IMAGE: ${{ github.event.repository.name }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       DOCKER_TARGET_PLATFORM: linux/arm/v7
