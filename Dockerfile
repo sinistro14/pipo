@@ -39,7 +39,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get --no-install-recommends install -y \
         ffmpeg \
-    && pip3 install --upgrade pip setuptools wheel cryptography==3.4.6 \
+    && pip3 install --upgrade pip setuptools wheel \
     && apt-get clean
 
 
@@ -60,7 +60,9 @@ RUN apt-get update \
         libffi-dev \
         libnacl-dev \
     && apt-get clean \
-    && pip3 install --ignore-installed distlib --disable-pip-version-check poetry==$POETRY_VERSION
+    && pip3 install --ignore-installed distlib --disable-pip-version-check \
+        cryptography==3.4.6 \
+        poetry==$POETRY_VERSION
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
