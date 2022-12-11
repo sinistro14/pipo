@@ -1,8 +1,8 @@
-FROM rust:1.65-slim-bullseye as base
+FROM python:3.9.16-slim-bullseye as base
 
     # python
 ENV APP_NAME="pipo" \
-    PYTHON_VERSION=3.8.15 \
+    PYTHON_VERSION=3.9.16 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -11,6 +11,8 @@ ENV APP_NAME="pipo" \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
+    # fixes install error for cryptography package, as fixing the package version below
+    CRYPTOGRAPHY_DONT_BUILD_RUST=1 \
     \
     # poetry
     # https://python-poetry.org/docs/configuration/#using-environment-variables
@@ -37,9 +39,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get --no-install-recommends install -y \
         ffmpeg \
-        python3 \
-        python3-pip \
-    && pip install --upgrade pip setuptools wheel \
+    && pip install --upgrade pip setuptools wheel cryptography==3.4.6 \
     && apt-get clean
 
 
