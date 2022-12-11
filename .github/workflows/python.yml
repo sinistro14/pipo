@@ -13,7 +13,8 @@ on:
     branches: [ "main", "dev", "cicd" ]
 
 jobs:
-  build:
+  python:
+    name: Test Application
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
