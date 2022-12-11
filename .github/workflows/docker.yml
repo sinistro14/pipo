@@ -20,7 +20,7 @@ on:
 jobs:
   docker:
     name: Build + Publish Docker Images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       DOCKER_REGISTRY: TODO
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -30,8 +30,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
-      with:
-        platforms: ${DOCKER_TARGET_PLATFORM}
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
       with:
