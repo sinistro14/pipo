@@ -41,8 +41,7 @@ jobs:
       id: prepare
       shell: bash
       run: |
-        export REPO=${GITHUB_REPOSITORY}
-        echo DOCKER_IMAGE=${REPO,,} >> $GITHUB_ENV
+        echo DOCKER_IMAGE=${GITHUB_REPOSITORY,,} >> $GITHUB_ENV
         echo docker_platform=${DOCKER_TARGET_PLATFORM} >> $GITHUB_OUTPUT
         echo docker_image=${DOCKER_REGISTRY}/${DOCKER_IMAGE} >> $GITHUB_OUTPUT
         echo version=${GITHUB_RUN_NUMBER} >> $GITHUB_OUTPUT
