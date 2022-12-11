@@ -9,9 +9,9 @@ name: Python application
 
 on:
   push:
-    branches: [ "cicd" ]
+    branches: [ "main", "dev", "cicd" ]
   pull_request:
-    branches: [ "cicd" ]
+    branches: [ "main", "dev"]
 
 jobs:
   build:
