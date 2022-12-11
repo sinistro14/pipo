@@ -39,7 +39,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get --no-install-recommends install -y \
         ffmpeg \
-    && pip install --upgrade pip setuptools wheel cryptography==3.4.6 \
+    && pip3 install --upgrade pip setuptools wheel cryptography==3.4.6 \
     && apt-get clean
 
 
