@@ -45,9 +45,25 @@ jobs:
       run: |
         make dev_setup
 
-    - name: Lint
+    - name: Run isort
       run: |
-        make lint
+        make isort
+
+    - name: Run black
+      run: |
+        make black
+
+    - name: Run mypy
+      run: |
+        make mypy
+
+    - name: Run pylint
+      run: |
+        make pylint
+
+    - name: Run bandit
+      run: |
+        make bandit
 
     - name: Test
       run: |
