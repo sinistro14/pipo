@@ -11,7 +11,7 @@ ENV APP_NAME="pipo" \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    # fixes install error for cryptography package, as fixing the package version below
+    # fixes install error for cryptography package, as does locking cryptography version
     CRYPTOGRAPHY_DONT_BUILD_RUST=1 \
     \
     # poetry
