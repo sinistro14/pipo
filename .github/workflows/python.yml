@@ -33,7 +33,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: .venv
-        key: ${{ runner.os }}-venv-python${{ matrix.python-versio }}-${{ hashFiles('**/pyproject.toml') }}
+        key: ${{ runner.os }}-venv-python${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
     - name: Install Poetry
       run: |
