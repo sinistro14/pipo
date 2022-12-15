@@ -36,7 +36,7 @@ mypy:
 	-$(POETRY) run mypy .
 
 pylint:
-	-$(POETRY) run pylint .
+	-$(POETRY) run pylint $(APP)
 
 bandit:
 	-$(POETRY) run bandit .
