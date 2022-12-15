@@ -1,8 +1,9 @@
 name: Automatic Rebase
+
 on:
   push:
-    branches:
-      - dev
+    branches: [ "dev" ]
+
 jobs:
   rebase:
     name: Rebase `dependencies` with `dev`
@@ -10,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+          fetch-depth: 0 # otherwise, one would need to push refs to dest repo
           ref: dependencies
       - run: |
           git config user.name github-actions
