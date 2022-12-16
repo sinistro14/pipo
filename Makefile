@@ -26,15 +26,25 @@ setup:
 dev_setup:
 	$(POETRY) install
 
-lint:
+isort:
 	-$(POETRY) run isort .
+
+black:
 	-$(POETRY) run black .
+
+mypy:
 	-$(POETRY) run mypy .
-	-$(POETRY) run pylint .
+
+pylint:
+	-$(POETRY) run pylint $(APP)
+
+bandit:
 	-$(POETRY) run bandit .
 
+lint: isort black mypy pylint bandit
+
 test:
-	$(POETRY) run coverage run -m pytest
+	$(POETRY) run pytest
 
 dist:
 	$(POETRY) dist
@@ -42,10 +52,10 @@ dist:
 image:
 	docker build . -t $(APP):latest
 
-run_image:
-	docker run -d --name $(APP) --env-file .env
+run_image: image
+	docker run -d --name $(APP) --env-file .env $(APP):latest
 
 run_app:
-	docker-compose up
+	docker compose up -d --build
 
-.PHONY: help poetry_setup setup dev_setup lint test dist image run_image run_app
+.PHONY: help poetry_setup setup dev_setup lint isort black mypy pylint bandit test dist image run_image run_app

@@ -1,15 +1,18 @@
 import random
 import re
 import urllib
+import logging
 
 import discord
 from discord.ext.commands import Bot
 from discord.ext.commands import Context as Dctx
-import pafy
-from pytube import Playlist
+from pytube import Playlist, YouTube
 
 from pipo.music import MusicQueue
 from pipo.states import Context, DisconnectedState, IdleState
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level = logging.INFO) 
 
 """
 class State:
@@ -43,6 +46,7 @@ class Groovy(Context):
 
     def __init__(self, bot: Bot):
         self.channel_id = None
+        self.voice_channel_id = None
 
         self._ffmpeg_options = {
             "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
@@ -58,6 +62,7 @@ class Groovy(Context):
 
     async def onReady(self):
         self._music_channel = self._bot.get_channel(self.channel_id)
+        logger.info("Pipo do Arraial is ready.")
 
     async def process(self, event, ctx: Dctx):
         if not ctx.author.voice:
@@ -72,13 +77,16 @@ class Groovy(Context):
     async def join(self, ctx: Dctx):
         self._music_queue.clear()
         channel = ctx.author.voice.channel
+        if not channel:
+            channel = self._bot.get_channel(self.voice_channel_id) # default channel
         try:
             await channel.connect()
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )
+            logger.debug("Joined successfully.")
         except:
-            pass
+            logger.exception("Error on joining a channel.")
         finally:
             self._voice_client = ctx.voice_client
             if "_query_" not in ctx.kwargs:
@@ -95,6 +103,7 @@ class Groovy(Context):
 
     def playNextMusic(self):
         nextQuery = self._music_queue.pop()
+        logger.debug(f"Next music: {nextQuery} | Queue size: {len(self._music_queue)}")
         if not nextQuery:
             self.transition_to(IdleState())
         else:
@@ -104,7 +113,8 @@ class Groovy(Context):
                     discord.FFmpegPCMAudio(nextUrl, **self._ffmpeg_options),
                     after=self.playNextMusic,
                 )
-            except:
+            except Exception as e:
+                logger.warning(f"Can not play next music. Error: {str(e)}")
                 self._music_channel.send("Can not play next music. Skipping...")
                 self.playNextMusic()
 
@@ -157,7 +167,6 @@ class Groovy(Context):
 
     async def shuffle(self, ctx: Dctx):
         self._music_queue.shuffle()
-        await self._moveMessage(ctx)
 
     def _getYoutubeAudio(self, query):
         if not query.startswith("http"):
@@ -166,14 +175,12 @@ class Groovy(Context):
                 f"https://www.youtube.com/results?search_query={query}"
             )
             video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-            query = video_ids[0]
+            query = f"https://www.youtube.com/watch?v={video_ids[0]}"
 
-        pafyObj = pafy.new(query)
-        audioUrl = pafyObj.getbestaudio().url
-        return audioUrl
+        return YouTube(query).streams.get_audio_only().url
 
     async def _moveMessage(self, ctx: Dctx):
         msg = ctx.message
         content = msg.content.encode("ascii", "ignore").decode()
-        await self._music_channel.send(msg.author.name + "  " + content)
+        await self._music_channel.send(f"{msg.author.name} {content}")
         await msg.delete()

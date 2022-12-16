@@ -5,15 +5,20 @@ from discord.ext import commands
 
 from .groovy import Groovy
 
+intents = discord.Intents.default()
+intents.typing = True
+intents.presences = True
+intents.members = True
+intents.message_content = True
+
 bot = commands.Bot(
-    command_prefix="-", case_insensitive=True, intents=discord.Intents.default()
+    command_prefix="-", case_insensitive=True, intents=intents
 )
 groovy = Groovy(bot)
 
 
 @bot.event
 async def on_ready():
-    print("Putos Groovy is ready!")
     await groovy.onReady()
 
 
