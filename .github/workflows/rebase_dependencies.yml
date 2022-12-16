@@ -1,3 +1,6 @@
+# This workflow will
+# - ensure branch dependencies is up to date in accordance to dev.
+
 name: Automatic Rebase
 
 on:
