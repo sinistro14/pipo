@@ -16,9 +16,8 @@ def main():
             urllib.request.urlopen("https://www.google.com/", timeout=5)
             break
         except:
-            print("No internet connection")
+            print("No internet connection.")
             time.sleep(5)
-            pass
     groovy.channel_id = channel
     groovy.voice_channel_id = voice_channel
     bot.run(token)

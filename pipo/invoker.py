@@ -1,3 +1,6 @@
+from pipo.command import Command
+
+
 class Invoker:
     """
     The Invoker is associated with one or several commands. It sends a request
@@ -17,7 +20,7 @@ class Invoker:
     def set_on_finish(self, command: Command):
         self._on_finish = command
 
-    def do_something_important(self) -> None:
+    async def do_something_important(self) -> None:
         """
         The Invoker does not depend on concrete command or receiver classes. The
         Invoker passes a request to a receiver indirectly, by executing a
@@ -32,4 +35,4 @@ class Invoker:
 
         print("Invoker: Does anybody want something done after I finish?")
         if isinstance(self._on_finish, Command):
-            self._on_finish.execute()
+            await self._on_finish.execute()

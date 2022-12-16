@@ -1,13 +1,12 @@
+from dataclasses import dataclass
+
+from pipo.command import Command
 from pipo.groovy import Groovy
-from .command import Command
 
+
+@dataclass
 class CommandList(Command):
-
-    def __init__(self, payload: str) -> None:
-        self._payload = payload
-
-    def __init__(self, bot: Groovy) -> None:
-        self._bot = bot
+    _bot: Groovy
 
     async def execute(self) -> None:
         await self._bot.send_message(

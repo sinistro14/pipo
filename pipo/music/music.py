@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from .component import Component
+from pipo.music.component import Component
 
 Self = TypeVar("Self", bound="Music")
 
@@ -14,11 +14,17 @@ class Music(Component):
     objects only delegate to their sub-components.
     """
 
+    _query: None
+
+    def __init__(self, query) -> None:
+        super().__init__()
+        self._query = query
+
     def count(self) -> int:
         return 1
 
-    def pop(self) -> Self:
-        return self
+    def pop(self) -> Component:
+        return self._query
 
-    def skiplist(self) -> None:
+    def skip_list(self) -> None:
         pass

@@ -1,14 +1,18 @@
+from dataclasses import dataclass
+
+from discord.ext.commands import Context as Dctx
+
+from pipo.command import Command
 from pipo.groovy import Groovy
-from .command import Command
 
+
+@dataclass
 class PlayList(Command):
-
-    def __init__(self, bot: Groovy, ctx, query, shuffle) -> None:
-        self._bot = bot
-        self._ctx = ctx
-        self._query = query
-        self._shuffle = shuffle
+    _bot: Groovy
+    _ctx: Dctx
+    _query: str
+    _shuffle: bool
 
     async def execute(self) -> None:
         self._ctx.kwargs["_query_"] = " ".join(self._query)
-        await self._bot.playList(self._ctx, shuffle=self._shuffle)
+        await self._bot.play_list(self._ctx, shuffle=self._shuffle)

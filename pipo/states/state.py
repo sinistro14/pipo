@@ -28,7 +28,7 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def playlist(self) -> None:
+    def play_list(self) -> None:
         pass
 
     @abstractmethod
@@ -36,7 +36,7 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def skiplist(self) -> None:
+    def skip_list(self) -> None:
         pass
 
     @abstractmethod

@@ -6,20 +6,17 @@ from discord.ext import commands
 from .groovy import Groovy
 
 intents = discord.Intents.default()
-intents.typing = True
 intents.presences = True
 intents.members = True
 intents.message_content = True
 
-bot = commands.Bot(
-    command_prefix="-", case_insensitive=True, intents=intents
-)
+bot = commands.Bot(command_prefix="-", case_insensitive=True, intents=intents)
 groovy = Groovy(bot)
 
 
 @bot.event
 async def on_ready():
-    await groovy.onReady()
+    await groovy.on_ready()
 
 
 @bot.command(pass_context=True)
@@ -78,19 +75,19 @@ async def skiplist(ctx):
     await groovy.process(BotEvent.SKIPLIST, ctx)
 
 
-@bot.command(pass_context=True)
-async def shuffle(ctx):
-    await groovy.shuffle(ctx)
+@bot.command(pass_context=False)
+async def shuffle():
+    await groovy.shuffle()
 
 
 @bot.command(pass_context=True)
 async def status(ctx):
-    await groovy.status(ctx)
+    await groovy.status(ctx)  # FIXME add command to processing queue
 
 
 @bot.command(pass_context=True)
 async def reboot(ctx):
-    await groovy.reboot()
+    await groovy.reboot(ctx)
 
 
 @bot.event

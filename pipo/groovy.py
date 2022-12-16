@@ -1,18 +1,18 @@
+import logging
 import random
 import re
 import urllib
-import logging
 
 import discord
 from discord.ext.commands import Bot
 from discord.ext.commands import Context as Dctx
 from pytube import Playlist, YouTube
 
-from pipo.music import MusicQueue
+from pipo.music import Music, MusicQueue
 from pipo.states import Context, DisconnectedState, IdleState
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level = logging.INFO) 
+logging.basicConfig(level=logging.INFO)
 
 """
 class State:
@@ -45,6 +45,7 @@ class Groovy(Context):
     _music_queue: MusicQueue
 
     def __init__(self, bot: Bot):
+        super().__init__()
         self.channel_id = None
         self.voice_channel_id = None
 
@@ -60,126 +61,107 @@ class Groovy(Context):
 
         self.transition_to(DisconnectedState())
 
-    async def onReady(self):
+    def current_state(self) -> str:
+        return self._state.__name__
+
+    def queue_size(self) -> int:
+        return self._music_queue.count()
+
+    async def on_ready(self):
         self._music_channel = self._bot.get_channel(self.channel_id)
         logger.info("Pipo do Arraial is ready.")
 
     async def process(self, event, ctx: Dctx):
         if not ctx.author.voice:
             return
-        newState = await self.currentState.process(event, ctx)
-        if newState:
-            self.transition_to(newState)
+        new_state = await self.currentState.process(event, ctx)
+        if new_state:
+            self.transition_to(new_state)
 
     async def send_message(self, message: str) -> None:
         await self._music_channel.send(message)
 
     async def join(self, ctx: Dctx):
-        self._music_queue.clear()
-        channel = ctx.author.voice.channel
-        if not channel:
-            channel = self._bot.get_channel(self.voice_channel_id) # default channel
-        try:
-            await channel.connect()
-            await ctx.guild.change_voice_state(
-                channel=channel, self_mute=True, self_deaf=True
-            )
-            logger.debug("Joined successfully.")
-        except:
-            logger.exception("Error on joining a channel.")
-        finally:
-            self._voice_client = ctx.voice_client
-            if "_query_" not in ctx.kwargs:
-                await self._moveMessage(ctx)
-            # self._startIdleCounter()
+        self._state.join(ctx)
 
-    async def joinAndPlay(self, ctx: Dctx):
-        await self.join(ctx)
-        await self.play(ctx)
-
-    async def joinAndPlayList(self, ctx: Dctx):
-        await self.join(ctx)
-        await self.playList(ctx)
-
-    def playNextMusic(self):
-        nextQuery = self._music_queue.pop()
-        logger.debug(f"Next music: {nextQuery} | Queue size: {len(self._music_queue)}")
-        if not nextQuery:
+    def _play_next_music(self):
+        next_query = self._music_queue.pop()
+        logger.debug(
+            "Next music: %s | Queue size: %d", next_query, self._music_queue.count()
+        )
+        if not next_query: # if queue is empty
             self.transition_to(IdleState())
         else:
             try:
-                nextUrl = self._getYoutubeAudio(nextQuery)
+                next_url = self._get_youtube_audio(next_query)
                 self._voice_client.play(
-                    discord.FFmpegPCMAudio(nextUrl, **self._ffmpeg_options),
-                    after=self.playNextMusic,
+                    discord.FFmpegPCMAudio(next_url, **self._ffmpeg_options),
+                    after=self._play_next_music,
                 )
-            except Exception as e:
-                logger.warning(f"Can not play next music. Error: {str(e)}")
+            except Exception as exc:
+                logger.warning("Can not play next music. Error: %s", str(exc))
                 self._music_channel.send("Can not play next music. Skipping...")
-                self.playNextMusic()
+                self._play_next_music()
 
     async def play(self, ctx: Dctx):
-        self._music_queue.add(ctx.kwargs["_query_"])
-        if not self._voice_client.is_playing() and not self._voice_client.is_paused():
-            self.playNextMusic()
-        await self._moveMessage(ctx)
+        await self._state.play(ctx)
 
-    async def playList(self, ctx: Dctx, shuffle: bool):
+    async def _play(self, ctx: Dctx):
+        self._music_queue.add(Music(ctx.kwargs["_query_"]))
+        if not self._voice_client.is_playing() and not self._voice_client.is_paused():
+            self._play_next_music()
+        await self._move_message(ctx)
+
+    async def play_list(self, ctx: Dctx):
+        await self._state.play_list(ctx)
+
+    async def _play_list(self, ctx: Dctx, shuffle: bool):
         plist = list(Playlist(ctx.kwargs["_query_"]))
-        if len(plist):
+        if plist:
             if shuffle:
                 random.shuffle(plist)
-            self._music_queue.add(plist)
-            if not self._voice_client.is_playing() and not self._voice_client.is_paused():
-                self.playNextMusic()
-        await self._moveMessage(ctx)
+            self._music_queue.add(MusicQueue([Music(music) for music in plist]))
+            if (
+                not self._voice_client.is_playing()
+                and not self._voice_client.is_paused()
+            ):
+                self._play_next_music()
+        await self._move_message(ctx)
 
     async def pause(self, ctx: Dctx):
-        await self._voice_client.pause()
-        await self._moveMessage(ctx)
+        await self._state.pause(ctx)
 
     async def resume(self, ctx: Dctx):
-        await self._voice_client.resume()
-        await self._moveMessage(ctx)
+        await self._state.resume(ctx)
 
     async def stop(self, ctx: Dctx):
-        self._music_queue.clear()
-        await self._moveMessage(ctx)
-        await self._voice_client.stop()
+        await self._state.stop(ctx)
 
     async def leave(self, ctx: Dctx):
-        await self._voice_client.disconnect()
-        await self._moveMessage(ctx)
-        #self._stopIdleCounter()
+        await self._state.leave(ctx)
 
-    async def skip(self, ctx: Dctx):
-        await self._moveMessage(ctx)
-        await self._voice_client.stop()
+    async def skip(self, ctx: Dctx, skip_list: bool):
+        await self._state.skip(ctx, skip_list)
 
-    async def skipList(self, ctx: Dctx):
-        await self._moveMessage(ctx)
-        self._music_queue.pop()
-        await self._voice_client.stop()
+    async def reboot(self, ctx: Dctx):
+        self._state.leave()  # transitions to Disconnected state
+        await self.join(ctx)  # transitions to Idle state
 
-    async def reboot(self):
-        self.transition_to(DisconnectedState())
-        await self.join()
-
-    async def shuffle(self, ctx: Dctx):
+    def shuffle(self):
         self._music_queue.shuffle()
 
-    def _getYoutubeAudio(self, query):
+    @staticmethod
+    def _get_youtube_audio(query):
         if not query.startswith("http"):
             query = query.replace(" ", "+").encode("ascii", "ignore").decode()
-            html = urllib.request.urlopen(
+            with urllib.request.urlopen(
                 f"https://www.youtube.com/results?search_query={query}"
-            )
-            video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-            query = f"https://www.youtube.com/watch?v={video_ids[0]}"
-
+            ) as response:
+                video_ids = re.findall(r"watch\?v=(\S{11})", response.read().decode())
+                query = f"https://www.youtube.com/watch?v={video_ids[0]}"
         return YouTube(query).streams.get_audio_only().url
 
-    async def _moveMessage(self, ctx: Dctx):
+    async def _move_message(self, ctx: Dctx):
         msg = ctx.message
         content = msg.content.encode("ascii", "ignore").decode()
         await self._music_channel.send(f"{msg.author.name} {content}")

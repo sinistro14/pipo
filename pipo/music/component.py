@@ -5,31 +5,13 @@ Self = typing.TypeVar("Self", bound="Component")
 
 
 class Component(ABC):
-    """
-    The base Component class declares common operations for both simple and
-    complex objects of a composition.
-    """
-
     @property
     def parent(self) -> Self:
         return self._parent
 
     @parent.setter
     def parent(self, parent: Self):
-        """
-        Optionally, the base Component can declare an interface for setting and
-        accessing a parent of the component in a tree structure. It can also
-        provide some default implementation for these methods.
-        """
         self._parent = parent
-
-    """
-    In some cases, it would be beneficial to define the child-management
-    operations right in the base Component class. This way, you won't need to
-    expose any concrete component classes to the client code, even during the
-    object tree assembly. The downside is that these methods will be empty for
-    the leaf-level components.
-    """
 
     def add(self, component: Self) -> None:
         pass
@@ -37,11 +19,8 @@ class Component(ABC):
     def pop(self) -> Self:
         pass
 
-    def is_composite(self) -> bool:
-        """
-        You can provide a method that lets the client code figure out whether a
-        component can bear children.
-        """
+    @classmethod
+    def is_composite(cls) -> bool:
         return False
 
     @abstractmethod
@@ -57,5 +36,5 @@ class Component(ABC):
         pass
 
     @abstractmethod
-    def skiplist(self) -> None:
+    def skip_list(self) -> None:
         pass

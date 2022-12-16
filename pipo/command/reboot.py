@@ -1,10 +1,15 @@
+from dataclasses import dataclass
+
+from discord.ext.commands import Context as Dctx
+
+from pipo.command import Command
 from pipo.groovy import Groovy
-from .command import Command
 
+
+@dataclass
 class Reboot(Command):
-
-    def __init__(self, bot: Groovy) -> None:
-        self._bot = bot
+    _bot: Groovy
+    _ctx: Dctx
 
     async def execute(self) -> None:
-        await self._bot.reboot()
+        await self._bot.reboot(self._ctx)

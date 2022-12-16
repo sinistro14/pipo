@@ -4,6 +4,7 @@ from pipo.states.state import State
 
 logger = logging.getLogger(__name__)
 
+
 class Context:
 
     _state: State = None
@@ -14,4 +15,4 @@ class Context:
     def transition_to(self, state):
         self._state = state
         self._state.context = self
-        logger.info("Current State: " + self._state.__name__)
+        logger.info("Current State: %s", self._state.__name__)

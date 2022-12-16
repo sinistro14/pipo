@@ -1,12 +1,16 @@
+from dataclasses import dataclass
+
+from discord.ext.commands import Context as Dctx
+
+from pipo.command import Command
 from pipo.groovy import Groovy
-from .command import Command
 
+
+@dataclass
 class Play(Command):
-
-    def __init__(self, bot: Groovy, ctx, query) -> None:
-        self._bot = bot
-        self._ctx = ctx
-        self._query = query
+    _bot: Groovy
+    _ctx: Dctx
+    _query: str
 
     async def execute(self) -> None:
         self._ctx.kwargs["_query_"] = " ".join(self._query)
