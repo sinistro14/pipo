@@ -32,10 +32,10 @@ class PlayingState(State):
         await self.context._play_list(ctx)
 
     async def skip(self, ctx: Dctx, skip_list: bool) -> None:
-        await self._move_message(ctx)
+        await self.context._move_message(ctx)
         if skip_list:
-            self._music_queue.skip_list()
-        await self._voice_client.stop()
+            self.context._music_queue.skip_list()
+        await self.context._voice_client.stop()
 
     def skip_list(self) -> None:
         self.context.skip()
