@@ -3,7 +3,23 @@
 import discord
 from discord.ext import commands
 
-from .groovy import Groovy
+from pipo.command import (
+    CommandQueue,
+    Join,
+    Leave,
+    ListCommands,
+    Pause,
+    Play,
+    PlayList,
+    Reboot,
+    Resume,
+    Shuffle,
+    Skip,
+    SkipList,
+    Status,
+    Stop,
+)
+from pipo.groovy import Groovy
 
 intents = discord.Intents.default()
 intents.presences = True
@@ -13,6 +29,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="-", case_insensitive=True, intents=intents)
 groovy = Groovy(bot)
 
+command_queue = CommandQueue(2)  # FIXME allow max workers configuration
+
 
 @bot.event
 async def on_ready():
@@ -21,73 +39,72 @@ async def on_ready():
 
 @bot.command(pass_context=True)
 async def join(ctx):
-    await groovy.process(BotEvent.JOIN, ctx)
+    command_queue.add(Join(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def leave(ctx):
-    await groovy.process(BotEvent.LEAVE, ctx)
+    command_queue.add(Leave(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def play(ctx, *query):
-    ctx.kwargs["_query_"] = " ".join(query)
-    await groovy.process(BotEvent.PLAY, ctx)
+    command_queue.add(Play(groovy, ctx, query))
 
 
 @bot.command(pass_context=True)
 async def playlist(ctx, *query):
-    ctx.kwargs["_query_"] = " ".join(query)
-    await groovy.process(BotEvent.PLAYLIST, ctx)
-    # PlayList(bot, ctx, query, False)
+    command_queue.add(PlayList(groovy, ctx, query, False))
 
 
 @bot.command(pass_context=True)
 async def playlistshuffle(ctx, *query):
-    ctx.kwargs["_query_"] = " ".join(query)
-    ctx.kwargs["_shuffle_"] = True
-    await groovy.process(BotEvent.PLAYLIST, ctx)
-    # PlayList(bot, ctx, query, True)
+    command_queue.add(PlayList(groovy, ctx, query, True))
 
 
 @bot.command(pass_context=True)
 async def stop(ctx):
-    await groovy.process(BotEvent.STOP, ctx)
+    command_queue.add(Stop(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def pause(ctx):
-    await groovy.process(BotEvent.PAUSE, ctx)
+    command_queue.add(Pause(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def resume(ctx):
-    await groovy.process(BotEvent.RESUME, ctx)
+    command_queue.add(Resume(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def skip(ctx):
-    await groovy.process(BotEvent.SKIP, ctx)
+    command_queue.add(Skip(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def skiplist(ctx):
-    await groovy.process(BotEvent.SKIPLIST, ctx)
+    command_queue.add(SkipList(groovy, ctx))
 
 
 @bot.command(pass_context=False)
 async def shuffle():
-    await groovy.shuffle()
+    command_queue.add(Shuffle(groovy))
+
+
+@bot.command(pass_context=True)
+async def listcommands(ctx):
+    command_queue.add(ListCommands(groovy))
 
 
 @bot.command(pass_context=True)
 async def status(ctx):
-    await groovy.status(ctx)  # FIXME add command to processing queue
+    command_queue.add(Status(groovy, ctx))
 
 
 @bot.command(pass_context=True)
 async def reboot(ctx):
-    await groovy.reboot(ctx)
+    command_queue.add(Reboot(groovy, ctx))
 
 
 @bot.event

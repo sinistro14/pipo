@@ -8,11 +8,11 @@ from pipo.groovy import Groovy
 
 @dataclass
 class PlayList(Command):
-    _bot: Groovy
-    _ctx: Dctx
-    _query: str
-    _shuffle: bool
+    bot: Groovy
+    ctx: Dctx
+    query: str
+    shuffle: bool
 
     async def execute(self) -> None:
-        self._ctx.kwargs["_query_"] = " ".join(self._query)
-        await self._bot.play_list(self._ctx, shuffle=self._shuffle)
+        self.ctx.kwargs["_query_"] = " ".join(self.query)
+        await self.bot.play_list(self.ctx, shuffle=self.shuffle)

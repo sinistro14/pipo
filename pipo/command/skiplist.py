@@ -8,8 +8,8 @@ from pipo.groovy import Groovy
 
 @dataclass
 class SkipList(Command):
-    _bot: Groovy
-    _ctx: Dctx
+    bot: Groovy
+    ctx: Dctx
 
     async def execute(self) -> None:
-        await self._bot.skip(self._ctx, skip_list=True)
+        await self.bot.skip(self.ctx, skip_list=True)

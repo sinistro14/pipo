@@ -8,8 +8,8 @@ from pipo.groovy import Groovy
 
 @dataclass
 class Reboot(Command):
-    _bot: Groovy
-    _ctx: Dctx
+    bot: Groovy
+    ctx: Dctx
 
     async def execute(self) -> None:
-        await self._bot.reboot(self._ctx)
+        await self.bot.reboot(self.ctx)

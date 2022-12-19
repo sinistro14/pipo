@@ -6,7 +6,7 @@ from pipo.groovy import Groovy
 
 @dataclass
 class Shuffle(Command):
-    _bot: Groovy
+    bot: Groovy
 
     async def execute(self) -> None:
-        await self._bot.shuffle()
+        await self.bot.shuffle()

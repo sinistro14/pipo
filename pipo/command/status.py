@@ -9,14 +9,14 @@ from pipo.groovy import Groovy
 
 @dataclass
 class Status(Command):
-    _bot: Groovy
-    _ctx: Dctx
+    bot: Groovy
+    ctx: Dctx
 
     async def execute(self) -> None:
-        await self._bot._move_message(self._ctx)
-        await self._bot.send_message(
-            f"Current State: {self._bot.current_state()}\n"
-            f"Queue Length: {self._bot.queue_size()}\n"
+        await self.bot._move_message(self.ctx)
+        await self.bot.send_message(
+            f"Current State: {self.bot.current_state()}\n"
+            f"Queue Length: {self.bot.queue_size()}\n"
             f"CPU Usage: {psutil.cpu_percent()}\n"
             f"RAM Usage: {psutil.virtual_memory().percent}%\n"
             f"Disk Usage: {psutil.disk_usage('/').percent}%\n"

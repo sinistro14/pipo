@@ -8,8 +8,8 @@ from pipo.groovy import Groovy
 
 @dataclass
 class Join(Command):
-    _bot: Groovy
-    _ctx: Dctx
+    bot: Groovy
+    ctx: Dctx
 
     async def execute(self) -> None:
-        await self._bot.join(self._ctx)
+        await self.bot.join(self.ctx)

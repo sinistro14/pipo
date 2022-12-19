@@ -89,7 +89,7 @@ class Groovy(Context):
         logger.debug(
             "Next music: %s | Queue size: %d", next_query, self._music_queue.count()
         )
-        if not next_query: # if queue is empty
+        if not next_query:  # if queue is empty
             self.transition_to(IdleState())
         else:
             try:

@@ -5,11 +5,11 @@ from pipo.groovy import Groovy
 
 
 @dataclass
-class CommandList(Command):
-    _bot: Groovy
+class ListCommands(Command):
+    bot: Groovy
 
     async def execute(self) -> None:
-        await self._bot.send_message(
+        await self.bot.send_message(
             "Command List: \n "
             " -join \n"
             " -play <query / url> \n"

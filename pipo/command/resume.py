@@ -8,8 +8,8 @@ from pipo.groovy import Groovy
 
 @dataclass
 class Resume(Command):
-    _bot: Groovy
-    _ctx: Dctx
+    bot: Groovy
+    ctx: Dctx
 
     async def execute(self) -> None:
-        await self._bot.resume(self._ctx)
+        await self.bot.resume(self.ctx)
