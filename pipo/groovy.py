@@ -14,28 +14,6 @@ from pipo.states import Context, DisconnectedState, IdleState
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-"""
-class State:
-    def __init__(self, name):
-        self.name = name
-        self.transitions = []
-
-    def addTransition(self, event, action, nextState):
-        transition = Transition(event, action, nextState)
-        self.transitions.append(transition)
-
-    async def process(self, event, msg):
-        for transition in self.transitions:
-            if event == transition.event:
-                try:
-                    await transition.action(msg)
-                except:
-                    pass
-                finally:
-                    return transition.nextState
-        return None
-"""
-
 
 class Groovy(Context):
 
