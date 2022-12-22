@@ -41,7 +41,10 @@ pylint:
 bandit:
 	-$(POETRY) run bandit .
 
-lint: isort black mypy pylint bandit
+vulture:
+	-$(POETRY) run vulture $(APP)
+
+lint: isort black mypy pylint bandit vulture
 
 test:
 	$(POETRY) run pytest
