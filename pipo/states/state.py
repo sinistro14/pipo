@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 
-from .context import Context
+from discord.ext.commands import Context as Dctx
+
+from pipo.states.context import Context
 
 
 class State(ABC):
@@ -20,23 +22,19 @@ class State(ABC):
         self._context = context
 
     @abstractmethod
-    def join(self) -> None:
+    def join(self, ctx: Dctx) -> None:
         pass
 
     @abstractmethod
-    def play(self) -> None:
+    def play(self, ctx: Dctx) -> None:
         pass
 
     @abstractmethod
-    def play_list(self) -> None:
+    def play_list(self, ctx: Dctx, shuffle: bool) -> None:
         pass
 
     @abstractmethod
-    def skip(self) -> None:
-        pass
-
-    @abstractmethod
-    def skip_list(self) -> None:
+    def skip(self, skip_list: bool) -> None:
         pass
 
     @abstractmethod

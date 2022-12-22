@@ -1,6 +1,7 @@
 import asyncio
 
 from discord.ext.commands import Context as Dctx
+from pytube import Playlist
 
 from pipo.groovy import Groovy
 from pipo.states.disconnected_state import DisconnectedState
@@ -11,7 +12,7 @@ from pipo.states.state import State
 class IdleState(State):
 
     context: Groovy
-    _idle_tracker = None
+    _idle_tracker: asyncio.Future
     _idle_timeout: int
 
     def __init__(self, idle_timeout: int = 60 * 30) -> None:  # 30 minutes
@@ -33,24 +34,22 @@ class IdleState(State):
         await self.context._music_channel.send("Bye Bye !!!")
         await self.context._voice_client.disconnect()
 
-    def _clean_transition_to(self, state: State):
+    def _clean_transition_to(self, state: State) -> None:
         self._stop_idle_tracker()
         self.context.transition_to(state)
 
     async def play(self, ctx: Dctx) -> None:
-        await self.context._play(ctx)
+        self.context._player.play(ctx.kwargs["_query_"])
         self._clean_transition_to(PlayingState())
 
-    async def play_list(self, ctx: Dctx) -> None:
-        await self.context._play_list(ctx)
+    async def play_list(self, ctx: Dctx, shuffle: bool) -> None:
+        self.context._player.play(list(Playlist(ctx.kwargs["_query_"])), shuffle)
         self._clean_transition_to(PlayingState())
 
-    async def leave(self, ctx: Dctx) -> None:
+    async def leave(self) -> None:
         await self.context._voice_client.disconnect()
-        await self.context._move_message(ctx)
         self.context.transition_to(DisconnectedState())
 
-    async def resume(self, ctx: Dctx) -> None:
-        await self.context._voice_client.resume()
-        await self.context._move_message(ctx)
+    async def resume(self) -> None:
+        self.context._player.resume()
         self._clean_transition_to(PlayingState())

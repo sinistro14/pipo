@@ -1,6 +1,7 @@
 import logging
 
 from discord.ext.commands import Context as Dctx
+from pytube import Playlist
 
 from pipo.groovy import Groovy
 from pipo.states.idle_state import IdleState
@@ -15,7 +16,6 @@ class DisconnectedState(State):
     context: Groovy
 
     async def _join(self, ctx: Dctx) -> None:
-        self.context._music_queue.clear()
         channel = ctx.author.voice.channel or self.context._bot.get_channel(
             self.context.voice_channel_id
         )
@@ -29,8 +29,7 @@ class DisconnectedState(State):
             logger.exception("Error while joining channel.")
         finally:
             self._voice_client = ctx.voice_client
-            if "_query_" not in ctx.kwargs:
-                await self.context._move_message(ctx)
+            await self.context._move_message(ctx)
 
     async def join(self, ctx: Dctx) -> None:
         await self._join(ctx)
@@ -38,10 +37,10 @@ class DisconnectedState(State):
 
     async def play(self, ctx: Dctx) -> None:
         await self._join(ctx)
-        await self.context._play()
+        self.context._player.play(ctx.kwargs["_query_"])
         self.context.transition_to(PlayingState())
 
-    async def play_list(self, ctx: Dctx) -> None:
+    async def play_list(self, ctx: Dctx, shuffle: bool) -> None:
         await self._join(ctx)
-        await self.context._play_list()
+        self.context._player.play(list(Playlist(ctx.kwargs["_query_"])), shuffle)
         self.context.transition_to(PlayingState())

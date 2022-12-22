@@ -87,9 +87,9 @@ async def skiplist(ctx):
     command_queue.add(SkipList(groovy, ctx))
 
 
-@bot.command(pass_context=False)
-async def shuffle():
-    command_queue.add(Shuffle(groovy))
+@bot.command(pass_context=True)
+async def shuffle(ctx):
+    command_queue.add(Shuffle(groovy, ctx))
 
 
 @bot.command(pass_context=True)
