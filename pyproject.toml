@@ -38,7 +38,7 @@ mypy = "0.971"
 black = "22.8.0"
 bandit = "~1.7.0"
 isort = "~5.10.0"
-vulture = "2.6"
+vulture = "2.7"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"
@@ -74,7 +74,7 @@ target = ["pipo"]
 exclude_dirs = ["tests", ".venv"]
 
 [tool.vulture]
+paths = ["pipo/"]
 make_whitelist = true
 min_confidence = 70
-paths = ["pipo/"]
 sort_by_size = true
