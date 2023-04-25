@@ -9,9 +9,6 @@ settings = Dynaconf(
     environments=True,
     validate_on_update=True,
     settings_files=["settings.yaml", ".secrets.yaml"],
-    validators=[
-        Validator("app", "channel", "voice_channel", "token", must_exist=True),
-    ],
 )
 
 # `envvar_prefix` = export envvars with `export PIPO_FOO=bar`
@@ -20,6 +17,6 @@ settings = Dynaconf(
 # lazy evaluation, check on usage only
 settings.validators.register(
     validators=[
-        Validator("app", "channel", "voice_channel", "token", neq=""),
+        Validator("app", "channel", "voice_channel", "token", must_exist=True, neq=""),
     ],
 )
