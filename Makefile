@@ -1,4 +1,4 @@
-include .env
+-include .env
 
 APP=$(PIPO_APP)
 CONFIG_PATH=pyproject.toml
