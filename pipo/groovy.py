@@ -1,22 +1,23 @@
+#!usr/bin/env python3
 import logging
 
 import discord
 from discord.ext.commands import Bot
 from discord.ext.commands import Context as Dctx
 
-from pipo.player import Player
-from pipo.states import Context, DisconnectedState, IdleState
+import pipo.player
+import pipo.states.context
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-class Groovy(Context):
+class Groovy(pipo.states.context.Context):
 
     _bot: Bot
     _voice_client: discord.VoiceClient
     _music_channel: discord.VoiceChannel
-    _player: Player
+    _player: pipo.player.Player
 
     def __init__(self, bot: Bot):
         super().__init__()
@@ -31,15 +32,15 @@ class Groovy(Context):
         self._bot = bot
         self._voice_client = None
         self._music_channel = None
-        self._player = Player(self)
+        self._player = pipo.player.Player(self)
 
-        self.transition_to(DisconnectedState())
+        self.transition_to(pipo.states.DisconnectedState())
 
     def current_state(self) -> str:
         return self._state.__name__
 
     def become_idle(self) -> None:
-        self.transition_to(IdleState())
+        self.transition_to(pipo.states.IdleState())
 
     def queue_size(self) -> int:
         return self._player.queue_size()
@@ -62,31 +63,31 @@ class Groovy(Context):
 
     async def play(self, ctx: Dctx):
         await self._state.play(ctx)
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def play_list(self, ctx: Dctx, shuffle: bool):
         await self._state.play_list(ctx, shuffle)
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def pause(self, ctx: Dctx):
         await self._state.pause()
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def resume(self, ctx: Dctx):
         await self._state.resume()
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def stop(self, ctx: Dctx):
         await self._state.stop()
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def leave(self, ctx: Dctx):
         await self._state.leave()
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def skip(self, ctx: Dctx, skip_list: bool):
         await self._state.skip(skip_list)
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
     async def reboot(self, ctx: Dctx):
         self._state.leave()  # transitions to Disconnected state
@@ -94,9 +95,9 @@ class Groovy(Context):
 
     async def shuffle(self, ctx: Dctx):
         self._player.shuffle()
-        await self._move_message(ctx)
+        await self.move_message(ctx)
 
-    async def _move_message(self, ctx: Dctx):
+    async def move_message(self, ctx: Dctx):
         msg = ctx.message
         content = msg.content.encode("ascii", "ignore").decode()
         await self.send_message(f"{msg.author.name} {content}")

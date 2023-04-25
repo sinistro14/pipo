@@ -1,0 +1,17 @@
+default:
+  # Application name
+  app:
+  # Discord channel
+  channel:
+  # Discord default voice channel
+  voice_channel:
+  command:
+    queue:
+      max_workers: 2
+  player:
+    queue:
+      size_check_iterations: 5
+    url_fetch:
+      pool_size: 4
+      retries: 5
+      wait: 1

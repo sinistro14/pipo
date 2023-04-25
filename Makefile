@@ -1,5 +1,7 @@
 include .env
 
+APP=$(PIPO_APP)
+CONFIG_PATH=pyproject.toml
 POETRY=poetry
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
 
@@ -39,10 +41,10 @@ pylint:
 	-$(POETRY) run pylint $(APP)
 
 bandit:
-	-$(POETRY) run bandit .
+	-$(POETRY) run bandit -c $(CONFIG_PATH) -r . 
 
 vulture:
-	-$(POETRY) run vulture $(APP)
+	-$(POETRY) run vulture
 
 lint: isort black mypy pylint bandit vulture
 

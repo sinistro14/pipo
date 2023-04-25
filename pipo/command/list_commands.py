@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from pipo.command import Command
 from pipo.groovy import Groovy
+from pipo.command.command import Command
 
 
 @dataclass

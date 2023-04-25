@@ -1,15 +1,12 @@
-from discord.ext.commands import Context as Dctx
 from pytube import Playlist
+from discord.ext.commands import Context as Dctx
 
-from pipo.groovy import Groovy
-from pipo.states.disconnected_state import DisconnectedState
-from pipo.states.idle_state import IdleState
 from pipo.states.state import State
+from pipo.states.idle_state import IdleState
+from pipo.states.disconnected_state import DisconnectedState
 
 
 class PlayingState(State):
-    context: Groovy
-
     async def stop(self) -> None:
         self.context._player.stop()
         self.context.transition_to(IdleState())
@@ -29,16 +26,15 @@ class PlayingState(State):
         self.context._player.play(list(Playlist(ctx.kwargs["_query_"])), shuffle)
 
     async def skip(self, skip_list: bool) -> None:
-        """Skip currently playing music.
+        """Skip currently playing music or playlist.
 
-        _extended_summary_
+        Skips currently playing music or playlist by stopping the voice client and
+        removing such queue element.
 
         Parameters
         ----------
-        ctx : Dctx
-            _description_
         skip_list : bool
-            _description_
+            Whether the item to be skipped is a playlist.
         """
         if skip_list:
             self.context._player.skip_list()

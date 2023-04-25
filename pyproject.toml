@@ -27,6 +27,7 @@ python = "^3.9"  # compatible python versions must be declared here
 psutil = "~5.9.0"
 discord-py = { version = "~2.0.0", extras = ["voice"] }
 pytube = "~12.1.0"
+dynaconf = { version = "~3.1.0", extras = ["yaml"] }
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
@@ -64,11 +65,13 @@ include = '\.pyi?$'
 
 [tool.isort]
 profile = "black"
+honor_noqa = true
+length_sort = true
+skip_gitignore = true
 
 [tool.bandit]
-exclude_dirs = ["tests"]
-tests = ["B201", "B301"]
-skips = ["B101", "B601"]
+target = ["pipo"]
+exclude_dirs = ["tests", ".venv"]
 
 [tool.vulture]
 make_whitelist = true

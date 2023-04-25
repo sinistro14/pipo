@@ -1,13 +1,11 @@
 import logging
 
-from pipo.states.state import State
-
 logger = logging.getLogger(__name__)
 
 
 class Context:
 
-    _state: State = None
+    _state = None
 
     def __init__(self, state) -> None:
         self.transition_to(state)  # initial state

@@ -1,6 +1,6 @@
 from concurrent.futures import Future, ThreadPoolExecutor
 
-from pipo.command import Command
+from pipo.command.command import Command
 
 
 class CommandQueue:
@@ -13,5 +13,5 @@ class CommandQueue:
     def add(self, command: Command) -> Future:
         return self._command_executor.submit(command.execute)
 
-    def stop(self):
+    def stop(self) -> None:
         self._command_executor.shutdown()

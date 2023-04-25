@@ -665,3 +665,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Ignore dynaconf secret files
+*.secrets.*

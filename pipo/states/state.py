@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 
 from discord.ext.commands import Context as Dctx
@@ -7,11 +8,17 @@ from pipo.states.context import Context
 
 class State(ABC):
     """
-    Declares methods that all Concrete State should
-    implement and also provides a backreference to the Context object
-    associated with State. This backreference can be used by States to
+    Declares methods all Concrete State should
+    implement and provides a backreference to the Context object
+    associated with State, which can be used by States to
     transition Context to another State.
     """
+
+    context: None  # Groovy
+    _logger: logging.Logger
+
+    def __init__(self) -> None:
+        self._logger = logging.getLogger(__name__)
 
     @property
     def context(self) -> Context:

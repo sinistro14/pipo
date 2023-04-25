@@ -3,8 +3,8 @@ from dataclasses import dataclass
 import psutil
 from discord.ext.commands import Context as Dctx
 
-from pipo.command import Command
 from pipo.groovy import Groovy
+from pipo.command.command import Command
 
 
 @dataclass
@@ -13,7 +13,7 @@ class Status(Command):
     ctx: Dctx
 
     async def execute(self) -> None:
-        await self.bot._move_message(self.ctx)
+        await self.bot.move_message(self.ctx)
         await self.bot.send_message(
             f"Current State: {self.bot.current_state()}\n"
             f"Queue Length: {self.bot.queue_size()}\n"

@@ -12,7 +12,7 @@ def main():
     token = os.environ["TOKEN"]
 
     while True:  # wait for internet connection
-        try:
+        try:  # TODO remove this check later
             urllib.request.urlopen("https://www.google.com/", timeout=5)
             break
         except:
