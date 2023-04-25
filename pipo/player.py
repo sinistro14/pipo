@@ -171,6 +171,7 @@ class Player:
         logging.getLogger(__name__).info(
             "Trying to obtain youtube audio url for query: %s", query
         )
+        url = None
         for attempt in range(settings.player.url_fetch.retries):
             logging.getLogger(__name__).debug(
                 "Attempt %s to obtain youtube audio url for query: %s", attempt, query
