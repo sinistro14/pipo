@@ -14,5 +14,5 @@ default:
     url_fetch:
       max_cache_size: 128
       pool_size: 4
-      retries: 5
+      retries: 3
       wait: 1

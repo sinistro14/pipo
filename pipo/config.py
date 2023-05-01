@@ -5,7 +5,7 @@ from dynaconf import Dynaconf, Validator
 settings = Dynaconf(
     root_path=os.path.dirname(os.path.realpath(__file__)),
     envvar_prefix="PIPO",
-    env='default',
+    env="default",
     environments=True,
     validate_on_update=True,
     settings_files=["settings.yaml", ".secrets.yaml"],

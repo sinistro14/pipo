@@ -6,10 +6,10 @@ import urllib
 import logging
 import threading
 from typing import List, Union, Optional
-from multiprocessing.pool import ThreadPool
 from functools import lru_cache
+from multiprocessing.pool import ThreadPool
 
-import pytube
+from yt_dlp import YoutubeDL
 
 from pipo.config import settings
 
@@ -179,7 +179,8 @@ class Player:
                 "Attempt %s to obtain youtube audio url for query: %s", attempt, query
             )
             try:  # required since library is really finicky
-                url = pytube.YouTube(query).streams.get_audio_only().url
+                with YoutubeDL({"format": "bestaudio/best"}) as dl:
+                    url = dl.extract_info(url=query, download=False).get("url", None)
             except:
                 logging.getLogger(__name__).warning(
                     "Unable to obtain audio url for query: %s", query

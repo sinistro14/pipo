@@ -34,3 +34,24 @@ class TestPlayer:
         player = pipo.player.Player(None)
         player.play(url_list)
         assert player.queue_size() == len(url_list)
+
+    @pytest.mark.parametrize(
+        "url_list",
+        [
+            [],
+            [tests.constants.URL_1],
+            tests.constants.URL_SIMPLE_LIST,
+        ],
+    )
+    def test_shuffle(self, mocker, url_list):
+        pass
+
+    def test_skip_list(
+        self,
+    ):
+        pass
+
+    def test_play(
+        self,
+    ):
+        pass

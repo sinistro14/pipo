@@ -1,12 +1,14 @@
 #!usr/bin/env python3
 import os
 import time
+import logging
 import urllib.request
 
 from pipo.bot import bot, groovy
 
 
 def main():
+    logging.basicConfig(encoding="utf-8", level=logging.INFO)
     channel = int(os.environ["CHANNEL"])
     voice_channel = int(os.environ["VOICE_CHANNEL"])
     token = os.environ["TOKEN"]
