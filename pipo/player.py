@@ -7,6 +7,7 @@ import logging
 import threading
 from typing import List, Union, Optional
 from multiprocessing.pool import ThreadPool
+from functools import lru_cache
 
 import pytube
 
@@ -149,6 +150,7 @@ class Player:
         return url
 
     @staticmethod
+    @lru_cache(maxsize=settings.player.url_fetch.max_cache_size)
     def get_youtube_audio(query: str) -> Optional[str]:
         """Obtains a youtube audio url.
 
