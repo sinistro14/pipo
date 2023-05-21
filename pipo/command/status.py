@@ -3,13 +3,13 @@ from dataclasses import dataclass
 import psutil
 from discord.ext.commands import Context as Dctx
 
-from pipo.groovy import Groovy
+from pipo.pipo import Pipo
 from pipo.command.command import Command
 
 
 @dataclass
 class Status(Command):
-    bot: Groovy
+    bot: Pipo
     ctx: Dctx
 
     async def execute(self) -> None:

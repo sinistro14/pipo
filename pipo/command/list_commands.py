@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-from pipo.groovy import Groovy
+from pipo.pipo import Pipo
 from pipo.command.command import Command
 
 
 @dataclass
 class ListCommands(Command):
-    bot: Groovy
+    bot: Pipo
 
     async def execute(self) -> None:
         await self.bot.send_message(

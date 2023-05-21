@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-class Groovy(pipo.states.context.Context):
+class Pipo(pipo.states.context.Context):
 
     _bot: Bot
     _voice_client: discord.VoiceClient
@@ -90,8 +90,8 @@ class Groovy(pipo.states.context.Context):
         await self.move_message(ctx)
 
     async def reboot(self, ctx: Dctx):
-        self._state.leave()  # transitions to Disconnected state
-        await self.join(ctx)  # transitions to Idle state
+        self._state.leave()     # transitions to Disconnected state
+        await self.join(ctx)    # transitions to Idle state
 
     async def shuffle(self, ctx: Dctx):
         self._player.shuffle()

@@ -5,9 +5,9 @@ import random
 import urllib
 import logging
 import threading
-from typing import List, Union, Optional
+import multiprocessing.pool
 from functools import lru_cache
-from multiprocessing.pool import ThreadPool
+from typing import List, Union, Optional
 
 from yt_dlp import YoutubeDL
 
@@ -19,7 +19,7 @@ class Player:
     __bot: None
     __logger: logging.Logger
     __lock: threading.Lock
-    __url_fetch_pool: ThreadPool
+    __url_fetch_pool: multiprocessing.pool.ThreadPool
     __player_thread: threading.Thread
     __music_queue: List[Union[str, List[str]]]
     can_play: threading.Event
@@ -31,7 +31,7 @@ class Player:
         self.__music_queue = []
         self.__lock = threading.Lock()
         self.can_play = threading.Event()
-        self.__url_fetch_pool = ThreadPool(
+        self.__url_fetch_pool = multiprocessing.pool.ThreadPool(
             processes=settings.player.url_fetch.pool_size
         )
 
@@ -51,7 +51,7 @@ class Player:
         await self.__bot._voice_client.disconnect()
 
     def queue_size(self) -> int:
-        # used for solving method reliability issues without locks
+        # used to solve method correctness issues without locks
         if self.__music_queue:
             sizes = [
                 len(self.__music_queue)

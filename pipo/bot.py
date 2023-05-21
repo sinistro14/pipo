@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from pipo.config import settings
-from pipo.groovy import Groovy
+from pipo.pipo import Pipo
 from pipo.command import (
     Join,
     Play,
@@ -28,7 +28,7 @@ intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="-", case_insensitive=True, intents=intents)
-groovy = Groovy(bot)
+groovy = Pipo(bot)
 
 command_queue = CommandQueue(settings.command.queue.max_workers)
 
