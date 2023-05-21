@@ -1,8 +1,12 @@
 import logging
+import random as rand
 
 import pytest
 from dynaconf import settings
 
+@pytest.fixture(scope="session", autouse=True)
+def random():
+    rand.seed(0)
 
 @pytest.fixture(scope="session", autouse=True)
 def set_test_settings():

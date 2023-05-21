@@ -3,8 +3,8 @@
 import discord
 from discord.ext import commands
 
-from pipo.config import settings
 from pipo.pipo import Pipo
+from pipo.config import settings
 from pipo.command import (
     Join,
     Play,
@@ -17,7 +17,6 @@ from pipo.command import (
     Status,
     Shuffle,
     PlayList,
-    SkipList,
     CommandQueue,
     ListCommands,
 )
@@ -81,12 +80,6 @@ async def resume(ctx):
 @bot.command(pass_context=True)
 async def skip(ctx):
     command_queue.add(Skip(pipo, ctx))
-
-
-@bot.command(pass_context=True)
-async def skiplist(ctx):
-    command_queue.add(SkipList(pipo, ctx))
-
 
 @bot.command(pass_context=True)
 async def shuffle(ctx):

@@ -6,8 +6,8 @@ import urllib
 import logging
 import threading
 import multiprocessing.pool
-from functools import lru_cache
 from typing import List, Union, Optional
+from functools import lru_cache
 
 from yt_dlp import YoutubeDL
 
@@ -21,7 +21,7 @@ class Player:
     __lock: threading.Lock
     __url_fetch_pool: multiprocessing.pool.ThreadPool
     __player_thread: threading.Thread
-    __music_queue: List[Union[str, List[str]]]
+    __music_queue: List[str]
     can_play: threading.Event
 
     def __init__(self, bot) -> None:
@@ -62,34 +62,34 @@ class Player:
 
     def shuffle(self) -> None:
         with self.__lock:
-            [random.shuffle(music) for music in self.__music_queue]
             random.shuffle(self.__music_queue)
 
-    def skip_list(self) -> List[str]:
-        with self.__lock:
-            if self.queue_size() and isinstance(self.__music_queue[0], list):
-                return self.__music_queue.pop()
+    def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> List[str]:
+        """_summary_
 
-    def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
-        if self.__player_thread:
-            if not self.__player_thread.is_alive:
-                self.__player_thread.join()
-                self.__player_thread = threading.Thread(
-                    self.__play_music_queue, daemon=True
-                )
-                self.__player_thread.start()
-                self.can_play.set()
-        else:
-            self.__player_thread = threading.Thread(
-                target=self.__play_music_queue, daemon=True
-            )
-            self.__player_thread.start()
-            self.can_play.set()
-        self.__add_music(queries, shuffle)
+        _extended_summary_
+
+        Parameters
+        ----------
+        queries : Union[str, List[str]]
+            _description_
+        shuffle : bool, optional
+            _description_, by default False
+
+        Returns
+        -------
+        List[str]
+            Music urls added to the queue.
+        """
+        if (not self.__player_thread) or (
+            self.__player_thread and not self.__player_thread.is_alive
+        ):
+            self._start_music_queue()
+        return self.__add_music(queries, shuffle)
 
     def __add_music(self, queries: Union[str, List[str]], shuffle: bool) -> List[str]:
         results = []
-        playlist = isinstance(queries, str)
+        playlist = isinstance(queries, list)
         if queries:
             queries = (
                 queries
@@ -109,14 +109,24 @@ class Player:
             ]
             with self.__lock:
                 if playlist:
-                    self.__music_queue.append(results)
-                else:
                     self.__music_queue.extend(results)
+                else:
+                    self.__music_queue.append(results)
         return results
 
     def __clear_queue(self) -> None:
         with self.__lock:
             self.__music_queue = []
+
+    def _start_music_queue(self) -> None:
+        if self.__player_thread and not self.__player_thread.is_alive:
+            self.__player_thread.join()
+        self.__player_thread = threading.Thread(target=self.__play_music_queue, daemon=True)
+        self.__player_thread.start()
+        self.can_play.set()
+    
+    def _get_music_queue(self) -> List[str]:
+        return self.__music_queue
 
     def __play_music_queue(self) -> None:
         while self.can_play.wait() and self.queue_size():
@@ -126,7 +136,7 @@ class Player:
                 url, playlist = self.__music_queue.pop()
                 if isinstance(playlist, list):  # got url or playlist?
                     url = playlist.pop()
-                    if playlist:  # playlist not empty
+                    if playlist:                # playlist not empty
                         self.__music_queue.insert(0, playlist)
             if url:
                 try:
@@ -179,8 +189,8 @@ class Player:
                 "Attempt %s to obtain youtube audio url for query: %s", attempt, query
             )
             try:  # required since library is really finicky
-                with YoutubeDL({"format": "bestaudio/best"}) as dl:
-                    url = dl.extract_info(url=query, download=False).get("url", None)
+                with YoutubeDL({"format": "bestaudio/best"}) as ydl:
+                    url = ydl.extract_info(url=query, download=False).get("url", None)
             except:
                 logging.getLogger(__name__).warning(
                     "Unable to obtain audio url for query: %s", query
@@ -188,8 +198,7 @@ class Player:
             if url:
                 logging.getLogger(__name__).info("Obtained audio url: %s", url)
                 return url
-            else:
-                time.sleep(settings.player.url_fetch.wait * random.random())
+            time.sleep(settings.player.url_fetch.wait * random.random())
         logging.getLogger(__name__).info(
             "Unable to obtain audio url for query: %s", query
         )
