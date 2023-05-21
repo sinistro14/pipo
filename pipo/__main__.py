@@ -4,7 +4,7 @@ import time
 import logging
 import urllib.request
 
-from pipo.bot import bot, groovy
+from pipo.bot import bot, pipo
 
 
 def main():
@@ -20,8 +20,8 @@ def main():
         except:
             print("No internet connection.")
             time.sleep(5)
-    groovy.channel_id = channel
-    groovy.voice_channel_id = voice_channel
+    pipo.channel_id = channel
+    pipo.voice_channel_id = voice_channel
     bot.run(token)
 
 
