@@ -36,17 +36,22 @@ async def on_ready():
     await pipo.on_ready()
 
 
-@bot.command(pass_context=True)
+@bot.event
+async def on_message(message):
+    await bot.process_commands(message)
+
+
+@bot.command
 async def join(ctx):
     command_queue.add(Join(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def leave(ctx):
     command_queue.add(Leave(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def play(ctx, *query):
     shuffle = len(query) > 1 and query[0] == settings.command.queue.max_workers
     if shuffle:
@@ -54,46 +59,41 @@ async def play(ctx, *query):
     command_queue.add(Play(pipo, ctx, query, shuffle))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def stop(ctx):
     command_queue.add(Stop(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def pause(ctx):
     command_queue.add(Pause(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def resume(ctx):
     command_queue.add(Resume(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def skip(ctx):
     command_queue.add(Skip(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def shuffle(ctx):
     command_queue.add(Shuffle(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def listcommands(ctx):
     command_queue.add(ListCommands(pipo))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def status(ctx):
     command_queue.add(Status(pipo, ctx))
 
 
-@bot.command(pass_context=True)
+@bot.command
 async def reboot(ctx):
     command_queue.add(Reboot(pipo, ctx))
-
-
-@bot.event
-async def on_message(message):
-    await bot.process_commands(message)

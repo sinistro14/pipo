@@ -25,12 +25,12 @@ class Player:
     can_play: threading.Event
 
     def __init__(self, bot) -> None:
-        self.__player_thread = None
         self.__logger = logging.getLogger(__name__)
-        self.__bot = bot
-        self.__music_queue = []
+        self.__player_thread = None
         self.__lock = threading.Lock()
         self.can_play = threading.Event()
+        self.__bot = bot
+        self.__music_queue = []
         self.__url_fetch_pool = multiprocessing.pool.ThreadPool(
             processes=settings.player.url_fetch.pool_size
         )
@@ -152,7 +152,7 @@ class Player:
                     self.__logger.warning(
                         "Unable to play next music. Error: %s", str(exc)
                     )
-                    self.__bot.send_message("Unable to play next music. Skipping...")
+                    self.__bot.send_message("Unable to play next music. Skipping.")
         self.can_play.clear()
         self.__bot.become_idle()
 
@@ -200,7 +200,7 @@ class Player:
                     attempt,
                     query,
                 )
-                try:  # required since library is really finicky
+                try:
                     with YoutubeDL({"format": "bestaudio/best"}) as ydl:
                         url = ydl.extract_info(url=query, download=False).get(
                             "url", None
