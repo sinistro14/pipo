@@ -1,4 +1,5 @@
-from pytube import Playlist
+from typing import List
+
 from discord.ext.commands import Context as Dctx
 
 from pipo.states.state import State
@@ -19,23 +20,13 @@ class PlayingState(State):
         await self.context._player.leave()
         self.context.transition_to(DisconnectedState())
 
-    async def play(self, ctx: Dctx) -> None:
-        self.context._player.play(ctx.kwargs["_query_"])
+    async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
+        self.context._player.play(query, shuffle)
 
-    async def play_list(self, ctx: Dctx, shuffle: bool) -> None:
-        self.context._player.play(list(Playlist(ctx.kwargs["_query_"])), shuffle)
+    async def skip(self) -> None:
+        """Skip currently playing music.
 
-    async def skip(self, skip_list: bool) -> None:
-        """Skip currently playing music or playlist.
-
-        Skips currently playing music or playlist by stopping the voice client and
+        Skips currently playing music by stopping the voice client and
         removing such queue element.
-
-        Parameters
-        ----------
-        skip_list : bool
-            Whether the item to be skipped is a playlist.
         """
-        if skip_list:
-            self.context._player.skip_list()
         self.context._voice_client.stop()

@@ -1,9 +1,10 @@
 import asyncio
+from typing import List
 
-from pytube import Playlist
 from discord.ext.commands import Context as Dctx
 
 import pipo.states
+from pipo.config import settings
 
 
 class IdleState(pipo.states.state.State):
@@ -11,7 +12,7 @@ class IdleState(pipo.states.state.State):
     _idle_tracker: asyncio.Future
     _idle_timeout: int
 
-    def __init__(self, idle_timeout: int = 60 * 30) -> None:  # 30 minutes
+    def __init__(self, idle_timeout: int = settings.player.idle_timeout) -> None:
         super().__init__()
         self._idle_timeout = idle_timeout
         self._start_idle_tracker()
@@ -34,12 +35,8 @@ class IdleState(pipo.states.state.State):
         self._stop_idle_tracker()
         self.context.transition_to(state)
 
-    async def play(self, ctx: Dctx) -> None:
-        self.context._player.play(ctx.kwargs["_query_"])
-        self._clean_transition_to(pipo.states.PlayingState())
-
-    async def play_list(self, ctx: Dctx, shuffle: bool) -> None:
-        self.context._player.play(list(Playlist(ctx.kwargs["_query_"])), shuffle)
+    async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
+        self.context._player.play(query, shuffle)
         self._clean_transition_to(pipo.states.PlayingState())
 
     async def leave(self) -> None:

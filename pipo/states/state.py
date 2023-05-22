@@ -9,12 +9,12 @@ from pipo.states.context import Context
 class State(ABC):
     """
     Declares methods all Concrete State should
-    implement and provides a backreference to the Context object
+    implement and provides a reference to the Context object
     associated with State, which can be used by States to
     transition Context to another State.
     """
 
-    context: None  # Groovy
+    context: None  # Pipo
     _logger: logging.Logger
 
     def __init__(self) -> None:
@@ -33,15 +33,11 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def play(self, ctx: Dctx) -> None:
+    def play(self, ctx: Dctx, shuffle: bool) -> None:
         pass
 
     @abstractmethod
-    def play_list(self, ctx: Dctx, shuffle: bool) -> None:
-        pass
-
-    @abstractmethod
-    def skip(self, skip_list: bool) -> None:
+    def skip(self) -> None:
         pass
 
     @abstractmethod

@@ -16,7 +16,6 @@ from pipo.command import (
     Resume,
     Status,
     Shuffle,
-    PlayList,
     CommandQueue,
     ListCommands,
 )
@@ -49,17 +48,10 @@ async def leave(ctx):
 
 @bot.command(pass_context=True)
 async def play(ctx, *query):
-    command_queue.add(Play(pipo, ctx, query))
-
-
-@bot.command(pass_context=True)
-async def playlist(ctx, *query):
-    command_queue.add(PlayList(pipo, ctx, query, False))
-
-
-@bot.command(pass_context=True)
-async def playlistshuffle(ctx, *query):
-    command_queue.add(PlayList(pipo, ctx, query, True))
+    shuffle = len(query) > 1 and query[0] == settings.command.queue.max_workers
+    if shuffle:
+        query = query[1:]
+    command_queue.add(Play(pipo, ctx, query, shuffle))
 
 
 @bot.command(pass_context=True)
@@ -80,6 +72,7 @@ async def resume(ctx):
 @bot.command(pass_context=True)
 async def skip(ctx):
     command_queue.add(Skip(pipo, ctx))
+
 
 @bot.command(pass_context=True)
 async def shuffle(ctx):

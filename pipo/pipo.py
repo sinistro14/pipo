@@ -1,8 +1,8 @@
 #!usr/bin/env python3
 import logging
+from typing import List
 
-import discord
-from discord.ext.commands import Bot
+import discord.ext.commands
 from discord.ext.commands import Context as Dctx
 
 import pipo.player
@@ -14,12 +14,12 @@ logging.basicConfig(level=logging.INFO)
 
 class Pipo(pipo.states.context.Context):
 
-    _bot: Bot
+    _bot: discord.ext.commands.Bot
     _voice_client: discord.VoiceClient
     _music_channel: discord.VoiceChannel
     _player: pipo.player.Player
 
-    def __init__(self, bot: Bot):
+    def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.channel_id = None
         self.voice_channel_id = None
@@ -61,12 +61,8 @@ class Pipo(pipo.states.context.Context):
     async def join(self, ctx: Dctx):
         self._state.join(ctx)
 
-    async def play(self, ctx: Dctx):
-        await self._state.play(ctx)
-        await self.move_message(ctx)
-
-    async def play_list(self, ctx: Dctx, shuffle: bool):
-        await self._state.play_list(ctx, shuffle)
+    async def play(self, ctx: Dctx, query: List[str], shuffle: bool):
+        await self._state.play(ctx, query, shuffle)
         await self.move_message(ctx)
 
     async def pause(self, ctx: Dctx):
@@ -85,13 +81,13 @@ class Pipo(pipo.states.context.Context):
         await self._state.leave()
         await self.move_message(ctx)
 
-    async def skip(self, ctx: Dctx, skip_list: bool):
-        await self._state.skip(skip_list)
+    async def skip(self, ctx: Dctx):
+        await self._state.skip()
         await self.move_message(ctx)
 
     async def reboot(self, ctx: Dctx):
-        self._state.leave()     # transitions to Disconnected state
-        await self.join(ctx)    # transitions to Idle state
+        self._state.leave()  # transitions to Disconnected state
+        await self.join(ctx)  # transitions to Idle state
 
     async def shuffle(self, ctx: Dctx):
         self._player.shuffle()

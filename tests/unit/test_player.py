@@ -1,17 +1,17 @@
-import pytest
 import functools
+
+import pytest
 
 import pipo.player
 import tests.constants
 
 
 class TestPlayer:
-
     @pytest.fixture(scope="function", autouse=True)
     def player(self, mocker):
         player = pipo.player.Player(None)
         # disable music queue consumption
-        mocker.patch.object(player, '_start_music_queue')
+        mocker.patch.object(player, "_start_music_queue")
         return player
 
     @pytest.mark.parametrize("url", tests.constants.URL_SIMPLE_LIST)
@@ -19,18 +19,19 @@ class TestPlayer:
         assert player.get_youtube_audio(url)
 
     @pytest.mark.parametrize(
-        "url",
+        "url, queue_size",
         [
-            tests.constants.URL_1,
-            tests.constants.URL_2,
-            tests.constants.URL_3,
-            tests.constants.URL_4,
-            tests.constants.URL_5,
+            ("", 0),
+            (tests.constants.URL_1, 1),
+            (tests.constants.URL_2, 1),
+            (tests.constants.URL_3, 1),
+            (tests.constants.URL_4, 1),
+            (tests.constants.URL_5, 1),
         ],
     )
-    def test_play_url(self, player, url):
+    def test_play_single_url(self, player, url, queue_size):
         player.play(url)
-        assert player.queue_size() == 1
+        assert player.queue_size() == queue_size
 
     @pytest.mark.parametrize(
         "url_list",
@@ -40,9 +41,36 @@ class TestPlayer:
             tests.constants.URL_COMPLEX_LIST,
         ],
     )
-    def test_play_url_list(self, player, url_list):
+    def test_play_multiple_url(self, player, url_list):
         player.play(url_list)
         assert player.queue_size() == len(url_list)
+
+    @pytest.mark.parametrize(
+        "url_list",
+        [
+            "",
+            [],
+        ],
+    )
+    def test_empty_queue_shuffle(self, player, url_list):
+        player.play(url_list)
+        player.shuffle()
+        assert len(player._get_music_queue()) == 0
+
+    @pytest.mark.parametrize(
+        "url_list",
+        [
+            tests.constants.URL_1,
+            tests.constants.URL_2,
+            tests.constants.URL_3,
+        ],
+    )
+    def test_single_item_queue_shuffle(self, helpers, player, url_list):
+        music_urls = player.play(url_list)
+        initial_music_queue = player._get_music_queue().copy()
+        player.shuffle()
+        assert helpers.compare_iterables(initial_music_queue, player._get_music_queue())
+        assert len(music_urls) == 1
 
     @pytest.mark.parametrize(
         "url_list",
@@ -51,10 +79,11 @@ class TestPlayer:
             tests.constants.URL_COMPLEX_LIST,
         ],
     )
-    def test_shuffle(self, player, url_list):
+    def test_multi_item_queue_shuffle(self, helpers, player, url_list):
         music_urls = player.play(url_list)
         initial_music_queue = player._get_music_queue().copy()
         player.shuffle()
-        shuffled_music_queue = player._get_music_queue().copy()
-        assert not functools.reduce(lambda x, y : x and y, map(lambda p, q: p == q, initial_music_queue, shuffled_music_queue), True)
+        assert not helpers.compare_iterables(
+            initial_music_queue, player._get_music_queue()
+        )
         assert len(music_urls) >= 0

@@ -1,4 +1,5 @@
-from pytube import Playlist
+from typing import List
+
 from discord.ext.commands import Context as Dctx
 
 from pipo.states.state import State
@@ -27,12 +28,7 @@ class DisconnectedState(State):
         await self._join(ctx)
         self.context.transition_to(IdleState())
 
-    async def play(self, ctx: Dctx) -> None:
+    async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
         await self._join(ctx)
-        self.context._player.play(ctx.kwargs["_query_"])
-        self.context.transition_to(PlayingState())
-
-    async def play_list(self, ctx: Dctx, shuffle: bool) -> None:
-        await self._join(ctx)
-        self.context._player.play(list(Playlist(ctx.kwargs["_query_"])), shuffle)
+        self.context._player.play(query, shuffle)
         self.context.transition_to(PlayingState())

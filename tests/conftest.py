@@ -1,12 +1,30 @@
-import logging
 import random as rand
+import logging
+import functools
 
 import pytest
 from dynaconf import settings
 
+
+class Helpers:
+    @staticmethod
+    def compare_iterables(iter_1, iter_2):
+        return functools.reduce(
+            lambda x, y: x and y,
+            map(lambda p, q: p == q, iter_1, iter_2),
+            True,
+        )
+
+
+@pytest.fixture
+def helpers():
+    return Helpers
+
+
 @pytest.fixture(scope="session", autouse=True)
 def random():
     rand.seed(0)
+
 
 @pytest.fixture(scope="session", autouse=True)
 def set_test_settings():

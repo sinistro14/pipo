@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from pipo.pipo import Pipo
+from pipo.config import settings
 from pipo.command.command import Command
 
 
@@ -10,17 +11,18 @@ class ListCommands(Command):
 
     async def execute(self) -> None:
         await self.bot.send_message(
-            "Command List: \n "
-            " -join \n"
-            " -play <query / url> \n"
-            " -pause \n"
-            " -resume \n"
-            " -skip \n"
-            " -stop \n"
-            " -leave \n"
-            " -playlist <url> \n"
-            " -playlistshuffle <url> \n"
-            " -skiplist \n"
-            " -state \n"
-            " -help"
+            """
+            Command List: \n
+             -join \n
+             -play [{shuffle}] <query> | <music_url> | <playlist_url> \n
+             -pause \n
+             -resume \n
+             -skip \n
+             -stop \n
+             -leave \n
+             -state \n
+             -help
+            """.format(
+                shuffle=settings.command.commands.shuffle
+            )
         )

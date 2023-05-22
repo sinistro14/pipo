@@ -8,7 +8,10 @@ default:
   command:
     queue:
       max_workers: 2
+    commands:
+      shuffle: s
   player:
+    idle_timeout: 1800  # 30 minutes
     queue:
       size_check_iterations: 5
     url_fetch:
