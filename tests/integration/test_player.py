@@ -1,11 +1,10 @@
 import pytest
 
+import pipo.player
 import tests.constants
 
-import pipo.player
 
 class TestPlayer:
-
     @pytest.fixture(scope="function", autouse=True)
     def player(self, mocker):
         player = pipo.player.Player(None)

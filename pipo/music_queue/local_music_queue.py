@@ -1,6 +1,6 @@
 import random
 import threading
-from typing import Any, List, Optional, Union, Iterable
+from typing import Any, List, Union, Iterable, Optional
 
 from pipo.config import settings
 from pipo.music_queue.music_queue import MusicQueue

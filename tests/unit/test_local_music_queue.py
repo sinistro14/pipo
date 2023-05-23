@@ -2,12 +2,10 @@
 import pytest
 
 import tests.constants
-
 from pipo.music_queue.local_music_queue import LocalMusicQueue
 
 
 class TestLocalMusicQueue:
-
     @pytest.fixture(scope="function", autouse=True)
     def queue(self):
         return LocalMusicQueue()
@@ -86,7 +84,7 @@ class TestLocalMusicQueue:
         queue.shuffle()
         assert queue.size() == len(musics)
         assert not helpers.equal_iterables(old_queue, queue.get_all())
-    
+
     @pytest.mark.parametrize(
         "musics",
         [
