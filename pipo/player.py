@@ -6,7 +6,7 @@ import urllib
 import logging
 import threading
 import multiprocessing.pool
-from typing import Any, List, Union, Optional
+from typing import List, Union, Optional
 from functools import lru_cache
 
 from yt_dlp import YoutubeDL
@@ -25,12 +25,12 @@ class Player:
     _music_queue: MusicQueue
     can_play: threading.Event
 
-    def __init__(self, bot, music_queue: MusicQueue = None) -> None:
+    def __init__(self, bot) -> None:
         self.__logger = logging.getLogger(__name__)
         self.__player_thread = None
         self.can_play = threading.Event()
         self.__bot = bot
-        self._music_queue = music_queue or LocalMusicQueue()  # TODO make more general
+        self._music_queue = LocalMusicQueue()  # TODO make more general
         self.__url_fetch_pool = multiprocessing.pool.ThreadPool(
             processes=settings.player.url_fetch.pool_size
         )
@@ -126,11 +126,7 @@ class Player:
     def __play_music_queue(self) -> None:
         while self.can_play.wait() and self.queue_size():
             self.can_play.clear()
-            url = None
-            try:
-                self._music_queue.get()
-            except IndexError as exc:
-                self.__logger.warning("Music queue may be empty. Error: %s", str(exc))
+            url = self._music_queue.get()
             if url:
                 try:
                     self.__bot.submit_music(url)

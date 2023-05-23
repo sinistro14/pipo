@@ -9,7 +9,7 @@ from dynaconf import settings
 
 class Helpers:
     @staticmethod
-    def compare_iterables(iter_1: Iterable, iter_2: Iterable):
+    def equal_iterables(iter_1: Iterable, iter_2: Iterable):
         return functools.reduce(
             lambda x, y: x and y,
             map(lambda p, q: p == q, iter_1, iter_2),

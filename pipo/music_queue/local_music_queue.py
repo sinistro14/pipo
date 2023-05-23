@@ -1,6 +1,6 @@
 import random
 import threading
-from typing import Any, List, Union, Iterable
+from typing import Any, List, Optional, Union, Iterable
 
 from pipo.config import settings
 from pipo.music_queue.music_queue import MusicQueue
@@ -27,9 +27,13 @@ class LocalMusicQueue(MusicQueue):
         with self.__lock:
             self.__music_queue.extend(music)
 
-    def get(self) -> str:
+    def get(self) -> Optional[str]:
         with self.__lock:
-            return self.__music_queue.pop()
+            try:
+                return self.__music_queue.pop(0)
+            except IndexError as exc:
+                self._logger.warning("Music queue may be empty. Error: %s", str(exc))
+        return None
 
     def get_all(self) -> Any:
         return self.__music_queue

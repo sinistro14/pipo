@@ -1,12 +1,11 @@
-import functools
-
 import pytest
 
-import pipo.player
 import tests.constants
 
+import pipo.player
 
 class TestPlayer:
+
     @pytest.fixture(scope="function", autouse=True)
     def player(self, mocker):
         player = pipo.player.Player(None)
@@ -44,48 +43,3 @@ class TestPlayer:
     def test_play_multiple_url(self, player, url_list):
         player.play(url_list)
         assert player.queue_size() == len(url_list)
-
-    @pytest.mark.parametrize(
-        "url_list",
-        [
-            "",
-            [],
-        ],
-    )
-    def test_empty_queue_shuffle(self, player, url_list):
-        player.play(url_list)
-        player.shuffle()
-        assert player.queue_size() == 0
-
-    @pytest.mark.parametrize(
-        "url_list",
-        [
-            tests.constants.URL_1,
-            tests.constants.URL_2,
-            tests.constants.URL_3,
-        ],
-    )
-    def test_single_item_queue_shuffle(self, helpers, player, url_list):
-        music_urls = player.play(url_list)
-        initial_music_queue = player._music_queue.get_all().copy()
-        player.shuffle()
-        assert helpers.compare_iterables(
-            initial_music_queue, player._music_queue.get_all()
-        )
-        assert len(music_urls) == 1
-
-    @pytest.mark.parametrize(
-        "url_list",
-        [
-            tests.constants.URL_SIMPLE_LIST,
-            tests.constants.URL_COMPLEX_LIST,
-        ],
-    )
-    def test_multi_item_queue_shuffle(self, helpers, player, url_list):
-        music_urls = player.play(url_list)
-        initial_music_queue = player._music_queue.get_all().copy()
-        player.shuffle()
-        assert not helpers.compare_iterables(
-            initial_music_queue, player._music_queue.get_all()
-        )
-        assert len(music_urls) >= 0

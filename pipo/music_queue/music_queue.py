@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Union, Iterable
+from typing import Any, Optional, Union, Iterable
 
 
 class MusicQueue(ABC):
@@ -15,7 +15,7 @@ class MusicQueue(ABC):
         pass
 
     @abstractmethod
-    def get(self) -> str:
+    def get(self) -> Optional[str]:
         pass
 
     @abstractmethod
