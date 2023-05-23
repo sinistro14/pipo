@@ -6,31 +6,31 @@ import urllib
 import logging
 import threading
 import multiprocessing.pool
-from typing import List, Union, Optional
+from typing import Any, List, Union, Optional
 from functools import lru_cache
 
 from yt_dlp import YoutubeDL
 
 from pipo.config import settings
+from pipo.music_queue.music_queue import MusicQueue
+from pipo.music_queue.local_music_queue import LocalMusicQueue
 
 
 class Player:
 
     __bot: None
     __logger: logging.Logger
-    __lock: threading.Lock
     __url_fetch_pool: multiprocessing.pool.ThreadPool
     __player_thread: threading.Thread
-    __music_queue: List[str]
+    _music_queue: MusicQueue
     can_play: threading.Event
 
-    def __init__(self, bot) -> None:
+    def __init__(self, bot, music_queue: MusicQueue = None) -> None:
         self.__logger = logging.getLogger(__name__)
         self.__player_thread = None
-        self.__lock = threading.Lock()
         self.can_play = threading.Event()
         self.__bot = bot
-        self.__music_queue = []
+        self._music_queue = music_queue or LocalMusicQueue()  # TODO make more general
         self.__url_fetch_pool = multiprocessing.pool.ThreadPool(
             processes=settings.player.url_fetch.pool_size
         )
@@ -51,18 +51,10 @@ class Player:
         await self.__bot._voice_client.disconnect()
 
     def queue_size(self) -> int:
-        # used to solve method correctness issues without locks
-        if self.__music_queue:
-            sizes = [
-                len(self.__music_queue)
-                for _ in range(settings.player.queue.size_check_iterations)
-            ]
-            return round(sum(sizes) / len(sizes))
-        return 0
+        return self._music_queue.size()
 
     def shuffle(self) -> None:
-        with self.__lock:
-            random.shuffle(self.__music_queue)
+        self._music_queue.shuffle()
 
     def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> List[str]:
         """_summary_
@@ -116,13 +108,11 @@ class Player:
                 if result
             ]
         if results:
-            with self.__lock:
-                self.__music_queue.extend(results)
+            self._music_queue.add(results)
         return results
 
     def __clear_queue(self) -> None:
-        with self.__lock:
-            self.__music_queue = []
+        self._music_queue.clear()
 
     def _start_music_queue(self) -> None:
         if self.__player_thread and not self.__player_thread.is_alive:
@@ -133,16 +123,12 @@ class Player:
         self.__player_thread.start()
         self.can_play.set()
 
-    def _get_music_queue(self) -> List[str]:
-        return self.__music_queue
-
     def __play_music_queue(self) -> None:
         while self.can_play.wait() and self.queue_size():
             self.can_play.clear()
             url = None
             try:
-                with self.__lock:
-                    url = self.__music_queue.pop()
+                self._music_queue.get()
             except IndexError as exc:
                 self.__logger.warning("Music queue may be empty. Error: %s", str(exc))
             if url:

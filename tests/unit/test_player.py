@@ -55,7 +55,7 @@ class TestPlayer:
     def test_empty_queue_shuffle(self, player, url_list):
         player.play(url_list)
         player.shuffle()
-        assert len(player._get_music_queue()) == 0
+        assert player.queue_size() == 0
 
     @pytest.mark.parametrize(
         "url_list",
@@ -67,9 +67,11 @@ class TestPlayer:
     )
     def test_single_item_queue_shuffle(self, helpers, player, url_list):
         music_urls = player.play(url_list)
-        initial_music_queue = player._get_music_queue().copy()
+        initial_music_queue = player._music_queue.get_all().copy()
         player.shuffle()
-        assert helpers.compare_iterables(initial_music_queue, player._get_music_queue())
+        assert helpers.compare_iterables(
+            initial_music_queue, player._music_queue.get_all()
+        )
         assert len(music_urls) == 1
 
     @pytest.mark.parametrize(
@@ -81,9 +83,9 @@ class TestPlayer:
     )
     def test_multi_item_queue_shuffle(self, helpers, player, url_list):
         music_urls = player.play(url_list)
-        initial_music_queue = player._get_music_queue().copy()
+        initial_music_queue = player._music_queue.get_all().copy()
         player.shuffle()
         assert not helpers.compare_iterables(
-            initial_music_queue, player._get_music_queue()
+            initial_music_queue, player._music_queue.get_all()
         )
         assert len(music_urls) >= 0

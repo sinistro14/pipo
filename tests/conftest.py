@@ -1,6 +1,7 @@
 import random as rand
 import logging
 import functools
+from typing import Iterable
 
 import pytest
 from dynaconf import settings
@@ -8,7 +9,7 @@ from dynaconf import settings
 
 class Helpers:
     @staticmethod
-    def compare_iterables(iter_1, iter_2):
+    def compare_iterables(iter_1: Iterable, iter_2: Iterable):
         return functools.reduce(
             lambda x, y: x and y,
             map(lambda p, q: p == q, iter_1, iter_2),
