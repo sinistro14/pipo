@@ -1,24 +1,39 @@
 import logging
 from abc import ABC, abstractmethod
+from typing import List
 
 from discord.ext.commands import Context as Dctx
 
-from pipo.states.context import Context
+
+class Context:
+
+    _state = None
+    _logger: logging.Logger
+
+    def __init__(self, state) -> None:
+        self._logger = logging.getLogger(__name__)
+        self.transition_to(state)
+
+    def transition_to(self, state):
+        self._state = state
+        self._state.context = self
+        self._logger.info("Current State: %s", self._state.__name__)
 
 
 class State(ABC):
     """
-    Declares methods all Concrete State should
-    implement and provides a reference to the Context object
-    associated with State, which can be used by States to
-    transition Context to another State.
+    Declares methods all concrete State should
+    implement and provides a reference to the associated Context object,
+    which can be used by States to transition Context to another State.
     """
 
-    context: None  # Pipo
+    name: str
+    _context: Context
     _logger: logging.Logger
 
-    def __init__(self) -> None:
+    def __init__(self, name: str) -> None:
         self._logger = logging.getLogger(__name__)
+        self.name = name
 
     @property
     def context(self) -> Context:
@@ -29,11 +44,11 @@ class State(ABC):
         self._context = context
 
     @abstractmethod
-    def join(self, ctx: Dctx) -> None:
+    async def join(self, ctx: Dctx) -> None:
         pass
 
     @abstractmethod
-    def play(self, ctx: Dctx, shuffle: bool) -> None:
+    async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
         pass
 
     @abstractmethod
@@ -41,17 +56,17 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def leave(self) -> None:
+    async def leave(self) -> None:
         pass
 
     @abstractmethod
-    def resume(self) -> None:
+    async def resume(self) -> None:
         pass
 
     @abstractmethod
-    def stop(self) -> None:
+    async def stop(self) -> None:
         pass
 
     @abstractmethod
-    def pause(self) -> None:
+    async def pause(self) -> None:
         pass

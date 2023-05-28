@@ -86,7 +86,7 @@ class Player:
     def __add_music(self, queries: List[str], shuffle: bool) -> List[str]:
         results = []
         for query in queries:
-            if ("/playlist?list=") in query:  # check if playlist
+            if "/playlist?list=" in query:  # check if playlist
                 with YoutubeDL({"extract_flat": True}) as ydl:
                     query = ydl.extract_info(url=query, download=False).get(
                         "queries",
@@ -134,7 +134,7 @@ class Player:
                     self.__logger.warning(
                         "Unable to play next music. Error: %s", str(exc)
                     )
-                    self.__bot.send_message("Unable to play next music. Skipping.")
+                    self.__bot.send_message(settings.player.messages.play_error)
         self.can_play.clear()
         self.__bot.become_idle()
 

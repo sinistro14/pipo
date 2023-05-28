@@ -6,21 +6,24 @@ import discord.ext.commands
 from discord.ext.commands import Context as Dctx
 
 import pipo.player
-import pipo.states.context
+import pipo.states.idle_state
+import pipo.states.disconnected_state
+from pipo.states import Context
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-class Pipo(pipo.states.context.Context):
+class Pipo(Context):
 
+    _logger: logging.Logger
     _bot: discord.ext.commands.Bot
     _voice_client: discord.VoiceClient
     _music_channel: discord.VoiceChannel
     _player: pipo.player.Player
 
     def __init__(self, bot: discord.ext.commands.Bot):
-        super().__init__()
+        super().__init__(pipo.states.disconnected_state.DisconnectedState())
+        self._logger = logging.getLogger(__name__)
         self.channel_id = None
         self.voice_channel_id = None
 
@@ -34,20 +37,18 @@ class Pipo(pipo.states.context.Context):
         self._music_channel = None
         self._player = pipo.player.Player(self)
 
-        self.transition_to(pipo.states.DisconnectedState())
-
     def current_state(self) -> str:
         return self._state.__name__
 
     def become_idle(self) -> None:
-        self.transition_to(pipo.states.IdleState())
+        self.transition_to(pipo.states.idle_state.IdleState())
 
     def queue_size(self) -> int:
         return self._player.queue_size()
 
     async def on_ready(self) -> None:
         self._music_channel = self._bot.get_channel(self.channel_id)
-        logger.info("Pipo do Arraial is ready.")
+        self._logger.info("Pipo do Arraial is ready.")
 
     async def send_message(self, message: str) -> None:
         await self._music_channel.send(message)

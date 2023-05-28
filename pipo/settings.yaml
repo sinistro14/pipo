@@ -11,6 +11,9 @@ default:
     commands:
       shuffle: s
   player:
+    messages:
+      play_error: Unable to play next music. Skipping.
+      disconnect: Bye bye !!!
     idle_timeout: 1800  # 30 minutes
     queue:
       local:

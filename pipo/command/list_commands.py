@@ -11,10 +11,10 @@ class ListCommands(Command):
 
     async def execute(self) -> None:
         await self.bot.send_message(
-            """
+            f"""
             Command List: \n
              -join \n
-             -play [{shuffle}] <query> | <music_url> | <playlist_url> \n
+             -play [{settings.command.commands.shuffle}] <query> | <music_url> | <playlist_url> \n
              -pause \n
              -resume \n
              -skip \n
@@ -22,7 +22,5 @@ class ListCommands(Command):
              -leave \n
              -state \n
              -help
-            """.format(
-                shuffle=settings.command.commands.shuffle
-            )
+            """
         )

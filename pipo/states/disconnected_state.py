@@ -1,13 +1,18 @@
+import asyncio
 from typing import List
 
+import discord
 from discord.ext.commands import Context as Dctx
 
-from pipo.states.state import State
-from pipo.states.idle_state import IdleState
-from pipo.states.playing_state import PlayingState
+import pipo.states.state
+import pipo.states.idle_state
+import pipo.states.playing_state
 
 
-class DisconnectedState(State):
+class DisconnectedState(pipo.states.state.State):
+    def __init__(self):
+        super().__init__("disconnected")
+
     async def _join(self, ctx: Dctx) -> None:
         channel = ctx.author.voice.channel or self.context._bot.get_channel(
             self.context.voice_channel_id
@@ -18,7 +23,7 @@ class DisconnectedState(State):
                 channel=channel, self_mute=True, self_deaf=True
             )
             self._logger.debug("Successfully joined channel %s.", channel.name)
-        except:
+        except (asyncio.TimeoutError, discord.ClientException):
             self._logger.exception("Error while joining channel.")
         finally:
             self._voice_client = ctx.voice_client
@@ -26,9 +31,24 @@ class DisconnectedState(State):
 
     async def join(self, ctx: Dctx) -> None:
         await self._join(ctx)
-        self.context.transition_to(IdleState())
+        self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
         await self._join(ctx)
         self.context._player.play(query, shuffle)
-        self.context.transition_to(PlayingState())
+        self.context.transition_to(pipo.states.playing_state.PlayingState())
+
+    def skip(self) -> None:
+        pass
+
+    async def leave(self) -> None:
+        pass
+
+    async def resume(self) -> None:
+        pass
+
+    async def stop(self) -> None:
+        pass
+
+    async def pause(self) -> None:
+        pass
