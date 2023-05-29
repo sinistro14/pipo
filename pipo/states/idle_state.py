@@ -17,7 +17,7 @@ class IdleState(pipo.states.state.State):
     """
 
     _idle_timeout: int
-    _idle_tracker: asyncio.Future
+    idle_tracker: asyncio.Future
 
     def __init__(self, idle_timeout: int = settings.player.idle_timeout):
         super().__init__("idle")
@@ -25,14 +25,15 @@ class IdleState(pipo.states.state.State):
         self._start_idle_tracker()
 
     def _start_idle_tracker(self):
-        self._idle_tracker = asyncio.ensure_future(
-            self._idle_tracker_task(), loop=asyncio.get_event_loop()
+        loop = asyncio.get_event_loop()
+        self.idle_tracker = loop.run_until_complete(
+            asyncio.ensure_future(self._idle_tracker_task())
         )
 
     def _stop_idle_tracker(self):
-        if self._idle_tracker:
-            self._idle_tracker.cancel()
-            self._idle_tracker = None
+        if self.idle_tracker:
+            self.idle_tracker.cancel()
+            self.idle_tracker = None
 
     async def _idle_tracker_task(self):
         await asyncio.sleep(self._idle_timeout)
@@ -41,8 +42,11 @@ class IdleState(pipo.states.state.State):
         await self.context._voice_client.disconnect()
 
     def _clean_transition_to(self, state: pipo.states.state.State) -> None:
-        self._stop_idle_tracker()
-        self.context.transition_to(state)
+        try:
+            self._stop_idle_tracker()
+            self.context.transition_to(state)
+        except asyncio.CancelledError:
+            self._logger.info("Coroutine was cancelled.")
 
     async def join(self, ctx: Dctx) -> None:
         pass

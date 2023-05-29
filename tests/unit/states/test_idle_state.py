@@ -13,16 +13,6 @@ class TestIdleState:
 
     __state_name = "idle"
 
-    def teardown(self):
-        loop = asyncio.get_event_loop()
-        try:
-            loop.run_forever()  # returns after calling loop.stop()
-            tasks = asyncio.Task.all_tasks()
-            for t in [t for t in tasks if not (t.done() or t.cancelled())]:
-                loop.run_until_complete(t)
-        finally:
-            loop.close()
-
     @pytest.fixture(scope="function")
     def state(self, mocker) -> IdleState:
         mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())
