@@ -18,11 +18,11 @@ class PlayingState(pipo.states.state.State):
         pass
 
     async def stop(self) -> None:
-        self.context._player.stop()
+        await self.context._player.stop()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def pause(self) -> None:
-        self.context._player.pause()
+        await self.context._player.pause()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def leave(self) -> None:
@@ -30,7 +30,7 @@ class PlayingState(pipo.states.state.State):
         self.context.transition_to(pipo.states.disconnected_state.DisconnectedState())
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
-        self.context._player.play(query, shuffle)
+        await self.context._player.play(query, shuffle)
 
     async def skip(self) -> None:
         """Skip currently playing music.

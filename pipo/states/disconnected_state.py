@@ -35,7 +35,7 @@ class DisconnectedState(pipo.states.state.State):
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
         await self._join(ctx)
-        self.context._player.play(query, shuffle)
+        await self.context._player.play(query, shuffle)
         self.context.transition_to(pipo.states.playing_state.PlayingState())
 
     def skip(self) -> None:

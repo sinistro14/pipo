@@ -29,22 +29,30 @@ class TestIdleState:
     async def test_timeout(self, state: IdleState):
         assert state.name == self.__state_name
         await asyncio.sleep(tests.constants.IDLE_TIMEOUT + 1)
-        assert state.name == "disconnected"
+        assert len(state.context.transition_to.call_args.args) == 1
+        next_state = state.context.transition_to.call_args.args[0]
+        assert next_state.name == "disconnected"
 
     @pytest.mark.asyncio
     async def test_play(self, state: IdleState):
         assert state.name == self.__state_name
         await state.play(None, ["test"], True)
-        assert state.name == "playing"
+        assert len(state.context.transition_to.call_args.args) == 1
+        next_state = state.context.transition_to.call_args.args[0]
+        assert next_state.name == "playing"
 
     @pytest.mark.asyncio
     async def test_resume(self, state: IdleState):
         state.name == self.__state_name
         await state.resume()
-        assert state.name == "playing"
+        assert len(state.context.transition_to.call_args.args) == 1
+        next_state = state.context.transition_to.call_args.args[0]
+        assert next_state.name == "playing"
 
     @pytest.mark.asyncio
     async def test_leave(self, state: IdleState):
         state.name == self.__state_name
         await state.leave()
-        assert state.name == "disconnected"
+        assert len(state.context.transition_to.call_args.args) == 1
+        next_state = state.context.transition_to.call_args.args[0]
+        assert next_state.name == "disconnected"
