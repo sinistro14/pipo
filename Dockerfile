@@ -52,7 +52,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         make \
-        gcc \
+        build-essential \
         libc-dev \
         libssl-dev \
         # discord.py[voice] dependencies
