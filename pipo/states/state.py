@@ -52,7 +52,7 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def skip(self) -> None:
+    async def skip(self) -> None:
         pass
 
     @abstractmethod

@@ -27,9 +27,8 @@ class IdleState(pipo.states.state.State):
         self._start_idle_tracker()
 
     def _start_idle_tracker(self):
-        loop = asyncio.get_event_loop()
-        self.idle_tracker = loop.run_until_complete(
-            asyncio.ensure_future(self._idle_tracker_task(self.cancel_event))
+        self.idle_tracker = asyncio.ensure_future(
+            self._idle_tracker_task(self.cancel_event)
         )
 
     async def _stop_idle_tracker(self):

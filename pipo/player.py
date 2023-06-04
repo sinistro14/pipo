@@ -2,13 +2,13 @@
 import re
 import time
 import random
-import urllib
 import logging
 import threading
 import multiprocessing.pool
 from typing import List, Union, Optional
 from functools import lru_cache
 
+import requests
 from yt_dlp import YoutubeDL
 
 from pipo.config import settings
@@ -143,10 +143,11 @@ class Player:
         url = None
         if query:
             query = query.replace(" ", "+").encode("ascii", "ignore").decode()
-            with urllib.request.urlopen(
-                f"https://www.youtube.com/results?search_query={query}"
+            with requests.get(
+                f"https://www.youtube.com/results?search_query={query}",
+                timeout=settings.player.url_fetch.timeout,
             ) as response:
-                video_ids = re.findall(r"watch\?v=(\S{11})", response.read().decode())
+                video_ids = re.findall(r"watch\?v=(\S{11})", response.text)
                 url = f"https://www.youtube.com/watch?v={video_ids[0]}"
         return url
 
@@ -156,8 +157,7 @@ class Player:
         """Obtains a youtube audio url.
 
         Given a query or a youtube url obtains the best quality audio url available.
-        Retries fetching audio url in case of error, waiting a random period of
-        time between each attempt.
+        Retries fetching audio url in case of error, waiting between each attempt.
 
         Parameters
         ----------
@@ -169,7 +169,7 @@ class Player:
         str
             Youtube audio url or None if no audio url was found.
         """
-        if not (query.startswith("http") or query.startswith("https")):
+        if not (query.startswith("http") and query.startswith("https")):
             query = Player.get_youtube_url_from_query(query)
         logging.getLogger(__name__).info(
             "Trying to obtain youtube audio url for query: %s", query
@@ -194,7 +194,7 @@ class Player:
                 if url:
                     logging.getLogger(__name__).info("Obtained audio url: %s", url)
                     return url
-                time.sleep(settings.player.url_fetch.wait * random.random())
+                time.sleep(settings.player.url_fetch.wait)
         logging.getLogger(__name__).info(
             "Unable to obtain audio url for query: %s", query
         )

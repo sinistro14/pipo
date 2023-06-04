@@ -19,6 +19,7 @@ default:
       local:
         size_check_iterations: 5
     url_fetch:
+      timeout: 3
       max_cache_size: 128
       pool_size: 4
       retries: 3

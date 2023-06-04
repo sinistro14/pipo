@@ -1,5 +1,4 @@
 #!usr/bin/env python3
-
 import mock
 import pytest
 
@@ -21,19 +20,21 @@ class TestPlayingState:
 
     @pytest.mark.asyncio
     async def test_disabled_commands(self, initial_state: PlayingState):
+        initial_state.name == self.__state_name
+        context = initial_state.context
         await initial_state.join(None)
         await initial_state.resume()
+        assert context == initial_state.context
 
-    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "method, args, final_state",
         [
             ("stop", (), IdleState),
             ("pause", (), IdleState),
             ("leave", (), DisconnectedState),
-            # ("play", (None, ["test"], True), PlayingState),
         ],
     )
+    @pytest.mark.asyncio
     async def test_state_transition(
         self, initial_state: PlayingState, method, args, final_state
     ):
@@ -42,3 +43,17 @@ class TestPlayingState:
         assert len(initial_state.context.transition_to.call_args.args) == 1
         result_state = initial_state.context.transition_to.call_args.args[0]
         assert result_state.name == final_state().name
+
+    @pytest.mark.parametrize(
+        "method, args",
+        [
+            ("skip", ()),
+            ("play", (None, ["test"], True)),
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_no_state_transition(self, initial_state: PlayingState, method, args):
+        initial_state.name == self.__state_name
+        context = initial_state.context
+        await getattr(initial_state, method)(*args)
+        assert context == initial_state.context

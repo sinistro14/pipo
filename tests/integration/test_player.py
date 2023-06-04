@@ -12,7 +12,14 @@ class TestPlayer:
         mocker.patch.object(player, "_start_music_queue")
         return player
 
-    @pytest.mark.parametrize("url", tests.constants.URL_SIMPLE_LIST)
+    @pytest.mark.parametrize(
+        "url",
+        [
+            tests.constants.URL_1,
+            tests.constants.URL_2,
+            tests.constants.URL_3,
+        ],
+    )
     def test_get_youtube_audio(self, player, url):
         assert player.get_youtube_audio(url)
 

@@ -60,7 +60,7 @@ class Pipo(Context):
         )
 
     async def join(self, ctx: Dctx):
-        self._state.join(ctx)
+        await self._state.join(ctx)
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool):
         await self._state.play(ctx, query, shuffle)
@@ -87,7 +87,7 @@ class Pipo(Context):
         await self.move_message(ctx)
 
     async def reboot(self, ctx: Dctx):
-        self._state.leave()  # transitions to Disconnected state
+        await self._state.leave()  # transitions to Disconnected state
         await self.join(ctx)  # transitions to Idle state
 
     async def shuffle(self, ctx: Dctx):

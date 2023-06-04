@@ -36,6 +36,7 @@ MUSIC_COMPLEX_LIST_1 = [
 ]
 
 ### Player ###
+URL_NO_HTTPS = "http://www.youtube.com/watch?v=1V_xRb0x9aw"
 URL_1 = "https://www.youtube.com/watch?v=1V_xRb0x9aw"
 URL_2 = "https://www.youtube.com/watch?v=imSefM4GPpE"
 URL_3 = "https://www.youtube.com/watch?v=04mfKJWDSzI"

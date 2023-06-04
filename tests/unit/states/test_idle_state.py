@@ -1,5 +1,4 @@
 #!usr/bin/env python3
-
 import asyncio
 
 import mock
@@ -35,7 +34,6 @@ class TestIdleState:
         next_state = initial_state.context.transition_to.call_args.args[0]
         assert next_state.name == DisconnectedState().name
 
-    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "method, args, final_state",
         [
@@ -44,6 +42,7 @@ class TestIdleState:
             ("leave", (), DisconnectedState),
         ],
     )
+    @pytest.mark.asyncio
     async def test_state_transition(
         self, initial_state: IdleState, method, args, final_state
     ):
