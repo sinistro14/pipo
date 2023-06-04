@@ -56,4 +56,4 @@ URL_COMPLEX_LIST = [
 
 
 ### States ###
-IDLE_TIMEOUT = 3
+IDLE_TIMEOUT = 2
