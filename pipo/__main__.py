@@ -44,7 +44,7 @@ def main():
             socket.create_connection(("1.1.1.1", 53), timeout=5)
             break
         except OSError:
-            logging.error("No internet connection.")
+            logging.getLogger(__name__).error("No internet connection.")
             time.sleep(5)
     pipo.channel_id = channel
     pipo.voice_channel_id = voice_channel

@@ -6,9 +6,9 @@ import discord.ext.commands
 from discord.ext.commands import Context as Dctx
 
 import pipo.player
+from pipo.states import Context
 import pipo.states.idle_state
 import pipo.states.disconnected_state
-from pipo.states import Context
 
 logging.basicConfig(level=logging.INFO)
 
