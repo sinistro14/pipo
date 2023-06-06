@@ -17,7 +17,7 @@ class Context:
     def transition_to(self, state):
         self._state = state
         self._state.context = self
-        self._logger.info("Current State: %s", self._state.__name__)
+        self._logger.info("Current State: %s", self._state.name)
 
 
 class State(ABC):
