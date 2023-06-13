@@ -1,5 +1,4 @@
 #!usr/bin/env python3
-import os
 import time
 import signal
 import socket
@@ -7,6 +6,7 @@ import asyncio
 import logging
 
 from pipo.bot import bot, pipo
+from pipo.config import settings
 
 
 def add_signal_handlers():
@@ -33,9 +33,9 @@ def add_signal_handlers():
 
 def main():
     logging.basicConfig(encoding="utf-8", level=logging.INFO)
-    channel = int(os.environ["CHANNEL"])
-    voice_channel = int(os.environ["VOICE_CHANNEL"])
-    token = os.environ["TOKEN"]
+    channel = settings.channel
+    voice_channel = settings.voice_channel
+    token = settings.token
 
     add_signal_handlers()
 

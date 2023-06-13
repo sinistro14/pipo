@@ -11,7 +11,6 @@ services:
     restart: unless-stopped
     environment:
       SERVICE_NAME: pipo
-    env_file:
-      - .env
+    env_file: .env
     networks:
       - backend
