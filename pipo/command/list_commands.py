@@ -13,14 +13,14 @@ class ListCommands(Command):
         await self.bot.send_message(
             f"""
             Command List: \n
+             -help \n
              -join \n
+             -leave \n
+             -resume \n
              -play [{settings.command.commands.shuffle}] <query> | <music_url> | <playlist_url> \n
              -pause \n
-             -resume \n
+             -shuffle \n
              -skip \n
-             -stop \n
-             -leave \n
-             -state \n
-             -help
+             -stop
             """
         )

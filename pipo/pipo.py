@@ -6,9 +6,9 @@ import discord.ext.commands
 from discord.ext.commands import Context as Dctx
 
 import pipo.player
-from pipo.states import Context
 import pipo.states.idle_state
 import pipo.states.disconnected_state
+from pipo.states import Context
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,10 +16,10 @@ logging.basicConfig(level=logging.INFO)
 class Pipo(Context):
 
     _logger: logging.Logger
-    _bot: discord.ext.commands.Bot
-    _voice_client: discord.VoiceClient
-    _music_channel: discord.VoiceChannel
-    _player: pipo.player.Player
+    bot: discord.ext.commands.Bot
+    voice_client: discord.VoiceClient
+    music_channel: discord.VoiceChannel
+    player: pipo.player.Player
 
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__(pipo.states.disconnected_state.DisconnectedState())
@@ -32,34 +32,35 @@ class Pipo(Context):
             "options": "-vn",
         }
 
-        self._bot = bot
-        self._voice_client = None
-        self._music_channel = None
-        self._player = pipo.player.Player(self)
+        self.bot = bot
+        self.voice_client = None
+        self.music_channel = None
+        self.player = pipo.player.Player(self)
 
     def current_state(self) -> str:
-        return self._state.__name__
+        return self._state.__name__  # noqa
 
     def become_idle(self) -> None:
         self.transition_to(pipo.states.idle_state.IdleState())
 
     def queue_size(self) -> int:
-        return self._player.queue_size()
+        return self.player.queue_size()
 
     async def on_ready(self) -> None:
-        self._music_channel = self._bot.get_channel(self.channel_id)
+        self.music_channel = self.bot.get_channel(self.channel_id)
         self._logger.info("Pipo do Arraial is ready.")
 
     async def send_message(self, message: str) -> None:
-        await self._music_channel.send(message)
+        await self.music_channel.send(message)
 
-    async def submit_music(self, url: str) -> None:
-        self._voice_client.play(
+    async def submit_music(self, url: str) -> None:  # noqa
+        self.voice_client.play(
             discord.FFmpegPCMAudio(url, **self._ffmpeg_options),
-            after=self._player.can_play.set,
+            after=self.player.can_play.set,
         )
 
     async def join(self, ctx: Dctx):
+        self._logger.info("Joined channel")
         await self._state.join(ctx)
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool):
@@ -91,7 +92,7 @@ class Pipo(Context):
         await self.join(ctx)  # transitions to Idle state
 
     async def shuffle(self, ctx: Dctx):
-        self._player.shuffle()
+        self.player.shuffle()
         await self.move_message(ctx)
 
     async def move_message(self, ctx: Dctx):

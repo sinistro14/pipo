@@ -14,7 +14,7 @@ class DisconnectedState(pipo.states.state.State):
         super().__init__("disconnected")
 
     async def _join(self, ctx: Dctx) -> None:
-        channel = ctx.author.voice.channel or self.context._bot.get_channel(
+        channel = ctx.author.voice.channel or self.context.bot.get_channel(
             self.context.voice_channel_id
         )
         try:
@@ -35,7 +35,7 @@ class DisconnectedState(pipo.states.state.State):
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
         await self._join(ctx)
-        await self.context._player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
         self.context.transition_to(pipo.states.playing_state.PlayingState())
 
     async def skip(self) -> None:

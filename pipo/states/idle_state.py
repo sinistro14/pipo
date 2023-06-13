@@ -44,8 +44,8 @@ class IdleState(pipo.states.state.State):
             self.context.transition_to(
                 pipo.states.disconnected_state.DisconnectedState()
             )
-            await self.context._music_channel.send(settings.player.messages.disconnect)
-            await self.context._voice_client.disconnect()
+            await self.context.music_channel.send(settings.player.messages.disconnect)
+            await self.context.voice_client.disconnect()
 
     async def _clean_transition_to(self, state: pipo.states.state.State) -> None:
         await self._stop_idle_tracker()
@@ -64,13 +64,13 @@ class IdleState(pipo.states.state.State):
         pass
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
-        await self.context._player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())
 
     async def leave(self) -> None:
-        await self.context._voice_client.disconnect()
+        await self.context.voice_client.disconnect()
         self.context.transition_to(pipo.states.disconnected_state.DisconnectedState())
 
     async def resume(self) -> None:
-        await self.context._player.resume()
+        await self.context.player.resume()
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())

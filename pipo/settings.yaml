@@ -6,9 +6,8 @@ default:
   # Discord default voice channel
   voice_channel:
   command:
-    queue:
-      max_workers: 2
     commands:
+      prefix: "-"
       shuffle: s
   player:
     messages:

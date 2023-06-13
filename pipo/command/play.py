@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import List
 from dataclasses import dataclass
 
 from discord.ext.commands import Context as Dctx
@@ -11,7 +11,7 @@ from pipo.command.command import Command
 class Play(Command):
     bot: Pipo
     ctx: Dctx
-    query: Iterable[str]
+    query: List[str]
     shuffle: bool
 
     async def execute(self) -> None:

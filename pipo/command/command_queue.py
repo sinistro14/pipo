@@ -1,17 +1,19 @@
-from concurrent.futures import Future, ThreadPoolExecutor
+import asyncio
+import logging
 
 from pipo.command.command import Command
 
 
 class CommandQueue:
 
-    _command_executor: ThreadPoolExecutor
+    __command_executor: asyncio.AbstractEventLoop
 
-    def __init__(self, max_workers: int) -> None:
-        self._command_executor = ThreadPoolExecutor(max_workers=max_workers)
+    def __init__(self) -> None:
+        self._logger = logging.getLogger(__name__)
+        self.__command_executor = asyncio.get_event_loop()
 
-    def add(self, command: Command) -> Future:
-        return self._command_executor.submit(command.execute)
+    def add(self, command: Command) -> asyncio.Task:
+        return self.__command_executor.create_task(command.execute())
 
     def stop(self) -> None:
-        self._command_executor.shutdown()
+        self.__command_executor.stop()

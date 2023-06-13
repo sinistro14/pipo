@@ -26,10 +26,10 @@ class Player:
     can_play: threading.Event
 
     def __init__(self, bot) -> None:
+        self.__bot = bot
         self.__logger = logging.getLogger(__name__)
         self.__player_thread = None
         self.can_play = threading.Event()
-        self.__bot = bot
         self._music_queue = LocalMusicQueue()  # TODO make more general
         self.__url_fetch_pool = multiprocessing.pool.ThreadPool(
             processes=settings.player.url_fetch.pool_size
@@ -37,7 +37,7 @@ class Player:
 
     def stop(self) -> None:
         self.__clear_queue()
-        self.can_play.set()  # loop in __play_music_queue breaks due to empty queue
+        self.can_play.set()  # loop in __play_music_queue would break due to empty queue
         self.__player_thread.join()
         self.__bot._voice_client.stop()
 
@@ -95,10 +95,11 @@ class Player:
                         ],
                     )
             else:
-                query = [
+                query = [  # noqa
                     query,
                 ]
-            shuffle and random.shuffle(query)
+            if shuffle:
+                random.shuffle(query)
             results = [
                 result
                 for result in self.__url_fetch_pool.map(
