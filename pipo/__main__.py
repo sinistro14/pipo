@@ -5,7 +5,7 @@ import socket
 import asyncio
 import logging
 
-from pipo.bot import bot, pipo
+from pipo.bot import bot, MusicBot
 from pipo.config import settings
 
 
@@ -31,8 +31,8 @@ def add_signal_handlers():
         loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown(sig)))
 
 
-def main():
-    logging.basicConfig(encoding="utf-8", level=logging.INFO)
+async def main():
+    logging.basicConfig(encoding="utf-8", level=settings.log_level)
     channel = settings.channel
     voice_channel = settings.voice_channel
     token = settings.token
@@ -46,10 +46,11 @@ def main():
         except OSError:
             logging.getLogger(__name__).error("No internet connection.")
             time.sleep(5)
-    pipo.channel_id = channel
-    pipo.voice_channel_id = voice_channel
-    bot.run(token)
+
+    async with bot:
+        await bot.add_cog(MusicBot(bot, channel, voice_channel))
+        await bot.start(token)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

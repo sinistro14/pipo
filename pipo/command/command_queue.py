@@ -8,12 +8,13 @@ class CommandQueue:
 
     __command_executor: asyncio.AbstractEventLoop
 
-    def __init__(self) -> None:
+    def __init__(self, loop: asyncio.AbstractEventLoop = None) -> None:
         self._logger = logging.getLogger(__name__)
-        self.__command_executor = asyncio.get_event_loop()
+        #self.__command_executor = loop or asyncio.get_running_loop()
 
-    def add(self, command: Command) -> asyncio.Task:
-        return self.__command_executor.create_task(command.execute())
+    async def add(self, command: Command) -> asyncio.Task:
+        await asyncio.create_task(command.execute())
 
     def stop(self) -> None:
-        self.__command_executor.stop()
+        pass
+        #self.__command_executor.stop()

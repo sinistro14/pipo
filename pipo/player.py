@@ -4,6 +4,7 @@ import time
 import random
 import logging
 import threading
+import asyncio
 import multiprocessing.pool
 from typing import List, Union, Optional
 from functools import lru_cache
@@ -81,7 +82,10 @@ class Player:
             queries = [
                 queries,
             ]
-        return self.__add_music(queries, shuffle)
+        music = self.__add_music(queries, shuffle)
+        if music:
+            self.can_play.set()
+        return music
 
     def __add_music(self, queries: List[str], shuffle: bool) -> List[str]:
         results = []
@@ -122,20 +126,22 @@ class Player:
             target=self.__play_music_queue, daemon=True
         )
         self.__player_thread.start()
-        self.can_play.set()
 
-    def __play_music_queue(self) -> None:
+    async def __play_music_queue(self) -> None:
+        self.__logger.debug(f"Entering music queue play loop.")
         while self.can_play.wait() and self.queue_size():
+            self.__logger.debug(f"Entered play loop for music queue size {self.queue_size()}.")
             self.can_play.clear()
             url = self._music_queue.get()
             if url:
                 try:
-                    self.__bot.submit_music(url)
+                    await self.__bot.submit_music(url)
                 except Exception as exc:
                     self.__logger.warning(
                         "Unable to play next music. Error: %s", str(exc)
                     )
                     self.__bot.send_message(settings.player.messages.play_error)
+        self.__logger.debug("Exited play music queue loop.")
         self.can_play.clear()
         self.__bot.become_idle()
 

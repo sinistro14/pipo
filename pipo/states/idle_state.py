@@ -64,7 +64,7 @@ class IdleState(pipo.states.state.State):
         pass
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
-        await self.context.player.play(query, shuffle)
+        self.context.player.play(query, shuffle)
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())
 
     async def leave(self) -> None:

@@ -21,6 +21,86 @@ from pipo.command import (
     ListCommands,
 )
 
+logger = logging.getLogger(__name__)
+
+class MusicBot(commands.Cog):
+
+    def __init__(self, bot, channel_id, voice_channel_id):
+        self.bot = bot
+        self.pipo = Pipo(self.bot)
+        self.pipo.channel_id = channel_id
+        self.pipo.voice_channel_id = voice_channel_id
+        self.command_queue = CommandQueue()
+
+    @commands.command(pass_context=True)
+    async def join(self, ctx):
+        logger.info("Received discord command join.")
+        await self.command_queue.add(Join(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def leave(self, ctx):
+        logger.info("Received discord command leave.")
+        await self.command_queue.add(Leave(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def play(self, ctx, *query):
+        logger.info("Received discord command play.")
+        shuffle = len(query) > 1 and query[0] == settings.command.commands.shuffle
+        if shuffle:
+            query = query[1:]
+        await self.command_queue.add(Play(self.pipo, ctx, query, shuffle))
+
+
+    @commands.command(pass_context=True)
+    async def stop(self, ctx):
+        logger.info("Received discord command stop.")
+        await self.command_queue.add(Stop(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def pause(self, ctx):
+        logger.info("Received discord command pause.")
+        await self.command_queue.add(Pause(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def resume(self, ctx):
+        logger.info("Received discord command resume.")
+        await self.command_queue.add(Resume(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def skip(self, ctx):
+        logger.info("Received discord command skip.")
+        await self.command_queue.add(Skip(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def shuffle(self, ctx):
+        logger.info("Received discord command shuffle.")
+        await self.command_queue.add(Shuffle(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def listcommands(self, ctx):
+        logger.info("Received discord command listcommands.")
+        await self.command_queue.add(ListCommands(self.pipo))
+
+
+    @commands.command(pass_context=True)
+    async def status(self, ctx):
+        logger.info("Received discord command status.")
+        await self.command_queue.add(Status(self.pipo, ctx))
+
+
+    @commands.command(pass_context=True)
+    async def reboot(self, ctx):
+        logger.info("Received discord command reboot.")
+        await self.command_queue.add(Reboot(self.pipo, ctx))
+
+
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
@@ -31,87 +111,11 @@ bot = commands.Bot(
     case_insensitive=True,
     intents=intents,
 )
-pipo = Pipo(bot)
-
-command_queue = CommandQueue()
-
-logger = logging.getLogger(__name__)
-
 
 @bot.event
 async def on_ready():
-    await pipo.on_ready()
-
+    logger.info("Pipo do Arraial is ready.")
 
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-
-
-@bot.command
-async def join(ctx):
-    logger.info("Received discord command join.")
-    await command_queue.add(Join(pipo, ctx))
-
-
-@bot.command
-async def leave(ctx):
-    logger.info("Received discord command leave.")
-    await command_queue.add(Leave(pipo, ctx))
-
-
-@bot.command
-async def play(ctx, *query):
-    logger.info("Received discord command play.")
-    shuffle = len(query) > 1 and query[0] == settings.command.commands.shuffle
-    if shuffle:
-        query = query[1:]
-    await command_queue.add(Play(pipo, ctx, query, shuffle))
-
-
-@bot.command
-async def stop(ctx):
-    logger.info("Received discord command stop.")
-    await command_queue.add(Stop(pipo, ctx))
-
-
-@bot.command
-async def pause(ctx):
-    logger.info("Received discord command pause.")
-    await command_queue.add(Pause(pipo, ctx))
-
-
-@bot.command
-async def resume(ctx):
-    logger.info("Received discord command resume.")
-    await command_queue.add(Resume(pipo, ctx))
-
-
-@bot.command
-async def skip(ctx):
-    logger.info("Received discord command skip.")
-    await command_queue.add(Skip(pipo, ctx))
-
-
-@bot.command
-async def shuffle(ctx):
-    logger.info("Received discord command shuffle.")
-    await command_queue.add(Shuffle(pipo, ctx))
-
-
-@bot.command
-async def listcommands(ctx):
-    logger.info("Received discord command listcommands.")
-    await command_queue.add(ListCommands(pipo))
-
-
-@bot.command
-async def status(ctx):
-    logger.info("Received discord command status.")
-    await command_queue.add(Status(pipo, ctx))
-
-
-@bot.command
-async def reboot(ctx):
-    logger.info("Received discord command reboot.")
-    await command_queue.add(Reboot(pipo, ctx))

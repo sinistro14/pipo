@@ -5,15 +5,15 @@ from typing import List
 import discord.ext.commands
 from discord.ext.commands import Context as Dctx
 
+import pipo
 import pipo.player
 import pipo.states.idle_state
 import pipo.states.disconnected_state
-from pipo.states import Context
 
 logging.basicConfig(level=logging.INFO)
 
 
-class Pipo(Context):
+class Pipo(pipo.states.Context):
 
     _logger: logging.Logger
     bot: discord.ext.commands.Bot
@@ -46,11 +46,9 @@ class Pipo(Context):
     def queue_size(self) -> int:
         return self.player.queue_size()
 
-    async def on_ready(self) -> None:
-        self.music_channel = self.bot.get_channel(self.channel_id)
-        self._logger.info("Pipo do Arraial is ready.")
-
     async def send_message(self, message: str) -> None:
+        if not self.music_channel:
+            self.music_channel = self.bot.get_channel(self.channel_id)
         await self.music_channel.send(message)
 
     async def submit_music(self, url: str) -> None:  # noqa
