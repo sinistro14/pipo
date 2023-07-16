@@ -38,4 +38,4 @@ class PlayingState(pipo.states.state.State):
         Skips currently playing music by stopping the voice client, currently playing
         the music.
         """
-        self.context.voice_client.stop()
+        self.context.player.stop()

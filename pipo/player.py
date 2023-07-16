@@ -2,9 +2,8 @@
 import re
 import time
 import random
-import logging
-import threading
 import asyncio
+import logging
 import multiprocessing.pool
 from typing import List, Union, Optional
 from functools import lru_cache
@@ -22,15 +21,15 @@ class Player:
     __bot: None
     __logger: logging.Logger
     __url_fetch_pool: multiprocessing.pool.ThreadPool
-    __player_thread: threading.Thread
+    __player_thread: asyncio.Task
     _music_queue: MusicQueue
-    can_play: threading.Event
+    can_play: asyncio.Event
 
     def __init__(self, bot) -> None:
         self.__bot = bot
         self.__logger = logging.getLogger(__name__)
         self.__player_thread = None
-        self.can_play = threading.Event()
+        self.can_play = asyncio.Event()
         self._music_queue = LocalMusicQueue()  # TODO make more general
         self.__url_fetch_pool = multiprocessing.pool.ThreadPool(
             processes=settings.player.url_fetch.pool_size
@@ -39,17 +38,21 @@ class Player:
     def stop(self) -> None:
         self.__clear_queue()
         self.can_play.set()  # loop in __play_music_queue would break due to empty queue
-        self.__player_thread.join()
-        self.__bot._voice_client.stop()
+        self.__player_thread.cancel()
+        self.__bot.voice_client.stop()
+
+    def skip(self) -> None:
+        self.__bot.voice_client.stop()
+        self.can_play.set()
 
     def pause(self) -> None:
-        self.__bot._voice_client.pause()
+        self.__bot.voice_client.pause()
 
     def resume(self) -> None:
-        self.__bot._voice_client.resume()
+        self.__bot.voice_client.resume()
 
     async def leave(self) -> None:
-        await self.__bot._voice_client.disconnect()
+        await self.__bot.voice_client.disconnect()
 
     def queue_size(self) -> int:
         return self._music_queue.size()
@@ -75,9 +78,10 @@ class Player:
             Music urls added to the queue.
         """
         if (not self.__player_thread) or (
-            self.__player_thread and not self.__player_thread.is_alive
+            self.__player_thread
+            and (self.__player_thread.done() or self.__player_thread.cancelled())
         ):
-            self._start_music_queue()
+            self.__player_thread = asyncio.create_task(self.__play_music_queue())
         if not isinstance(queries, (list, tuple)):  # ensure an Iterable is used
             queries = [
                 queries,
@@ -119,30 +123,26 @@ class Player:
     def __clear_queue(self) -> None:
         self._music_queue.clear()
 
-    def _start_music_queue(self) -> None:
-        if self.__player_thread and not self.__player_thread.is_alive:
-            self.__player_thread.join()
-        self.__player_thread = threading.Thread(
-            target=self.__play_music_queue, daemon=True
-        )
-        self.__player_thread.start()
-
     async def __play_music_queue(self) -> None:
         self.__logger.debug(f"Entering music queue play loop.")
-        while self.can_play.wait() and self.queue_size():
-            self.__logger.debug(f"Entered play loop for music queue size {self.queue_size()}.")
+        while await self.can_play.wait() and self.queue_size():
+            self.__logger.debug(
+                f"Entered play loop for music queue size {self.queue_size()}."
+            )
             self.can_play.clear()
             url = self._music_queue.get()
             if url:
                 try:
-                    await self.__bot.submit_music(url)
+                    asyncio.to_thread(asyncio.create_task(self.__bot.submit_music(url)))
+                except asyncio.CancelledError as exc:
+                    self.__logger.warning("Play music queue task cancelled.")
                 except Exception as exc:
                     self.__logger.warning(
                         "Unable to play next music. Error: %s", str(exc)
                     )
-                    self.__bot.send_message(settings.player.messages.play_error)
-        self.__logger.debug("Exited play music queue loop.")
+                    # await self.__bot.send_message(settings.player.messages.play_error)
         self.can_play.clear()
+        self.__logger.debug("Exited play music queue loop.")
         self.__bot.become_idle()
 
     @staticmethod

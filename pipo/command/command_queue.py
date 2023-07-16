@@ -1,20 +1,24 @@
 import asyncio
 import logging
+from typing import Set
 
 from pipo.command.command import Command
 
 
 class CommandQueue:
 
-    __command_executor: asyncio.AbstractEventLoop
+    _logger: logging.Logger
+    __scheduled_tasks: Set[asyncio.Task]
 
-    def __init__(self, loop: asyncio.AbstractEventLoop = None) -> None:
+    def __init__(self) -> None:
         self._logger = logging.getLogger(__name__)
-        #self.__command_executor = loop or asyncio.get_running_loop()
+        self.__scheduled_tasks = set()
 
     async def add(self, command: Command) -> asyncio.Task:
-        await asyncio.create_task(command.execute())
+        task = asyncio.create_task(command.execute())
+        self.__scheduled_tasks.add(task)
+        task.add_done_callback(self.__scheduled_tasks.discard)
 
     def stop(self) -> None:
-        pass
-        #self.__command_executor.stop()
+        for task in self.__scheduled_tasks:
+            task.cancel()

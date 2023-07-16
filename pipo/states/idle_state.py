@@ -46,6 +46,8 @@ class IdleState(pipo.states.state.State):
             )
             await self.context.music_channel.send(settings.player.messages.disconnect)
             await self.context.voice_client.disconnect()
+        except asyncio.CancelledError:
+            self._logger.info("Cancelling idle tracker task.")
 
     async def _clean_transition_to(self, state: pipo.states.state.State) -> None:
         await self._stop_idle_tracker()

@@ -11,5 +11,5 @@ class Reboot(Command):
     bot: Pipo
     ctx: Dctx
 
-    async def execute(self) -> None:
+    async def _execute(self) -> None:
         await self.bot.reboot(self.ctx)

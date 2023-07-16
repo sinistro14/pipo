@@ -14,5 +14,5 @@ class Play(Command):
     query: List[str]
     shuffle: bool
 
-    async def execute(self) -> None:
+    async def _execute(self) -> None:
         await self.bot.play(self.ctx, self.query, self.shuffle)

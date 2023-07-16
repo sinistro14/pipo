@@ -12,7 +12,7 @@ class Status(Command):
     bot: Pipo
     ctx: Dctx
 
-    async def execute(self) -> None:
+    async def _execute(self) -> None:
         await self.bot.move_message(self.ctx)
         await self.bot.send_message(
             f"Current State: {self.bot.current_state()}\n"

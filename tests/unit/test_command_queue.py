@@ -8,7 +8,7 @@ import pipo.command.command_queue
 
 
 class DummyCommand(pipo.command.command.Command):
-    async def execute(self):
+    async def _execute(self):
         return 0
 
 
@@ -18,7 +18,7 @@ class DummyAsyncCommand(pipo.command.command.Command):
     def __init__(self, event) -> None:
         self.event = event
 
-    async def execute(self):
+    async def _execute(self):
         self.event.set()
 
 
@@ -37,6 +37,6 @@ class TestCommandQueue:
     ):
         event = asyncio.Event()
         command = DummyAsyncCommand(event)
-        command_queue.add(command)
+        await command_queue.add(command)
         await event.wait()
         assert event.is_set()

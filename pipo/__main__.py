@@ -5,7 +5,7 @@ import socket
 import asyncio
 import logging
 
-from pipo.bot import bot, MusicBot
+from pipo.bot import MusicBot, bot
 from pipo.config import settings
 
 

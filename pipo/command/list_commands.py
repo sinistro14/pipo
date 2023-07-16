@@ -9,7 +9,7 @@ from pipo.command.command import Command
 class ListCommands(Command):
     bot: Pipo
 
-    async def execute(self) -> None:
+    async def _execute(self) -> None:
         await self.bot.send_message(
             f"""
             Command List: \n

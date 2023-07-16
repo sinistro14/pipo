@@ -52,10 +52,13 @@ class Pipo(pipo.states.Context):
         await self.music_channel.send(message)
 
     async def submit_music(self, url: str) -> None:  # noqa
-        self.voice_client.play(
-            discord.FFmpegPCMAudio(url, **self._ffmpeg_options),
-            after=self.player.can_play.set,
-        )
+        try:
+            self.voice_client.play(
+                discord.FFmpegPCMAudio(url, **self._ffmpeg_options),
+                after=self.player.can_play.set,
+            )
+        except discord.ClientException:
+            self._logger.warn("Unable to play music in Discord voice channel.")
 
     async def join(self, ctx: Dctx):
         self._logger.info("Joined channel")
