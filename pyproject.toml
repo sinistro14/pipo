@@ -26,7 +26,7 @@ classifiers = [
 python = "^3.9"  # compatible python versions must be declared here
 requests = "^2.31"
 psutil = "~5.9.0"
-discord-py = { version = "~2.2.0", extras = ["voice"] }
+discord-py = { version = "~2.3.0", extras = ["voice"] }
 yt-dlp = "^2023.3"
 dynaconf = { version = "~3.1.0", extras = ["yaml"] }
 
@@ -36,6 +36,7 @@ mock = "~5.0.0"
 pytest-mock = "~3.10.0"
 pytest-asyncio = "~0.21.0"
 types-mock = "^5.0.0"
+dpytest = "0.7.0"
 pylint = "~2.13.0"
 mypy = "0.971"
 black = "22.8.0"

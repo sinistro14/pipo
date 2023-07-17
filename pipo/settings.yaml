@@ -1,5 +1,5 @@
 default:
-  log_level: DEBUG
+  log_level: INFO
   # Application name
   app:
   # Discord channel
@@ -9,7 +9,11 @@ default:
   command:
     commands:
       prefix: "-"
-      shuffle: s
+      # ensure same values are used in help messages
+      search: -q
+      shuffle: -s
+  pipo:
+    move_message_delay: 1 # seconds
   player:
     messages:
       play_error: Unable to play next music. Skipping.

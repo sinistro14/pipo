@@ -37,9 +37,9 @@ class Player:
 
     def stop(self) -> None:
         self.__clear_queue()
-        self.can_play.set()  # loop in __play_music_queue would break due to empty queue
         self.__player_thread.cancel()
         self.__bot.voice_client.stop()
+        self.can_play.set()  # loop in __play_music_queue would break due to empty queue
 
     def skip(self) -> None:
         self.__bot.voice_client.stop()
@@ -81,14 +81,15 @@ class Player:
             self.__player_thread
             and (self.__player_thread.done() or self.__player_thread.cancelled())
         ):
+            self.can_play.set()
             self.__player_thread = asyncio.create_task(self.__play_music_queue())
         if not isinstance(queries, (list, tuple)):  # ensure an Iterable is used
             queries = [
                 queries,
             ]
         music = self.__add_music(queries, shuffle)
-        if music:
-            self.can_play.set()
+        # if music:
+        #    self.can_play.set()
         return music
 
     def __add_music(self, queries: List[str], shuffle: bool) -> List[str]:
@@ -125,22 +126,24 @@ class Player:
 
     async def __play_music_queue(self) -> None:
         self.__logger.debug(f"Entering music queue play loop.")
-        while await self.can_play.wait() and self.queue_size():
-            self.__logger.debug(
+        while await self.can_play.wait():
+            if not self.queue_size():
+                break
+            self.can_play.clear()
+            self.__logger.info(
                 f"Entered play loop for music queue size {self.queue_size()}."
             )
-            self.can_play.clear()
             url = self._music_queue.get()
             if url:
                 try:
-                    asyncio.to_thread(asyncio.create_task(self.__bot.submit_music(url)))
+                    asyncio.create_task(self.__bot.submit_music(url))
                 except asyncio.CancelledError as exc:
                     self.__logger.warning("Play music queue task cancelled.")
                 except Exception as exc:
                     self.__logger.warning(
                         "Unable to play next music. Error: %s", str(exc)
                     )
-                    # await self.__bot.send_message(settings.player.messages.play_error)
+                    #await self.__bot.send_message(settings.player.messages.play_error)
         self.can_play.clear()
         self.__logger.debug("Exited play music queue loop.")
         self.__bot.become_idle()

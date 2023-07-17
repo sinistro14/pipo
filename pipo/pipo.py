@@ -9,9 +9,9 @@ import pipo
 import pipo.player
 import pipo.states.idle_state
 import pipo.states.disconnected_state
+from pipo.config import settings
 
-logging.basicConfig(level=logging.INFO)
-
+logging.basicConfig(encoding="utf-8", level=settings.log_level)
 
 class Pipo(pipo.states.Context):
 
@@ -53,9 +53,15 @@ class Pipo(pipo.states.Context):
 
     async def submit_music(self, url: str) -> None:  # noqa
         try:
+            self._logger.info(
+                f"can_play flag before voice client play: {self.player.can_play.is_set()}"
+            )
             self.voice_client.play(
                 discord.FFmpegPCMAudio(url, **self._ffmpeg_options),
-                after=self.player.can_play.set,
+                after=self.player.can_play.set(),
+            )
+            self._logger.info(
+                f"can_play flag after voice client play: {self.player.can_play.is_set()}"
             )
         except discord.ClientException:
             self._logger.warn("Unable to play music in Discord voice channel.")
@@ -99,5 +105,5 @@ class Pipo(pipo.states.Context):
     async def move_message(self, ctx: Dctx):
         msg = ctx.message
         content = msg.content.encode("ascii", "ignore").decode()
+        await msg.delete(delay=settings.pipo.move_message_delay)
         await self.send_message(f"{msg.author.name} {content}")
-        await msg.delete()
