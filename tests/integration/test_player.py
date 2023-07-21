@@ -53,7 +53,9 @@ class TestPlayer:
     @pytest.mark.parametrize(
         "playlist, playlist_size",
         [
+            (tests.constants.PLAYLIST_SOURCE_1, 1),
             (tests.constants.PLAYLIST_1, 1),
+            (tests.constants.PLAYLIST_SOURCE_2, 3),
             (tests.constants.PLAYLIST_2, 3),
         ],
     )
