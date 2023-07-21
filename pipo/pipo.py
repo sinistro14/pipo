@@ -56,7 +56,7 @@ class Pipo(pipo.states.Context):
     async def submit_music(self, url: str) -> None:  # noqa
         try:
             self.voice_client.play(discord.FFmpegPCMAudio(url, **self._ffmpeg_options))
-            while self.voice_client.is_playing():
+            while self.voice_client.is_playing() or self.voice_client.is_paused():
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except Exception:
             self._logger.warn("Unable to play music in Discord voice channel.")
@@ -93,11 +93,8 @@ class Pipo(pipo.states.Context):
 
     async def reboot(self, ctx: Dctx):
         await self._state.leave()  # transitions to Disconnected state
-        await self.join(ctx)  # transitions to Idle state
-
-    async def shuffle(self, ctx: Dctx):
-        self.player.shuffle()
-        await self.move_message(ctx)
+        self._logger.info("Rebooting...")
+        exit(0)
 
     async def move_message(self, ctx: Dctx):
         msg = ctx.message

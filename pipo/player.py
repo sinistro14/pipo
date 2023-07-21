@@ -56,9 +56,6 @@ class Player:
     def queue_size(self) -> int:
         return self._music_queue.size()
 
-    def shuffle(self) -> None:
-        self._music_queue.shuffle()
-
     def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
         """_summary_
 
@@ -93,8 +90,15 @@ class Player:
             if "list=" in query:  # check if playlist
                 with YoutubeDL({"extract_flat": True}) as ydl:
                     playlist_id = ydl.extract_info(url=query, download=False).get("id")
-                    playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
-                    query = [url.get("url") for url in ydl.extract_info(url=playlist_url, download=False).get("entries")]
+                    playlist_url = (
+                        f"https://www.youtube.com/playlist?list={playlist_id}"
+                    )
+                    query = [
+                        url.get("url")
+                        for url in ydl.extract_info(
+                            url=playlist_url, download=False
+                        ).get("entries")
+                    ]
             else:
                 query = [  # noqa
                     query,
@@ -102,12 +106,16 @@ class Player:
             if shuffle:
                 random.shuffle(query)
 
-            self.__logger.info(f"Obtaining audio for: {query}") #FIXME remove later or change to debug
+            self.__logger.info(
+                f"Obtaining audio for: {query}"
+            )  # FIXME remove later or change to debug
             for result in self.__url_fetch_pool.imap(
                 Player.get_youtube_audio,
                 query,
             ):
-                self.__logger.info(f"Adding music: {result}") #FIXME remove later or change to debug
+                self.__logger.info(
+                    f"Adding music: {result}"
+                )  # FIXME remove later or change to debug
                 if result:
                     self._music_queue.add(result)
 
@@ -196,7 +204,7 @@ class Player:
                         "Unable to obtain audio url for query: %s", query
                     )
                 if url:
-                    logging.getLogger(__name__).info("Obtained audio url: %s", url)
+                    logging.getLogger(__name__).debug("Obtained audio url: %s", url)
                     return url
                 time.sleep(settings.player.url_fetch.wait)
         logging.getLogger(__name__).info(

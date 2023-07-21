@@ -26,6 +26,6 @@ default:
     url_fetch:
       timeout: 300 # seconds
       max_cache_size: 64
-      pool_size: 8
+      pool_size: 16
       retries: 3
       wait: 1

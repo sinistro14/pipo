@@ -22,7 +22,7 @@ class PlayingState(pipo.states.state.State):
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def pause(self) -> None:
-        await self.context.player.pause()
+        self.context.player.pause()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def leave(self) -> None:

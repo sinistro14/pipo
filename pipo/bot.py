@@ -15,7 +15,6 @@ from pipo.command import (
     Pause,
     Reboot,
     Resume,
-    Shuffle,
     CommandQueue,
 )
 
@@ -102,11 +101,6 @@ class MusicBot(commands.Cog):
     async def skip(self, ctx):
         logger.info("Received discord command skip.")
         await self.command_queue.add(Skip(self.pipo, ctx))
-
-    @commands.command(pass_context=True, help="Deprecated.")
-    async def shuffle(self, ctx):
-        logger.info("Received discord command shuffle.")
-        await self.command_queue.add(Shuffle(self.pipo, ctx))
 
     @commands.command(pass_context=True, brief="Restart bot.")
     async def reboot(self, ctx):
