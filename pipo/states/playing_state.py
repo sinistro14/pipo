@@ -18,7 +18,7 @@ class PlayingState(pipo.states.state.State):
         pass
 
     async def stop(self) -> None:
-        await self.context.player.stop()
+        self.context.player.stop()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def pause(self) -> None:
@@ -38,4 +38,4 @@ class PlayingState(pipo.states.state.State):
         Skips currently playing music by stopping the voice client, currently playing
         the music.
         """
-        self.context.player.stop()
+        self.context.player.skip()

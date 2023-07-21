@@ -43,7 +43,6 @@ class Player:
 
     def skip(self) -> None:
         self.__bot.voice_client.stop()
-        self.can_play.set()
 
     def pause(self) -> None:
         self.__bot.voice_client.pause()
@@ -60,7 +59,7 @@ class Player:
     def shuffle(self) -> None:
         self._music_queue.shuffle()
 
-    def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> List[str]:
+    def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
         """_summary_
 
         _extended_summary_
@@ -81,19 +80,15 @@ class Player:
             self.__player_thread
             and (self.__player_thread.done() or self.__player_thread.cancelled())
         ):
-            self.can_play.set()
-            self.__player_thread = asyncio.create_task(self.__play_music_queue())
+            self._start_music_queue()
         if not isinstance(queries, (list, tuple)):  # ensure an Iterable is used
             queries = [
                 queries,
             ]
-        music = self.__add_music(queries, shuffle)
-        # if music:
-        #    self.can_play.set()
-        return music
+        self.__add_music(queries, shuffle)
 
-    def __add_music(self, queries: List[str], shuffle: bool) -> List[str]:
-        results = []
+    def __add_music(self, queries: List[str], shuffle: bool) -> None:
+        self.__logger.info(f"Processing music query: {queries}")
         for query in queries:
             if "/playlist?list=" in query:  # check if playlist
                 with YoutubeDL({"extract_flat": True}) as ydl:
@@ -109,17 +104,17 @@ class Player:
                 ]
             if shuffle:
                 random.shuffle(query)
-            results = [
-                result
-                for result in self.__url_fetch_pool.map(
-                    Player.get_youtube_audio,
-                    queries,
-                )
-                if result
-            ]
-        if results:
-            self._music_queue.add(results)
-        return results
+
+            for result in self.__url_fetch_pool.imap(
+                Player.get_youtube_audio,
+                query,
+            ):
+                if result:
+                    self._music_queue.add(result)
+
+    def _start_music_queue(self) -> None:
+        self.can_play.set()
+        self.__player_thread = asyncio.create_task(self.__play_music_queue())
 
     def __clear_queue(self) -> None:
         self._music_queue.clear()
@@ -136,16 +131,16 @@ class Player:
             url = self._music_queue.get()
             if url:
                 try:
-                    asyncio.create_task(self.__bot.submit_music(url))
+                    await self.__bot.submit_music(url)
                 except asyncio.CancelledError as exc:
-                    self.__logger.warning("Play music queue task cancelled.")
+                    self.__logger.info("Play music queue task cancelled.")
                 except Exception as exc:
                     self.__logger.warning(
                         "Unable to play next music. Error: %s", str(exc)
                     )
-                    #await self.__bot.send_message(settings.player.messages.play_error)
-        self.can_play.clear()
-        self.__logger.debug("Exited play music queue loop.")
+                    await self.__bot.send_message(settings.player.messages.play_error)
+        self.can_play.set()
+        self.__logger.info("Exited play music queue loop.")
         self.__bot.become_idle()
 
     @staticmethod

@@ -13,7 +13,8 @@ default:
       search: -q
       shuffle: -s
   pipo:
-    move_message_delay: 1 # seconds
+    move_message_delay: 0 # seconds
+    check_if_playing_frequency: 3 # seconds
   player:
     messages:
       play_error: Unable to play next music. Skipping.
@@ -23,8 +24,8 @@ default:
       local:
         size_check_iterations: 5
     url_fetch:
-      timeout: 3
-      max_cache_size: 128
-      pool_size: 4
+      timeout: 300 # seconds
+      max_cache_size: 64
+      pool_size: 8
       retries: 3
       wait: 1
