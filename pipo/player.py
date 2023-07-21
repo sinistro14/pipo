@@ -90,14 +90,11 @@ class Player:
     def __add_music(self, queries: List[str], shuffle: bool) -> None:
         self.__logger.info(f"Processing music query: {queries}")
         for query in queries:
-            if "/playlist?list=" in query:  # check if playlist
+            if "list=" in query:  # check if playlist
                 with YoutubeDL({"extract_flat": True}) as ydl:
-                    query = ydl.extract_info(url=query, download=False).get(
-                        "queries",
-                        [
-                            query,
-                        ],
-                    )
+                    playlist_id = ydl.extract_info(url=query, download=False).get("id")
+                    playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+                    query = [url.get("url") for url in ydl.extract_info(url=playlist_url, download=False).get("entries")]
             else:
                 query = [  # noqa
                     query,
@@ -105,10 +102,12 @@ class Player:
             if shuffle:
                 random.shuffle(query)
 
+            self.__logger.info(f"Obtaining audio for: {query}") #FIXME remove later or change to debug
             for result in self.__url_fetch_pool.imap(
                 Player.get_youtube_audio,
                 query,
             ):
+                self.__logger.info(f"Adding music: {result}") #FIXME remove later or change to debug
                 if result:
                     self._music_queue.add(result)
 

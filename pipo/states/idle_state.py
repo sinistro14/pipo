@@ -74,5 +74,5 @@ class IdleState(pipo.states.state.State):
         self.context.transition_to(pipo.states.disconnected_state.DisconnectedState())
 
     async def resume(self) -> None:
-        await self.context.player.resume()
+        self.context.player.resume()
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())

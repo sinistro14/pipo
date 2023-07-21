@@ -49,3 +49,14 @@ class TestPlayer:
     def test_play_multiple_url(self, player, url_list):
         player.play(url_list)
         assert player.queue_size() == len(url_list)
+
+    @pytest.mark.parametrize(
+        "playlist, playlist_size",
+        [
+            (tests.constants.PLAYLIST_1, 1),
+            (tests.constants.PLAYLIST_2, 3),
+        ],
+    )
+    def test_playlist(self, player, playlist, playlist_size):
+        player.play(playlist)
+        assert player.queue_size() == playlist_size

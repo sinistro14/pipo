@@ -54,6 +54,9 @@ URL_COMPLEX_LIST = [
     URL_4,
     URL_5,
 ]
+PLAYLIST_1 = "https://www.youtube.com/playlist?list=PL4lCao7KL_QFVb7Iudeipvc2BCavECqzc"
+PLAYLIST_2 = "https://www.youtube.com/watch?v=sgLvV2pX9V0&list=PLhpLyZ-aL82gssiK-uYP71UD5vgm_T-ZK"
+PLAYLIST_3 = "https://www.youtube.com/watch?v=_-uMPb63e8U&list=PLh_2AL0cs37xUwRGScAmHpCY_vxKlgqRB"
 
 
 ### States ###
