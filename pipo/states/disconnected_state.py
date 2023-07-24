@@ -24,7 +24,7 @@ class DisconnectedState(pipo.states.state.State):
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )
-            self._logger.info("Successfully joined channel %s.", channel.name)
+            self._logger.info("Successfully joined channel '%s'.", channel.name)
         except (asyncio.TimeoutError, discord.ClientException):
             self._logger.exception("Error while joining channel.")
         finally:

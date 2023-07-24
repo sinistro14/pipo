@@ -67,11 +67,6 @@ class Player:
             _description_
         shuffle : bool, optional
             _description_, by default False
-
-        Returns
-        -------
-        List[str]
-            Music urls added to the queue.
         """
         if (not self.__player_thread) or (
             self.__player_thread
@@ -127,12 +122,12 @@ class Player:
         self._music_queue.clear()
 
     async def __play_music_queue(self) -> None:
-        self.__logger.debug(f"Entering music queue play loop.")
+        self.__logger.info(f"Entering music queue play loop.")
         while await self.can_play.wait():
             if not self.queue_size():
                 break
             self.can_play.clear()
-            self.__logger.info(
+            self.__logger.info(  # FIXME change to debug
                 f"Entered play loop for music queue size {self.queue_size()}."
             )
             url = self._music_queue.get()
@@ -183,7 +178,7 @@ class Player:
         """
         if not (query.startswith("http") and query.startswith("https")):
             query = Player.get_youtube_url_from_query(query)
-        logging.getLogger(__name__).info(
+        logging.getLogger(__name__).info(  # FIXME change to debug
             "Trying to obtain youtube audio url for query: %s", query
         )
         url = None

@@ -5,7 +5,8 @@ import socket
 import asyncio
 import logging
 
-from pipo.bot import MusicBot, bot
+from pipo.bot import PipoBot
+from pipo.cogs import MusicBot
 from pipo.config import settings
 
 
@@ -46,6 +47,10 @@ async def main():
         except OSError:
             logging.getLogger(__name__).error("No internet connection.")
             time.sleep(5)
+
+    bot = PipoBot(
+        command_prefix=settings.commands.prefix, description=settings.bot_description
+    )
 
     async with bot:
         await bot.add_cog(MusicBot(bot, channel, voice_channel))

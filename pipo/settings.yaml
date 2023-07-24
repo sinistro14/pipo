@@ -6,14 +6,14 @@ default:
   channel:
   # Discord default voice channel
   voice_channel:
-  command:
-    commands:
-      prefix: "-"
-      # ensure same values are used in help messages
-      search: -q
-      shuffle: -s
+  bot_description: Discord Music Bot
+  commands:
+    prefix: "-"
+    # ensure same values are used in help messages
+    search: -q
+    shuffle: -s
   pipo:
-    move_message_delay: 0 # seconds
+    move_message_delay: 1 # seconds
     check_if_playing_frequency: 3 # seconds
   player:
     messages:
