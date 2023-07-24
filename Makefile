@@ -28,25 +28,19 @@ setup:
 dev_setup:
 	$(POETRY) install
 
-isort:
-	-$(POETRY) run isort .
-
 black:
 	-$(POETRY) run black .
 
-mypy:
-	-$(POETRY) run mypy .
+ruff:
+	-$(POETRY) run ruff .
 
-pylint:
-	-$(POETRY) run pylint $(APP)
-
-bandit:
-	-$(POETRY) run bandit -c $(CONFIG_PATH) -r . 
+ruff_fix:
+	-$(POETRY) run ruff --fix .
 
 vulture:
 	-$(POETRY) run vulture
 
-lint: isort black mypy pylint bandit vulture
+lint: ruff black vulture
 
 test:
 	$(POETRY) run pytest
@@ -61,6 +55,6 @@ run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
 
 run_app:
-	docker compose up -d --build
+	docker compose up -d --build --remove-orphans
 
-.PHONY: help poetry_setup setup dev_setup lint isort black mypy pylint bandit test dist image run_image run_app
+.PHONY: help poetry_setup setup dev_setup lint black bandit ruff test dist image run_image run_app

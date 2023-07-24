@@ -16,6 +16,8 @@ keywords = ['python', 'discord', 'music', 'bot']
 
 classifiers = [
     'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     'Operating System :: OS Independent',
     'Natural Language :: English',
     'Topic :: Multimedia :: Sound/Audio',
@@ -23,11 +25,10 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"  # compatible python versions must be declared here
+python = "^3.9"
 requests = "^2.31"
-psutil = "~5.9.0"
-discord-py = { version = "~2.3.0", extras = ["voice"] }
 yt-dlp = "~2023.7.0"
+discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.1.0", extras = ["yaml"] }
 
 [tool.poetry.dev-dependencies]
@@ -37,11 +38,8 @@ pytest-mock = "~3.10.0"
 pytest-asyncio = "~0.21.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
-pylint = "~2.13.0"
-mypy = "0.971"
+ruff = "0.0.280"
 black = "22.8.0"
-bandit = "~1.7.0"
-isort = "~5.10.0"
 vulture = "2.7"
 
 [tool.poetry.scripts]
@@ -55,32 +53,13 @@ build-backend = "poetry.core.masonry.api"
 asyncio_mode = "auto"
 mock_use_standalone_module = true
 
-[tool.mypy]
-python_version = "3.9"
-exclude = ["tests"]
-warn_return_any = true
-warn_unused_configs = true
-
-[tool.pylint]
-max-line-length = 88
-disable = [
-    "C0330",
-]
-
-[tool.black]
+[tool.ruff]
+select = ["E", "F", "B", "W", "C90", "I", "S", "TRY", "PL", "D"]
+extend-exclude = ["tests"]
 line-length = 88
-target-version = ['py37']
-include = '\.pyi?$'
 
-[tool.isort]
-profile = "black"
-honor_noqa = true
-length_sort = true
-skip_gitignore = true
-
-[tool.bandit]
-target = ["pipo"]
-exclude_dirs = ["tests", ".venv"]
+[tool.ruff.pydocstyle]
+convention = "numpy"
 
 [tool.vulture]
 paths = ["pipo/"]
