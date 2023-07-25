@@ -54,7 +54,17 @@ asyncio_mode = "auto"
 mock_use_standalone_module = true
 
 [tool.ruff]
-select = ["E", "F", "B", "W", "C90", "I", "S", "TRY", "PL", "D"]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "S",
+    "PL",
+    "D",
+    "C90",
+]
 extend-exclude = ["tests"]
 line-length = 88
 

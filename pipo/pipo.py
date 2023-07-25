@@ -59,7 +59,10 @@ class Pipo(pipo.states.Context):
             while self.voice_client.is_playing() or self.voice_client.is_paused():
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except Exception:
-            self._logger.warn("Unable to play music in Discord voice channel.")
+            self._logger.warn(
+                "Unable to play music in Discord voice channel.",
+                exc_info=True
+            )
         finally:
             self.player.can_play.set()
 
