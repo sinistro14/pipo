@@ -45,16 +45,19 @@ lint: ruff black vulture
 test:
 	$(POETRY) run pytest
 
+docs:
+	$(POETRY) run make -C docs html
+
 dist:
 	$(POETRY) dist
 
-image:
+image: docs
 	docker build . -t $(APP):latest
 
 run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
 
-run_app:
+run_app: docs
 	docker compose up -d --build --remove-orphans
 
-.PHONY: help poetry_setup setup dev_setup lint black bandit ruff test dist image run_image run_app
+.PHONY: help poetry_setup setup dev_setup lint docs black bandit ruff test dist image run_image run_app
