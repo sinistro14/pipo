@@ -2,9 +2,9 @@ from typing import List
 
 from discord.ext.commands import Context as Dctx
 
-import pipo.states.state
-import pipo.states.idle_state
 import pipo.states.disconnected_state
+import pipo.states.idle_state
+import pipo.states.state
 
 
 class PlayingState(pipo.states.state.State):

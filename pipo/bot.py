@@ -8,7 +8,7 @@ from discord.ext import commands
 class PipoBot(commands.Bot):
     """Top level Discord bot.
 
-    Discord bot where functionality Cogs will be integrated.
+    Discord bot where functionality Cogs are integrated.
     """
 
     _logger: logging.Logger
@@ -25,7 +25,7 @@ class PipoBot(commands.Bot):
 
     @staticmethod
     def get_intents() -> discord.Intents:
-        """Defines required intents for bot to function.
+        """Define required intents for bot.
 
         Returns
         -------
@@ -38,4 +38,4 @@ class PipoBot(commands.Bot):
 
     async def on_ready(self):
         """Triggered when bot reaches a stable functionality state."""
-        self._logger.info("Pipo do Arraial is ready.")
+        self._logger.info("Pipo do Arraial is ready")

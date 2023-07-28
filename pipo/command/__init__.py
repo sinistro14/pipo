@@ -1,5 +1,6 @@
 """Manage bot commands and corresponding asynchronous requests.
 """
+# flake8: noqa
 from pipo.command.join import Join
 from pipo.command.play import Play
 from pipo.command.skip import Skip

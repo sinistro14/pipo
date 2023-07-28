@@ -3,9 +3,9 @@ from typing import List
 
 from discord.ext.commands import Context as Dctx
 
-import pipo.states.state
-import pipo.states.playing_state
 import pipo.states.disconnected_state
+import pipo.states.playing_state
+import pipo.states.state
 from pipo.config import settings
 
 
@@ -47,7 +47,7 @@ class IdleState(pipo.states.state.State):
             await self.context.music_channel.send(settings.player.messages.disconnect)
             await self.context.voice_client.disconnect()
         except asyncio.CancelledError:
-            self._logger.info("Cancelling idle tracker task.")
+            self._logger.info("Cancelling idle tracker task", exc_info=True)
 
     async def _clean_transition_to(self, state: pipo.states.state.State) -> None:
         await self._stop_idle_tracker()

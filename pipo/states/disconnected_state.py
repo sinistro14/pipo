@@ -4,9 +4,9 @@ from typing import List
 import discord
 from discord.ext.commands import Context as Dctx
 
-import pipo.states.state
 import pipo.states.idle_state
 import pipo.states.playing_state
+import pipo.states.state
 
 
 class DisconnectedState(pipo.states.state.State):
@@ -14,7 +14,7 @@ class DisconnectedState(pipo.states.state.State):
         super().__init__("disconnected")
 
     async def _join(self, ctx: Dctx) -> None:
-        self._logger.debug(f"Join requested by {ctx.author.name}")
+        self._logger.debug("Join requested", extra=dict(user=ctx.author.name))
         if ctx.author.voice:
             channel = ctx.author.voice.channel
         else:
@@ -24,9 +24,12 @@ class DisconnectedState(pipo.states.state.State):
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )
-            self._logger.info("Successfully joined channel '%s'.", channel.name)
+            self._logger.info(
+                "Successfully joined channel",
+                extra=dict(channel=channel.name)
+            )
         except (asyncio.TimeoutError, discord.ClientException):
-            self._logger.exception("Error while joining channel.")
+            self._logger.exception("Error while joining channel")
         finally:
             self.context.voice_client = ctx.voice_client
             await self.context.move_message(ctx)

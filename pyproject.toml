@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pipo"
 version = "0.0.1"
-description = "Bot to play music in a discord channel based on user input"
+description = "Bot to play music in a discord channel"
 
 license = "MIT"
 
@@ -32,10 +32,13 @@ discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.1.0", extras = ["yaml"] }
 
 [tool.poetry.dev-dependencies]
+setuptools = "*"
+sphinx = "~7.1.0"
 pytest = "^7.1"
 mock = "~5.0.0"
 pytest-mock = "~3.10.0"
 pytest-asyncio = "~0.21.0"
+pytest-cov = "~4.1.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
 ruff = "0.0.280"
@@ -52,20 +55,40 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 mock_use_standalone_module = true
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.coverage.run]
+source = ['pipo']
+[tool.coverage.report]
+fail_under = 65
+omit = [
+    '*__init__.py',
+    '*__main__.py',
+]
 
 [tool.ruff]
 select = [
-    "E",
-    "W",
-    "F",
-    "I",
-    "B",
-    "S",
-    "PL",
-    "D",
-    "C90",
+    "E",        #pycodestyle error
+    "W",        #pycodestyle warning
+    "D",        #pydocstyle
+    "F",        #pyflakes
+    "I",        #isort
+    "B",        #bugbear
+    "S",        #bandit
+    "N",        #pep8-naming
+    "G",        #flake8-logging-format
+    "PL",       #pylint
+    "FLY",      #flynt
+    "TRY",      #tryceratops
+    "TCH",      #flake8-type-checking
+    "C90",      #McCabe complexity
+    "ASYNC",    #flake8-async
 ]
 extend-exclude = ["tests"]
+format = "grouped"
 line-length = 88
 
 [tool.ruff.pydocstyle]

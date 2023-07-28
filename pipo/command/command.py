@@ -14,7 +14,7 @@ class Command(ABC):
         try:
             await self._execute()
         except asyncio.CancelledError:
-            self._logger.info("Cancelling command.")
+            self._logger.info("Cancelling command", exc_info=True)
 
     @abstractmethod
     async def _execute(self) -> None:

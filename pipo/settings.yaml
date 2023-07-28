@@ -1,5 +1,6 @@
 default:
   log_level: INFO
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   # Application name
   app:
   # Discord channel
@@ -13,7 +14,7 @@ default:
     search: -q
     shuffle: -s
   pipo:
-    move_message_delay: 1 # seconds
+    move_message_delay: 0.5 # seconds
     check_if_playing_frequency: 3 # seconds
   player:
     messages:
@@ -21,6 +22,8 @@ default:
       disconnect: Bye bye !!!
     idle_timeout: 1800  # 30 minutes
     queue:
+      type: local
+      default: local
       local:
         size_check_iterations: 5
     url_fetch:

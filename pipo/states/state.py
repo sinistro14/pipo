@@ -17,11 +17,12 @@ class Context:
     def transition_to(self, state):
         self._state = state
         self._state.context = self
-        self._logger.info("Current State: %s", self._state.name)
+        self._logger.info("Current State", extra=dict(state=self._state.name))
 
 
 class State(ABC):
-    """
+    """State machine base.
+
     Declares methods all concrete State should
     implement and provides a reference to the associated Context object,
     which can be used by States to transition Context to another State.

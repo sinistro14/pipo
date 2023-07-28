@@ -1,6 +1,7 @@
 #!usr/bin/env python3
 import asyncio
 import logging
+import sys
 from typing import List
 
 import discord.ext.commands
@@ -8,11 +9,9 @@ from discord.ext.commands import Context as Dctx
 
 import pipo
 import pipo.player
-import pipo.states.idle_state
 import pipo.states.disconnected_state
+import pipo.states.idle_state
 from pipo.config import settings
-
-logging.basicConfig(encoding="utf-8", level=settings.log_level)
 
 
 class Pipo(pipo.states.Context):
@@ -30,8 +29,9 @@ class Pipo(pipo.states.Context):
         self.voice_channel_id = None
 
         self._ffmpeg_options = {
-            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
             "options": "-vn",
+            "before_options":
+                "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
         }
 
         self.bot = bot
@@ -59,8 +59,8 @@ class Pipo(pipo.states.Context):
             while self.voice_client.is_playing() or self.voice_client.is_paused():
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except Exception:
-            self._logger.warn(
-                "Unable to play music in Discord voice channel.",
+            self._logger.warning(
+                "Unable to play music in Discord voice channel",
                 exc_info=True
             )
         finally:
@@ -97,7 +97,7 @@ class Pipo(pipo.states.Context):
     async def reboot(self, ctx: Dctx):
         await self._state.leave()  # transitions to Disconnected state
         self._logger.info("Rebooting...")
-        exit(0)
+        sys.exit(0)
 
     async def move_message(self, ctx: Dctx):
         msg = ctx.message

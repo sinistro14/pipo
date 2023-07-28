@@ -2,7 +2,7 @@
 import pytest
 
 import tests.constants
-from pipo.music_queue.local_music_queue import LocalMusicQueue
+from pipo.player.music_queue.local_music_queue import LocalMusicQueue
 
 
 class TestLocalMusicQueue:

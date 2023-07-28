@@ -3,19 +3,19 @@ import logging
 
 from discord.ext import commands
 
-from pipo.pipo import Pipo
-from pipo.config import settings
 from pipo.command import (
+    CommandQueue,
     Join,
-    Play,
-    Skip,
-    Stop,
     Leave,
     Pause,
+    Play,
     Reboot,
     Resume,
-    CommandQueue,
+    Skip,
+    Stop,
 )
+from pipo.config import settings
+from pipo.pipo import Pipo
 
 
 class MusicBot(commands.Cog):
@@ -43,7 +43,7 @@ class MusicBot(commands.Cog):
         help="Add bot to voice channel the user is in, or to a default one.",
     )
     async def join(self, ctx):
-        self._logger.info("Received discord command join.")
+        self._logger.info("Received discord command join")
         await self.command_queue.add(Join(self.pipo, ctx))
 
     @commands.command(
@@ -51,7 +51,7 @@ class MusicBot(commands.Cog):
         help="Remove bot from voice channel.",
     )
     async def leave(self, ctx):
-        self._logger.info("Received discord command leave.")
+        self._logger.info("Received discord command leave")
         await self.command_queue.add(Leave(self.pipo, ctx))
 
     @commands.command(
@@ -63,7 +63,7 @@ class MusicBot(commands.Cog):
         "-play [-q] [-s] <query> | <music_url> | <playlist_url>",
     )
     async def play(self, ctx, *query):
-        self._logger.info("Received discord command play.")
+        self._logger.info("Received discord command play")
         option = query[0]
         shuffle = len(query) > 1 and option == settings.commands.shuffle
         search = len(query) > 1 and option == settings.commands.search
@@ -73,7 +73,7 @@ class MusicBot(commands.Cog):
             query = " ".join(query[1:])
         else:
             option = ""
-        self._logger.info(f"Received play query '{query}' with option '{option}'")
+        self._logger.info("Received play query", extra=dict(query=query, option=option))
         await self.command_queue.add(Play(self.pipo, ctx, query, shuffle))
 
     @commands.command(
@@ -82,7 +82,7 @@ class MusicBot(commands.Cog):
         help="Clear all queued music and bot state.",
     )
     async def stop(self, ctx):
-        self._logger.info("Received discord command stop.")
+        self._logger.info("Received discord command stop")
         await self.command_queue.add(Stop(self.pipo, ctx))
 
     @commands.command(
@@ -91,7 +91,7 @@ class MusicBot(commands.Cog):
         help="Pause currently playing music.",
     )
     async def pause(self, ctx):
-        self._logger.info("Received discord command pause.")
+        self._logger.info("Received discord command pause")
         await self.command_queue.add(Pause(self.pipo, ctx))
 
     @commands.command(
@@ -100,7 +100,7 @@ class MusicBot(commands.Cog):
         help="Resume playing previously paused music.",
     )
     async def resume(self, ctx):
-        self._logger.info("Received discord command resume.")
+        self._logger.info("Received discord command resume")
         await self.command_queue.add(Resume(self.pipo, ctx))
 
     @commands.command(
@@ -109,10 +109,10 @@ class MusicBot(commands.Cog):
         help="Skip currently playing music.",
     )
     async def skip(self, ctx):
-        self._logger.info("Received discord command skip.")
+        self._logger.info("Received discord command skip")
         await self.command_queue.add(Skip(self.pipo, ctx))
 
     @commands.command(pass_context=True, brief="Restart bot.")
     async def reboot(self, ctx):
-        self._logger.info("Received discord command reboot.")
+        self._logger.info("Received discord command reboot")
         await self.command_queue.add(Reboot(self.pipo, ctx))

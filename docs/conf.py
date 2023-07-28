@@ -11,7 +11,9 @@ copyright = '2023, Tiago Gonçalves, André Gonçalves'
 author = 'Tiago Gonçalves, André Gonçalves'
 
 version = '0.0.1'
-release = '0.0.1'
+release = version
+
+nitpicky = True
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -25,6 +27,8 @@ extensions = [
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+add_function_parentheses = False
 
 language = 'en'
 
