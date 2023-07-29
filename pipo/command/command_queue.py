@@ -6,6 +6,7 @@ from pipo.command.command import Command
 
 
 class CommandQueue:
+    """Queue for asynchronous command execution."""
 
     _logger: logging.Logger
     __scheduled_tasks: Set[asyncio.Task]
@@ -14,11 +15,21 @@ class CommandQueue:
         self._logger = logging.getLogger(__name__)
         self.__scheduled_tasks = set()
 
-    async def add(self, command: Command) -> asyncio.Task:
+    async def add(self, command: Command) -> None:
+        """Add command to execute.
+
+        Create a task for command to be asynchronously executed.
+
+        Parameters
+        ----------
+        command : Command
+            Command to execute.
+        """
         task = asyncio.create_task(command.execute())
         self.__scheduled_tasks.add(task)
         task.add_done_callback(self.__scheduled_tasks.discard)
 
     def stop(self) -> None:
+        """Stop running tasks."""
         for task in self.__scheduled_tasks:
             task.cancel()

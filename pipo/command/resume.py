@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Resume(Command):
+    """Command to resume pause music."""
+
     bot: Pipo
     ctx: Dctx
 

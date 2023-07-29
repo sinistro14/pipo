@@ -1,1 +1,1 @@
-from .player import Player # noqa
+from .player import Player  # noqa

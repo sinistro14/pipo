@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Leave(Command):
+    """Command bot to leave server."""
+
     bot: Pipo
     ctx: Dctx
 

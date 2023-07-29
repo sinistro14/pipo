@@ -1,4 +1,5 @@
 #!usr/bin/env python3
+"""Music Player."""
 import asyncio
 import logging
 import multiprocessing.pool
@@ -35,7 +36,7 @@ class Player:
         Obtains source information required to play music.
     __player_thread : asyncio.Task
         Obtains and plays music from :attr:`~Player._music_queue`.
-    _music_queue: :class:`~pipo.player.music_queue.music_queue.MusicQueue`
+    _music_queue : :class:`~pipo.player.music_queue.music_queue.MusicQueue`
         Stores music to play.
     can_play : asyncio.Event
         Whether new music from queue can be played.
@@ -152,16 +153,12 @@ class Player:
             if shuffle:
                 random.shuffle(audio)
 
-            self.__logger.debug(
-                "Obtaining audio", extra=dict(audio=audio)
-            )
+            self.__logger.debug("Obtaining audio", extra=dict(audio=audio))
             for result in self.__audio_fetch_pool.imap(
                 Player.get_youtube_audio,
                 audio,
             ):
-                self.__logger.info(
-                    "Adding music", extra=dict(result=result)
-                )
+                self.__logger.info("Adding music", extra=dict(result=result))
                 if result:
                     self._music_queue.add(result)
 
@@ -199,14 +196,12 @@ class Player:
                 except asyncio.CancelledError:
                     self.__logger.info("Play music task cancelled", exc_info=True)
                 except Exception:
-                    self.__logger.warning(
-                        "Unable to play next music", exc_info=True
-                    )
+                    self.__logger.warning("Unable to play next music", exc_info=True)
                     await self.__bot.send_message(settings.player.messages.play_error)
             else:
                 self.__logger.info(
-                        "Unable to play next music, obtained invalid url",
-                        extra=dict(url=url),
+                    "Unable to play next music, obtained invalid url",
+                    extra=dict(url=url),
                 )
                 await self.__bot.send_message(settings.player.messages.play_error)
         self.can_play.set()
@@ -268,7 +263,7 @@ class Player:
             for attempt in range(settings.player.url_fetch.retries):
                 logging.getLogger(__name__).debug(
                     "Attempting to obtain youtube audio url",
-                    extra=dict(attempt=attempt, query=query)
+                    extra=dict(attempt=attempt, query=query),
                 )
                 try:
                     with YoutubeDL({"format": "bestaudio/best"}) as ydl:

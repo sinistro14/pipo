@@ -11,16 +11,16 @@ from pipo.config import settings
 def add_signal_handlers(loop: asyncio.AbstractEventLoop):
     """Add signal handlers to manage program execution."""
 
-    async def shutdown(sig: signal.Signals, loop: asyncio.AbstractEventLoop) -> None:
+    async def shutdown(loop: asyncio.AbstractEventLoop) -> None:
         """Cancel all running async tasks.
 
-        Defines shutdown sig catchers for asyncio.CancelledError,
-        so that any running task can perform necessary cleanup when it's cancelled.
+        Cancel running asyncio tasks, except this one, so they can perform necessary
+        cleanup when cancelled by processing an asyncio.CancelledError exception.
 
         Parameters
         ----------
-        sig : signal.Signals
-            Signal TODO
+        loop : asyncio.AbstractEventLoop
+            Loop from where tasks should cancelled.
         """
         tasks = []
         for task in asyncio.all_tasks(loop):
@@ -31,10 +31,7 @@ def add_signal_handlers(loop: asyncio.AbstractEventLoop):
         loop.stop()
 
     for sig in [signal.SIGINT, signal.SIGTERM, signal.SIGHUP]:
-        loop.add_signal_handler(
-            sig,
-            lambda x: asyncio.create_task(shutdown(x, loop))
-        )
+        loop.add_signal_handler(sig, asyncio.create_task(shutdown(loop)))
 
 
 async def main():

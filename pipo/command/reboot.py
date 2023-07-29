@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Reboot(Command):
+    """Command to reboot bot."""
+
     bot: Pipo
     ctx: Dctx
 

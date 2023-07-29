@@ -51,7 +51,7 @@ vulture:
 	-$(POETRY) run vulture
 
 .PHONY: lint
-lint: ruff black vulture
+lint: black ruff vulture
 
 .PHONY: test
 test:

@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Skip(Command):
+    """Command to skip current music."""
+
     bot: Pipo
     ctx: Dctx
 

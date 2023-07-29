@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Pause(Command):
+    """Command to pause music."""
+
     bot: Pipo
     ctx: Dctx
 

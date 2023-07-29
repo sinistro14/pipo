@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pipo"
-version = "0.0.1"
+version = "0.1.0"
 description = "Bot to play music in a discord channel"
 
 license = "MIT"
@@ -57,7 +57,7 @@ asyncio_mode = "auto"
 mock_use_standalone_module = true
 log_cli = true
 log_cli_level = "INFO"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.coverage.run]
@@ -87,9 +87,16 @@ select = [
     "C90",      #McCabe complexity
     "ASYNC",    #flake8-async
 ]
-extend-exclude = ["tests"]
+extend-exclude = [
+    "tests",
+    "*__main__.py",
+    "*__init__.py",
+]
 format = "grouped"
 line-length = 88
+ignore = [
+    "D100", # missing docstring in public module
+]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

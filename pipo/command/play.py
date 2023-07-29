@@ -9,6 +9,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Play(Command):
+    """Command to play music."""
+
     bot: Pipo
     ctx: Dctx
     query: List[str]

@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Join(Command):
+    """Command bot to join server."""
+
     bot: Pipo
     ctx: Dctx
 

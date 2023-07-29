@@ -25,8 +25,7 @@ class DisconnectedState(pipo.states.state.State):
                 channel=channel, self_mute=True, self_deaf=True
             )
             self._logger.info(
-                "Successfully joined channel",
-                extra=dict(channel=channel.name)
+                "Successfully joined channel", extra=dict(channel=channel.name)
             )
         except (asyncio.TimeoutError, discord.ClientException):
             self._logger.exception("Error while joining channel")

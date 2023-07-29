@@ -8,6 +8,8 @@ from pipo.pipo import Pipo
 
 @dataclass
 class Stop(Command):
+    """Command to stop music and clear queue."""
+
     bot: Pipo
     ctx: Dctx
 

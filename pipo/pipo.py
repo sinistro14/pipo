@@ -30,8 +30,9 @@ class Pipo(pipo.states.Context):
 
         self._ffmpeg_options = {
             "options": "-vn",
-            "before_options":
-                "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+            "before_options": (
+                "-reconnect 1 -reconnect_streamed 1" "-reconnect_delay_max 5"
+            ),
         }
 
         self.bot = bot
@@ -60,8 +61,7 @@ class Pipo(pipo.states.Context):
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except Exception:
             self._logger.warning(
-                "Unable to play music in Discord voice channel",
-                exc_info=True
+                "Unable to play music in Discord voice channel", exc_info=True
             )
         finally:
             self.player.can_play.set()
