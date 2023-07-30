@@ -23,7 +23,7 @@ class DisconnectedState(pipo.states.state.State):
 
     async def _join(self, ctx: Dctx) -> None:
         """Make bot connect to voice channel."""
-        self._logger.debug("Join requested", extra=dict(data=ctx.author.name))
+        self._logger.debug("Join requested from %s", ctx.author.name)
         if ctx.author.voice:
             channel = ctx.author.voice.channel
         else:
@@ -33,9 +33,7 @@ class DisconnectedState(pipo.states.state.State):
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )
-            self._logger.info(
-                "Successfully joined channel", extra=dict(data=channel.name)
-            )
+            self._logger.info("Successfully joined channel %s", channel.name)
         except (asyncio.TimeoutError, discord.ClientException):
             self._logger.exception("Error joining channel")
         finally:
@@ -68,17 +66,17 @@ class DisconnectedState(pipo.states.state.State):
         self.context.player.play(query, shuffle)
         self.context.transition_to(pipo.states.playing_state.PlayingState())
 
-    async def skip(self) -> None: # noqa: D102
+    async def skip(self) -> None:  # noqa: D102
         pass
 
-    async def leave(self) -> None: # noqa: D102
+    async def leave(self) -> None:  # noqa: D102
         pass
 
-    async def resume(self) -> None: # noqa: D102
+    async def resume(self) -> None:  # noqa: D102
         pass
 
-    async def stop(self) -> None: # noqa: D102
+    async def stop(self) -> None:  # noqa: D102
         pass
 
-    async def pause(self) -> None: # noqa: D102
+    async def pause(self) -> None:  # noqa: D102
         pass

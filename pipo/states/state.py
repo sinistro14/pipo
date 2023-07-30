@@ -25,7 +25,7 @@ class Context:
         """
         self._state = state
         self._state.context = self
-        self._logger.info("Current State", extra=dict(data=self._state.name))
+        self._logger.info("Current State %s", self._state.name)
 
 
 class State(ABC):

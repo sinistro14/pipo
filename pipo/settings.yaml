@@ -1,6 +1,6 @@
 default:
   log_level: INFO
-  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(data)s"
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   # Application name
   app:
   # Discord channel

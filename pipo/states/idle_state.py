@@ -75,13 +75,13 @@ class IdleState(pipo.states.state.State):
     async def join(self, ctx: Dctx) -> None:  # noqa: D102
         pass
 
-    async def skip(self) -> None: # noqa: D102
+    async def skip(self) -> None:  # noqa: D102
         pass
 
-    async def stop(self) -> None: # noqa: D102
+    async def stop(self) -> None:  # noqa: D102
         pass
 
-    async def pause(self) -> None: # noqa: D102
+    async def pause(self) -> None:  # noqa: D102
         pass
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:

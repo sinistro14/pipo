@@ -22,10 +22,10 @@ class PlayingState(pipo.states.state.State):
     def __init__(self):
         super().__init__("playing")
 
-    async def join(self, ctx: Dctx) -> None: # noqa: D102
+    async def join(self, ctx: Dctx) -> None:  # noqa: D102
         pass
 
-    async def resume(self) -> None: # noqa: D102
+    async def resume(self) -> None:  # noqa: D102
         pass
 
     async def stop(self) -> None:

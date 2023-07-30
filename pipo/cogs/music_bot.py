@@ -74,8 +74,9 @@ class MusicBot(commands.Cog):
         else:
             option = ""
         self._logger.info(
-            "Received play query",
-            extra=dict(data=dict(query=query, option=option)),
+            "Received play query %s with option %s",
+            query,
+            option,
         )
         await self.command_queue.add(Play(self.pipo, ctx, query, shuffle))
 
