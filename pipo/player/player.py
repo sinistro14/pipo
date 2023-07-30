@@ -132,7 +132,7 @@ class Player:
         shuffle : bool
             Randomize order by which queries are added to play queue.
         """
-        self.__logger.info("Processing music query", extra=dict(query=queries))
+        self.__logger.info("Processing music query", extra=dict(data=queries))
         for query in queries:
             if "list=" in query:  # check if playlist
                 with YoutubeDL({"extract_flat": True}) as ydl:
@@ -153,12 +153,12 @@ class Player:
             if shuffle:
                 random.shuffle(audio)
 
-            self.__logger.debug("Obtaining audio", extra=dict(audio=audio))
+            self.__logger.debug("Obtaining audio", extra=dict(data=audio))
             for result in self.__audio_fetch_pool.imap(
                 Player.get_youtube_audio,
                 audio,
             ):
-                self.__logger.info("Adding music", extra=dict(result=result))
+                self.__logger.info("Adding music", extra=dict(data=result))
                 if result:
                     self._music_queue.add(result)
 
@@ -187,7 +187,7 @@ class Player:
             self.can_play.clear()
             self.__logger.debug(
                 "Entered music play loop",
-                extra=dict(queue_size=self.queue_size()),
+                extra=dict(data=self.queue_size()),
             )
             url = self._music_queue.get()
             if url:
@@ -201,7 +201,7 @@ class Player:
             else:
                 self.__logger.info(
                     "Unable to play next music, obtained invalid url",
-                    extra=dict(url=url),
+                    extra=dict(data=url),
                 )
                 await self.__bot.send_message(settings.player.messages.play_error)
         self.can_play.set()
@@ -256,14 +256,14 @@ class Player:
         if not query.startswith(("http", "https")):
             query = Player.get_youtube_url_from_query(query)
         logging.getLogger(__name__).debug(
-            "Trying to obtain youtube audio url", extra=dict(query=query)
+            "Trying to obtain youtube audio url", extra=dict(data=query)
         )
         url = None
         if query:
             for attempt in range(settings.player.url_fetch.retries):
                 logging.getLogger(__name__).debug(
                     "Attempting to obtain youtube audio url",
-                    extra=dict(attempt=attempt, query=query),
+                    extra=dict(data=dict(attempt=attempt, query=query)),
                 )
                 try:
                     with YoutubeDL({"format": "bestaudio/best"}) as ydl:
@@ -273,16 +273,16 @@ class Player:
                 except Exception:
                     logging.getLogger(__name__).warning(
                         "Unable to obtain audio url",
-                        extra=dict(query=query),
+                        extra=dict(data=query),
                         exc_info=True,
                     )
                 if url:
                     logging.getLogger(__name__).info(
-                        "Obtained audio url", extra=dict(url=url)
+                        "Obtained audio url", extra=dict(data=url)
                     )
                     return url
                 time.sleep(settings.player.url_fetch.wait)
         logging.getLogger(__name__).warning(
-            "Unable to obtain audio url", extra=dict(query=query)
+            "Unable to obtain audio url", extra=dict(data=query)
         )
         return None
