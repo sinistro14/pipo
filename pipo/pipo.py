@@ -30,9 +30,7 @@ class Pipo(pipo.states.Context):
 
         self._ffmpeg_options = {
             "options": "-vn",
-            "before_options": (
-                "-reconnect 1 -reconnect_streamed 1" "-reconnect_delay_max 5"
-            ),
+            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
         }
 
         self.bot = bot

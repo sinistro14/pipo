@@ -7,6 +7,7 @@ from discord.ext.commands import Context as Dctx
 import pipo.states.idle_state
 import pipo.states.playing_state
 import pipo.states.state
+from pipo.config import settings
 
 
 class DisconnectedState(pipo.states.state.State):
@@ -22,14 +23,14 @@ class DisconnectedState(pipo.states.state.State):
         super().__init__("disconnected")
 
     async def _join(self, ctx: Dctx) -> None:
-        """Make bot connect to voice channel."""
+        """Connect bot to voice channel."""
         self._logger.debug("Join requested from %s", ctx.author.name)
         if ctx.author.voice:
             channel = ctx.author.voice.channel
         else:
             channel = self.context.bot.get_channel(self.context.voice_channel_id)
         try:
-            await channel.connect()
+            await channel.connect(timeout=settings.player.idle_timeout, reconnect=True)
             await ctx.guild.change_voice_state(
                 channel=channel, self_mute=True, self_deaf=True
             )

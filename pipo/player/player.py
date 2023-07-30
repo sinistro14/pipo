@@ -158,8 +158,9 @@ class Player:
                 Player.get_youtube_audio,
                 audio,
             ):
-                self.__logger.info("Adding music %s", result)
+                self.__logger.debug("Trying to add music %s", result)
                 if result:
+                    self.__logger.info("Added music %s", result)
                     self._music_queue.add(result)
 
     def _start_music_queue(self) -> None:
