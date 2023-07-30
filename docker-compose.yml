@@ -12,3 +12,9 @@ services:
     env_file: .env
     networks:
       - backend
+    deploy:
+      resources:
+        reservations:
+          memory: 250M
+        limits:
+          memory: 400M
