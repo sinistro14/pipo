@@ -2,35 +2,69 @@ from typing import List
 
 from discord.ext.commands import Context as Dctx
 
-import pipo.states.state
-import pipo.states.idle_state
 import pipo.states.disconnected_state
+import pipo.states.idle_state
+import pipo.states.state
 
 
 class PlayingState(pipo.states.state.State):
+    """Bot playing state.
+
+    Bot state while playing music in a voice channel.
+    Can process commands:
+        * :meth:`leave`
+        * :meth:`play`
+        * :meth:`stop`
+        * :meth:`skip`
+        * :meth:`pause`
+    """
+
     def __init__(self):
         super().__init__("playing")
 
-    async def join(self, ctx: Dctx) -> None:
+    async def join(self, ctx: Dctx) -> None:  # noqa: D102
         pass
 
-    async def resume(self) -> None:
+    async def resume(self) -> None:  # noqa: D102
         pass
 
     async def stop(self) -> None:
-        await self.context._player.stop()
+        """Reset music queue and halt currently playing audio.
+
+        Music is stopped and bot transition to Idle State.
+        """
+        self.context.player.stop()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def pause(self) -> None:
-        await self.context._player.pause()
+        """Pause currently playing music.
+
+        Pause currently playing music and transition to Idle State.
+        """
+        self.context.player.pause()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def leave(self) -> None:
-        await self.context._player.leave()
+        """Make bot leave the current server.
+
+        Bot leaves server and transition to Disconnected State.
+        """
+        await self.context.player.leave()
         self.context.transition_to(pipo.states.disconnected_state.DisconnectedState())
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
-        await self.context._player.play(query, shuffle)
+        """Add music to play.
+
+        Parameters
+        ----------
+        ctx : Dctx
+            Bot context.
+        query : List[str]
+            Music to play.
+        shuffle : bool, optional
+            Randomize play order when multiple musics are provided.
+        """
+        self.context.player.play(query, shuffle)
 
     async def skip(self) -> None:
         """Skip currently playing music.
@@ -38,4 +72,4 @@ class PlayingState(pipo.states.state.State):
         Skips currently playing music by stopping the voice client, currently playing
         the music.
         """
-        self.context._voice_client.stop()
+        self.context.player.skip()

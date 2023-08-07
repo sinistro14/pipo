@@ -1,18 +1,20 @@
-from typing import Iterable
 from dataclasses import dataclass
+from typing import List
 
 from discord.ext.commands import Context as Dctx
 
-from pipo.pipo import Pipo
 from pipo.command.command import Command
+from pipo.pipo import Pipo
 
 
 @dataclass
 class Play(Command):
+    """Command to play music."""
+
     bot: Pipo
     ctx: Dctx
-    query: Iterable[str]
+    query: List[str]
     shuffle: bool
 
-    async def execute(self) -> None:
+    async def _execute(self) -> None:
         await self.bot.play(self.ctx, self.query, self.shuffle)

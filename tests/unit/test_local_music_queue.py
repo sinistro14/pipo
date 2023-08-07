@@ -2,7 +2,7 @@
 import pytest
 
 import tests.constants
-from pipo.music_queue.local_music_queue import LocalMusicQueue
+from pipo.player.music_queue.local_music_queue import LocalMusicQueue
 
 
 class TestLocalMusicQueue:
@@ -74,7 +74,7 @@ class TestLocalMusicQueue:
     @pytest.mark.parametrize(
         "musics",
         [
-            tests.constants.MUSIC_SIMPLE_LIST_2,
+            tests.constants.MUSIC_SIMPLE_LIST_3,
             tests.constants.MUSIC_COMPLEX_LIST_1,
         ],
     )

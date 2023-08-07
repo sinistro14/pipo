@@ -3,17 +3,30 @@ from typing import List
 
 from discord.ext.commands import Context as Dctx
 
-import pipo.states.state
-import pipo.states.playing_state
 import pipo.states.disconnected_state
+import pipo.states.playing_state
+import pipo.states.state
 from pipo.config import settings
 
 
 class IdleState(pipo.states.state.State):
-    """Time aware idle state.
+    """Bot idle state.
 
-    State allowing play, resume and leave functionality.
-    After initialization starts an internal timeout for migration to Disconnected state.
+    Starts an internal timeout for migration to Disconnected state.
+    Cancelled if a play command is received.
+    Can process commands:
+        * :meth:`play`
+        * :meth:`leave`
+        * :meth:`resume`
+
+    Attributes
+    ----------
+    _idle_timeout : int
+        Time in seconds before timeout.
+    idle_tracker : asyncio.Future
+        Task tracking passed time.
+    cancel_event : asyncio.Event
+        Event blocking transition to Disconnected until :attr:`idle_tracker` timeout.
     """
 
     _idle_timeout: int
@@ -27,11 +40,13 @@ class IdleState(pipo.states.state.State):
         self._start_idle_tracker()
 
     def _start_idle_tracker(self):
+        """Initialize idle timeout tracker."""
         self.idle_tracker = asyncio.ensure_future(
             self._idle_tracker_task(self.cancel_event)
         )
 
     async def _stop_idle_tracker(self):
+        """Stop idle timeout tracker."""
         if self.idle_tracker:
             self.cancel_event.set()
             await self.idle_tracker
@@ -44,33 +59,60 @@ class IdleState(pipo.states.state.State):
             self.context.transition_to(
                 pipo.states.disconnected_state.DisconnectedState()
             )
-            await self.context._music_channel.send(settings.player.messages.disconnect)
-            await self.context._voice_client.disconnect()
+            await self.context.music_channel.send(settings.player.messages.disconnect)
+            await self.context.voice_client.disconnect()
+        except asyncio.CancelledError:
+            self._logger.info("Cancelling idle tracker task", exc_info=True)
 
     async def _clean_transition_to(self, state: pipo.states.state.State) -> None:
+        """Orderly transition to a new state.
+
+        Ensures idle timeout tracker is stopped before transitioning to new state.
+        """
         await self._stop_idle_tracker()
         self.context.transition_to(state)
 
-    async def join(self, ctx: Dctx) -> None:
+    async def join(self, ctx: Dctx) -> None:  # noqa: D102
         pass
 
-    async def skip(self) -> None:
+    async def skip(self) -> None:  # noqa: D102
         pass
 
-    async def stop(self) -> None:
+    async def stop(self) -> None:  # noqa: D102
         pass
 
-    async def pause(self) -> None:
+    async def pause(self) -> None:  # noqa: D102
         pass
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool) -> None:
-        await self.context._player.play(query, shuffle)
+        """Add music to play.
+
+        Add music and transition to Playing State.
+
+        Parameters
+        ----------
+        ctx : Dctx
+            Bot context.
+        query : List[str]
+            Music to play.
+        shuffle : bool, optional
+            Randomize play order when multiple musics are provided.
+        """
+        self.context.player.play(query, shuffle)
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())
 
     async def leave(self) -> None:
-        await self.context._voice_client.disconnect()
+        """Make bot leave the current server.
+
+        Bot leaves server and transition to Disconnected State.
+        """
+        await self.context.voice_client.disconnect()
         self.context.transition_to(pipo.states.disconnected_state.DisconnectedState())
 
     async def resume(self) -> None:
-        await self.context._player.resume()
+        """Resume previously paused music.
+
+        Resume music and transition to Playing State.
+        """
+        self.context.player.resume()
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())

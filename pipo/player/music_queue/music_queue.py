@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Union, Iterable, Optional
+from typing import Any, Iterable, Optional, Union
 
 
 class MusicQueue(ABC):

@@ -1,3 +1,7 @@
+"""Common configuration.
+
+Load importable settings from configuration files.
+"""
 import os
 
 from dynaconf import Dynaconf, Validator

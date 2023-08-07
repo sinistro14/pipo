@@ -32,7 +32,7 @@ make image
 ## How to run
 After docker and docker compose one may run:
 
-### Containarized application (Docker)
+### Containerized application (Docker)
 Before running more commands, please make sure file '.env' was created in accordance with the available [example](.env.example).
 
 Start a single container with
