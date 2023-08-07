@@ -57,8 +57,14 @@ dist:
 image:
 	docker build . -t $(APP):latest
 
+dev_image:
+	docker build . --target development -t $(APP)-dev:latest
+
 run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
+
+run_dev_image: dev_image
+	docker run --name $(APP)-dev --env-file .env $(APP)-dev:latest
 
 run_app:
 	docker compose up -d --build
