@@ -2,15 +2,7 @@
 """Music Player."""
 import asyncio
 import logging
-import multiprocessing.pool
-import random
-import re
-import time
-from functools import lru_cache
-from typing import List, Optional, Union
-
-import requests
-from yt_dlp import YoutubeDL
+from typing import List, Union
 
 from pipo.config import settings
 from pipo.player.music_queue.music_queue import MusicQueue
@@ -32,8 +24,6 @@ class Player:
         Client Discord bot.
     __logger : logging.Logger
         Class logger.
-    __audio_fetch_pool : multiprocessing.pool.ThreadPool
-        Obtains source information required to play music.
     __player_thread : asyncio.Task
         Obtains and plays music from :attr:`~Player._music_queue`.
     _music_queue : :class:`~pipo.player.music_queue.music_queue.MusicQueue`
@@ -44,7 +34,6 @@ class Player:
 
     __bot: None
     __logger: logging.Logger
-    __audio_fetch_pool: multiprocessing.pool.ThreadPool
     __player_thread: asyncio.Task
     _music_queue: MusicQueue
     can_play: asyncio.Event
@@ -62,9 +51,6 @@ class Player:
         self.__player_thread = None
         self.can_play = asyncio.Event()
         self._music_queue = MusicQueueFactory.get(settings.player.queue.type)
-        self.__audio_fetch_pool = multiprocessing.pool.ThreadPool(
-            processes=settings.player.url_fetch.pool_size
-        )
 
     def stop(self) -> None:
         """Reset music queue and halt currently playing audio."""
@@ -133,35 +119,10 @@ class Player:
             Randomize order by which queries are added to play queue.
         """
         self.__logger.info("Processing music query %s", queries)
-        for query in queries:
-            if "list=" in query:  # check if playlist
-                with YoutubeDL({"extract_flat": True}) as ydl:
-                    playlist_id = ydl.extract_info(url=query, download=False).get("id")
-                    playlist_url = (
-                        f"https://www.youtube.com/playlist?list={playlist_id}"
-                    )
-                    audio = [
-                        url.get("url")
-                        for url in ydl.extract_info(
-                            url=playlist_url, download=False
-                        ).get("entries")
-                    ]
-            else:
-                audio = [  # noqa
-                    query,
-                ]
-            if shuffle:
-                random.shuffle(audio)
-
-            self.__logger.debug("Obtaining audio %s", audio)
-            for result in self.__audio_fetch_pool.imap(
-                Player.get_youtube_audio,
-                audio,
-            ):
-                self.__logger.debug("Trying to add music %s", result)
-                if result:
-                    self.__logger.info("Added music %s", result)
-                    self._music_queue.add(result)
+        self._music_queue.add(
+            queries,
+            shuffle,
+        )  # source_type) TODO decide how to use
 
     def _start_music_queue(self) -> None:
         """Initialize music thread.
@@ -174,6 +135,10 @@ class Player:
     def __clear_queue(self) -> None:
         """Clear music queue."""
         self._music_queue.clear()
+
+    async def _submit_music(self, url: str) -> None:
+        # TODO consider raised exceptions
+        await self.__bot.submit_music(url)
 
     async def __play_music_queue(self) -> None:
         """Play music task.
@@ -204,77 +169,3 @@ class Player:
         self.can_play.set()
         self.__logger.info("Exiting play music queue loop")
         self.__bot.become_idle()
-
-    @staticmethod
-    def get_youtube_url_from_query(query: str) -> Optional[str]:
-        """Get youtube video url based on search query.
-
-        Perform a youtube query to obtain the related with the most views.
-
-        Parameters
-        ----------
-        query : str
-            Word query to search.
-
-        Returns
-        -------
-        Optional[str]
-            Youtube video url best matching query, None if no video found.
-        """
-        url = None
-        if query:
-            query = query.replace(" ", "+").encode("ascii", "ignore").decode()
-            with requests.get(
-                f"https://www.youtube.com/results?search_query={query}",
-                timeout=settings.player.url_fetch.timeout,
-            ) as response:
-                video_ids = re.findall(r"watch\?v=(\S{11})", response.text)
-                url = f"https://www.youtube.com/watch?v={video_ids[0]}"
-        return url
-
-    @staticmethod
-    @lru_cache(maxsize=settings.player.url_fetch.max_cache_size)
-    def get_youtube_audio(query: str) -> Optional[str]:
-        """Obtain a youtube audio url.
-
-        Given a query or a youtube url obtains the best quality audio url.
-        Retries fetching audio url in case of error waiting between attempts.
-
-        Parameters
-        ----------
-        query : str
-            Youtube video url or query.
-
-        Returns
-        -------
-        Optional[str]
-            Youtube audio url or None if no audio url was found.
-        """
-        if not query.startswith(("http", "https")):
-            query = Player.get_youtube_url_from_query(query)
-        logging.getLogger(__name__).debug(
-            "Trying to obtain youtube audio url %s", query
-        )
-        url = None
-        if query:
-            for attempt in range(settings.player.url_fetch.retries):
-                logging.getLogger(__name__).debug(
-                    "Attempting %s to obtain youtube audio url %s", attempt, query
-                )
-                try:
-                    with YoutubeDL({"format": "bestaudio/best"}) as ydl:
-                        url = ydl.extract_info(url=query, download=False).get(
-                            "url", None
-                        )
-                except Exception:
-                    logging.getLogger(__name__).warning(
-                        "Unable to obtain audio url %s",
-                        query,
-                        exc_info=True,
-                    )
-                if url:
-                    logging.getLogger(__name__).info("Obtained audio url %s", url)
-                    return url
-                time.sleep(settings.player.url_fetch.wait)
-        logging.getLogger(__name__).warning("Unable to obtain audio url %s", query)
-        return None

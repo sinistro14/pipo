@@ -1,6 +1,7 @@
 #!usr/bin/env python3
 
 ### MusicQueue  ###
+TIME_TO_FETCH_MUSIC = 6 # seconds
 EMPTY_MUSIC = ""
 MUSIC_1 = "a"
 MUSIC_2 = "b"
@@ -66,7 +67,9 @@ PLAYLIST_SOURCE_3 = (
     "https://www.youtube.com/playlist?list=PLh_2AL0cs37xUwRGScAmHpCY_vxKlgqRB"
 )
 PLAYLIST_3 = "https://www.youtube.com/watch?v=_-uMPb63e8U&list=PLh_2AL0cs37xUwRGScAmHpCY_vxKlgqRB"
-
+QUERY_0 = ""
+QUERY_1 = "yellow"
+QUERY_2 = "submarine"
 
 ### States ###
 IDLE_TIMEOUT = 2

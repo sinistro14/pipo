@@ -27,12 +27,6 @@ class Pipo(pipo.states.Context):
         self._logger = logging.getLogger(__name__)
         self.channel_id = None
         self.voice_channel_id = None
-
-        self._ffmpeg_options = {
-            "options": "-vn",
-            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
-        }
-
         self.bot = bot
         self.voice_client = None
         self.music_channel = None
@@ -54,7 +48,9 @@ class Pipo(pipo.states.Context):
 
     async def submit_music(self, url: str) -> None:  # noqa
         try:
-            self.voice_client.play(discord.FFmpegPCMAudio(url, **self._ffmpeg_options))
+            self.voice_client.play(
+                discord.FFmpegPCMAudio(url, **settings.pipo.ffmpeg_config)
+            )
             while self.voice_client.is_playing() or self.voice_client.is_paused():
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except Exception:

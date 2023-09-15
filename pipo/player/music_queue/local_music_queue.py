@@ -1,8 +1,9 @@
-import random
-import threading
-from typing import Any, Iterable, List, Optional, Union
+import multiprocessing
+import queue
+from typing import Any, Iterable, Optional
 
 from pipo.config import settings
+from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.music_queue.music_queue import MusicQueue
 
 
@@ -15,46 +16,58 @@ class LocalMusicQueue(MusicQueue):
     ----------
     __lock : threading.Lock
         Controls queue altering methods.
-    __music_queue : List[str]
-        Stores queue music items.
     """
 
-    __lock: threading.Lock
-    __music_queue: List[str]
+    _audio_fetch_queue: multiprocessing.Queue
+    _audio_queue: multiprocessing.Queue
 
     def __init__(self) -> None:
-        super().__init__()
-        self.__lock = threading.Lock()
-        self.__music_queue = []
-
-    def add(self, music: Union[str, Iterable[str]]) -> None:
-        """Add item to queue."""
-        music = (
-            [
-                music,
-            ]
-            if isinstance(music, str)
-            else music
+        audio_fetch_queue = multiprocessing.Queue()
+        audio_queue = multiprocessing.Queue()
+        super().__init__(
+            settings.player.queue.local.prefetch_limit,
+            audio_fetch_queue,
+            audio_queue,
         )
-        with self.__lock:
-            self.__music_queue.extend(music)
 
-    def get(self) -> Optional[str]:
+    def _add(self, music: str) -> None:
+        """Add item to queue."""
+        self._audio_queue.put_nowait(music)
+
+    def _get(self) -> Optional[str]:
         """Get queue item."""
-        with self.__lock:
-            try:
-                return self.__music_queue.pop(0)
-            except IndexError:
-                self._logger.exception("Music queue may be empty")
+        try:
+            return self._audio_queue.get_nowait() # FIXME check empty answer exception
+        except queue.Empty:
+            self._logger.exception("Music queue is empty")
         return None
 
+    def _submit_fetch(self, sources: Iterable[SourcePair]) -> None:
+        for source in sources:
+            self._audio_fetch_queue.put_nowait(source)
+
+    def _clear(self) -> None:
+        """Clear queue."""
+        try:
+            while True:
+                self._audio_fetch_queue.get_nowait()
+        except queue.Empty:
+            self._logger.info("Music fetch queue was cleaned.")
+
+        try:
+            while True:
+                self._audio_queue.get_nowait()
+        except queue.Empty:
+            self._logger.info("Music queue was cleaned.")
+
     def get_all(self) -> Any:
-        """Get queues."""
-        return self.__music_queue
+        """Get enqueued music."""
+        return self._audio_queue
 
     def size(self) -> int:
         """Queue size.
 
+        Sum of enqueued and yet to process music.
         Estimates queue size calculating the average of several samples, solving method
         correctness issues without locks.
 
@@ -63,20 +76,9 @@ class LocalMusicQueue(MusicQueue):
         int
             Queue size.
         """
-        if self.__music_queue:
-            sizes = [
-                len(self.__music_queue)
-                for _ in range(settings.player.queue.local.size_check_iterations)
-            ]
-            return round(sum(sizes) / len(sizes))
-        return 0
-
-    def clear(self) -> None:
-        """Clear queue."""
-        with self.__lock:
-            self.__music_queue = []
-
-    def shuffle(self) -> None:
-        """Shuffle queue."""
-        with self.__lock:
-            random.shuffle(self.__music_queue)
+        size = 0
+        if self._audio_fetch_queue:
+            size += self._audio_fetch_queue.qsize()
+        if self._audio_queue:
+            size += self._audio_queue.qsize()
+        return size

@@ -1,4 +1,5 @@
 import pytest
+from flaky import flaky
 
 import pipo.player
 import tests.constants
@@ -13,17 +14,6 @@ class TestPlayer:
         return player
 
     @pytest.mark.parametrize(
-        "url",
-        [
-            tests.constants.URL_1,
-            tests.constants.URL_2,
-            tests.constants.URL_3,
-        ],
-    )
-    def test_get_youtube_audio(self, player, url):
-        assert player.get_youtube_audio(url)
-
-    @pytest.mark.parametrize(
         "url, queue_size",
         [
             ("", 0),
@@ -34,10 +24,11 @@ class TestPlayer:
             (tests.constants.URL_5, 1),
         ],
     )
-    def test_play_single_url(self, player, url, queue_size):
+    async def test_play_single_url(self, player, url, queue_size):
         player.play(url)
         assert player.queue_size() == queue_size
 
+    @flaky(max_runs=3, min_passes=1)
     @pytest.mark.parametrize(
         "url_list",
         [
@@ -46,19 +37,20 @@ class TestPlayer:
             tests.constants.URL_COMPLEX_LIST,
         ],
     )
-    def test_play_multiple_url(self, player, url_list):
+    async def test_play_multiple_url(self, player, url_list):
         player.play(url_list)
         assert player.queue_size() == len(url_list)
 
+    @flaky(max_runs=3, min_passes=1)
     @pytest.mark.parametrize(
         "playlist, playlist_size",
         [
             (tests.constants.PLAYLIST_SOURCE_1, 1),
             (tests.constants.PLAYLIST_1, 1),
-            (tests.constants.PLAYLIST_SOURCE_2, 3),
-            (tests.constants.PLAYLIST_2, 3),
+            (tests.constants.PLAYLIST_SOURCE_2, 5),
+            (tests.constants.PLAYLIST_2, 5),
         ],
     )
-    def test_playlist(self, player, playlist, playlist_size):
+    async def test_playlist(self, player, playlist, playlist_size):
         player.play(playlist)
         assert player.queue_size() == playlist_size

@@ -38,4 +38,4 @@ class PipoBot(commands.Bot):
 
     async def on_ready(self):
         """Triggered when bot reaches a stable functionality state."""
-        self._logger.info("Pipo do Arraial is ready")
+        self._logger.info("Bot is ready")

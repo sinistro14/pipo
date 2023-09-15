@@ -16,6 +16,9 @@ default:
   pipo:
     move_message_delay: 0.3       # seconds
     check_if_playing_frequency: 3 # seconds
+    ffmpeg_config:
+      options: "-vn"
+      before_options: "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
   player:
     messages:
       play_error: Unable to play next music. Skipping.
@@ -25,10 +28,11 @@ default:
       type: local
       default: local
       local:
+        prefetch_limit: 10
         size_check_iterations: 3
     url_fetch:
       timeout: 600 # seconds
       max_cache_size: 64
-      pool_size: 8
+      pool_size: 1
       retries: 3
       wait: 1
