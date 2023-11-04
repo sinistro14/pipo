@@ -73,9 +73,17 @@ dist:
 image: docs
 	docker build . -t $(APP):latest
 
+.PHONY: dev_image
+dev_image:
+	docker build . --target development -t $(APP)-dev:latest
+
 .PHONY: run_image
 run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
+
+.PHONY: run_dev_image
+run_dev_image: dev_image
+	docker run --name $(APP)-dev --env-file .env $(APP)-dev:latest
 
 .PHONY: run_app
 run_app: docs
