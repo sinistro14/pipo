@@ -1,4 +1,4 @@
-FROM python:3.9.16-alpine as base
+FROM python:3.9.16-slim-bullseye as base
 
     # python
 ENV APP_NAME="pipo" \
@@ -35,27 +35,34 @@ ENV APP_NAME="pipo" \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # install required system dependencies
-RUN apk update \
-    && apk upgrade \
-    && apk --no-cache add ffmpeg \
-    && pip3 install --upgrade pip setuptools wheel
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get --no-install-recommends install -y \
+        ffmpeg \
+    && pip3 install --upgrade pip setuptools wheel \
+    && apt-get clean
+
 
 # `builder-base` stage is used to build deps + create virtual environment
+#FROM base as builder-base
 FROM base as builder-base
 
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
-RUN apk update \
-    && apk upgrade \
-    && apk --no-cache add \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends -y \
         make \
-        gcc \
+        build-essential \
         libc-dev \
-        libressl-dev \
+        libssl-dev \
         # discord.py[voice] dependencies
         python3-dev \
         libffi-dev \
-        libsodium-dev \
-    && pip3 install --ignore-installed distlib --disable-pip-version-check poetry==$POETRY_VERSION
+        libnacl-dev \
+    && apt-get clean \
+    && pip3 install --ignore-installed distlib --disable-pip-version-check \
+        cryptography==3.4.6 \
+        poetry==$POETRY_VERSION
 
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
@@ -63,18 +70,6 @@ COPY pyproject.toml ./
 
 # install runtime dependencies, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
 RUN poetry install --without dev
-
-# `development` image used for runtime
-FROM builder-base as development
-
-# install runtime dependencies, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
-RUN poetry install
-
-COPY . /${APP_NAME}/
-
-WORKDIR $APP_NAME
-
-CMD /bin/sh
 
 
 # `production` image used for runtime
@@ -86,11 +81,9 @@ ENV ENV=production \
     USER_UID=1000
 ENV USER_GID=$USER_UID
 
-# RUN adduser -u $USER_UID -G $USER_GID $USERNAME
-# RUN adduser -u $USER_UID -G $USER_GID $USERNAME
-# RUN addgroup -g $USER_GID $USERNAME \
-#     && adduser -u $USER_UID -G $USER_GID $USERNAME
-# USER $USERNAME
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
