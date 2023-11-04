@@ -30,7 +30,7 @@ class TestDisconnectedState:
         await initial_state.skip()
         await initial_state.leave()
         await initial_state.resume()
-        await initial_state.stop()
+        await initial_state.clear()
         await initial_state.pause()
         assert context == initial_state.context
 

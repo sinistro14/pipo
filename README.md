@@ -47,7 +47,3 @@ make run_app
 
 ## License
 This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## Disclaimer
-This software was develop as a code challenge for Codacy, therefore,
-no enterprise level reliability assurances can be provided.

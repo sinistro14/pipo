@@ -1,6 +1,7 @@
 #!usr/bin/env python3
 """Music Player."""
 import asyncio
+import hashlib
 import logging
 from typing import List, Union
 
@@ -52,12 +53,14 @@ class Player:
         self.can_play = asyncio.Event()
         self._music_queue = MusicQueueFactory.get(settings.player.queue.type)
 
-    def stop(self) -> None:
+    def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""
+        self.__logger.info("Clearing Player state...")
         self.__clear_queue()
         self.__player_thread.cancel()
         self.__bot.voice_client.stop()
         self.can_play.set()
+        self.__logger.info("Clearing operation completed")
 
     def skip(self) -> None:
         """Skip currently playing music."""
@@ -149,23 +152,41 @@ class Player:
         self.__logger.info("Entering music play loop")
         while await self.can_play.wait():
             if not self.queue_size():
-                break
+                pass
+                # self.__logger.info("Breaking music play loop due to empty queue")
+                # break if needed
             self.can_play.clear()
-            self.__logger.debug("Entered music play loop %s", self.queue_size())
+            self.__logger.debug("Music queue size: %s", self.queue_size())
             url = self._music_queue.get()
+            self.__logger.info(
+                "Obtained music from queue %s",
+                hashlib.sha1(url.encode(), usedforsecurity=False).hexdigest(),
+            )
             if url:
                 try:
+                    self.__logger.info(
+                        "Submitting music %s",
+                        hashlib.sha1(url.encode(), usedforsecurity=False).hexdigest(),
+                    )
                     await self.__bot.submit_music(url)
                 except asyncio.CancelledError:
                     self.__logger.info("Play music task cancelled", exc_info=True)
                 except Exception:
                     self.__logger.warning("Unable to play next music", exc_info=True)
                     await self.__bot.send_message(settings.player.messages.play_error)
+            # FIXME possible race check condition, None could be returned due to
+            # empty queue and still not enter this condition
+            elif not self.queue_size():
+                self.__logger.info("Breaking music play loop due to empty queue")
+                break
             else:
                 self.__logger.info(
-                    "Unable to play next music, obtained invalid url %s", url
+                    "Unable to play next music, obtained invalid url '%s'", url
                 )
                 await self.__bot.send_message(settings.player.messages.play_error)
+            self.__logger.debug(
+                "Will wait for playing music to complete or exit if queue is empty"
+            )
         self.can_play.set()
         self.__logger.info("Exiting play music queue loop")
         self.__bot.become_idle()

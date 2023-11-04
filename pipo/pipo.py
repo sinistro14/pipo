@@ -76,8 +76,8 @@ class Pipo(pipo.states.Context):
         await self._state.resume()
         await self.move_message(ctx)
 
-    async def stop(self, ctx: Dctx):
-        await self._state.stop()
+    async def clear(self, ctx: Dctx):
+        await self._state.clear()
         await self.move_message(ctx)
 
     async def leave(self, ctx: Dctx):

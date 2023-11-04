@@ -1,7 +1,7 @@
 #!usr/bin/env python3
 
 ### MusicQueue  ###
-TIME_TO_FETCH_MUSIC = 6 # seconds
+TIME_TO_FETCH_MUSIC = 8  # seconds
 EMPTY_MUSIC = ""
 MUSIC_1 = "a"
 MUSIC_2 = "b"

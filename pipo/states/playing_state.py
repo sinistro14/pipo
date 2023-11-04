@@ -28,12 +28,12 @@ class PlayingState(pipo.states.state.State):
     async def resume(self) -> None:  # noqa: D102
         pass
 
-    async def stop(self) -> None:
+    async def clear(self) -> None:
         """Reset music queue and halt currently playing audio.
 
         Music is stopped and bot transition to Idle State.
         """
-        self.context.player.stop()
+        self.context.player.clear()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def pause(self) -> None:

@@ -21,7 +21,9 @@ class YoutubeHandler(BaseHandler):
 
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):
-            logging.getLogger(__name__).info("Processing youtube audio source %s", source)
+            logging.getLogger(__name__).info(
+                "Processing youtube audio source %s", source
+            )
             return SourcePair(query=source, handler_type=YoutubeHandler.name)
         else:
             return super().handle(source)
@@ -32,26 +34,28 @@ class YoutubeHandler(BaseHandler):
         if "list=" in query:  # check if playlist
             with YoutubeDL({"extract_flat": True}) as ydl:
                 playlist_id = ydl.extract_info(url=query, download=False).get("id")
-                playlist_url = (
-                    f"https://www.youtube.com/playlist?list={playlist_id}"
-                )
+                playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
                 audio = [
                     url.get("url")
-                    for url in ydl.extract_info(
-                        url=playlist_url, download=False
-                    ).get("entries")
+                    for url in ydl.extract_info(url=playlist_url, download=False).get(
+                        "entries"
+                    )
                 ]
-                parsed_query = [SourcePair(entry, YoutubeHandler.name) for entry in audio]
+                parsed_query = [
+                    SourcePair(entry, YoutubeHandler.name) for entry in audio
+                ]
         else:
             parsed_query = [  # noqa
-                query,
+                SourcePair(query, YoutubeHandler.name),
             ]
         return parsed_query
 
     @staticmethod
     def fetch(source: str) -> Optional[str]:
         if YoutubeHandler.__valid_source(source):
-            logging.getLogger(__name__).info("Processing youtube audio source %s", source)
+            logging.getLogger(__name__).info(
+                "Processing youtube audio source %s", source
+            )
             return YoutubeHandler.get_audio(source)
         return None
 
@@ -93,8 +97,10 @@ class YoutubeHandler(BaseHandler):
                         exc_info=True,
                     )
                 if url:
-                    logging.getLogger(__name__).debug("Obtained audio url %s", url)
-                    logging.getLogger(__name__).info("Obtained audio url for query %s", query)
+                    logging.getLogger(__name__).debug("Obtained audio url '%s'", url)
+                    logging.getLogger(__name__).info(
+                        "Obtained audio url for query '%s'", query
+                    )
                     return url
                 time.sleep(settings.player.url_fetch.wait)
         logging.getLogger(__name__).warning("Unable to obtain audio url %s", query)

@@ -78,7 +78,7 @@ class IdleState(pipo.states.state.State):
     async def skip(self) -> None:  # noqa: D102
         pass
 
-    async def stop(self) -> None:  # noqa: D102
+    async def clear(self) -> None:  # noqa: D102
         pass
 
     async def pause(self) -> None:  # noqa: D102

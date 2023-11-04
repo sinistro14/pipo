@@ -61,9 +61,9 @@ class MusicQueue(ABC):
     ) -> None:
         query = list(query) if not isinstance(query, list) else query
         sources = SourceOracle.get_sources(query, source_type)
-        sources = self._parse(sources)  # FIXME move elsewhere if needed
+        sources = self._parse(sources)
         if shuffle:
-            sources = random.shuffle(sources)
+            random.shuffle(sources)
         if sources:
             self._submit_fetch(sources)
 
@@ -71,7 +71,9 @@ class MusicQueue(ABC):
         # prepare request to be submitted, depending on queue type, override if needed
         parsed_sources = []
         for source in sources:
-            parsed_sources.extend(SourceFactory.get_source(source.handler_type).parse(source))
+            parsed_sources.extend(
+                SourceFactory.get_source(source.handler_type).parse(source)
+            )
         return parsed_sources
 
     @abstractmethod
@@ -85,7 +87,9 @@ class MusicQueue(ABC):
 
     def get(self) -> Optional[str]:
         self.__fetch_limit.release()
-        return self._get()
+        music = self._get()
+        self._logger.debug("Item obtained from music queue: '%s'", music)
+        return music
 
     @abstractmethod
     def _get(self) -> Optional[str]:

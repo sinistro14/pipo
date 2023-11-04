@@ -26,7 +26,9 @@ class YoutubeQueryHandler(BaseHandler):
 
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):
-            logging.getLogger(__name__).info("Processing youtube query audio source %s", source)
+            logging.getLogger(__name__).info(
+                "Processing youtube query audio source %s", source
+            )
             return SourcePair(query=source, handler_type=YoutubeQueryHandler.name)
         else:
             return super().handle(source)
@@ -34,7 +36,9 @@ class YoutubeQueryHandler(BaseHandler):
     @staticmethod
     def fetch(source: str) -> Optional[str]:
         if YoutubeQueryHandler.__valid_source(source):
-            logging.getLogger(__name__).info("Processing youtube audio query source %s", source)
+            logging.getLogger(__name__).info(
+                "Processing youtube audio query source %s", source
+            )
             return YoutubeQueryHandler.get_audio(source)
         return None
 

@@ -20,9 +20,12 @@ async def main():
         command_prefix=settings.commands.prefix, description=settings.bot_description
     )
 
-    async with bot:
-        await bot.add_cog(MusicBot(bot, channel, voice_channel))
-        await bot.start(token)
+    try:
+        async with bot:
+            await bot.add_cog(MusicBot(bot, channel, voice_channel))
+            await bot.start(token)
+    except Exception:
+        logging.getLogger(__name__).exception("Unexpected exception raised.")
 
 
 if __name__ == "__main__":

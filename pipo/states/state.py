@@ -90,7 +90,7 @@ class State(ABC):
         pass
 
     @abstractmethod
-    async def stop(self) -> None:
+    async def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""
         pass
 

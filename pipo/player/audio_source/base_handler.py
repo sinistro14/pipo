@@ -1,6 +1,5 @@
 from abc import abstractmethod
-from random import random
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional
 
 from pipo.player.audio_source.source_handler import SourceHandler
 from pipo.player.audio_source.source_pair import SourcePair
@@ -24,14 +23,6 @@ class BaseHandler(SourceHandler):
     @staticmethod
     def parse(sources: SourcePair) -> Iterable[SourcePair]:
         return [sources]
-
-#    def parse_query(
-#        self, source: SourceHandler, query: Union[str, Iterable], shuffle: bool
-#    ) -> Union[SourceHandler, str]:
-#        query = list(query) if not isinstance(query, list) else query
-#        if shuffle:
-#            random.shuffle(query)
-#        return source, query
 
     @staticmethod
     @abstractmethod

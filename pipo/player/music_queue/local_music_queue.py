@@ -36,10 +36,19 @@ class LocalMusicQueue(MusicQueue):
 
     def _get(self) -> Optional[str]:
         """Get queue item."""
-        try:
-            return self._audio_queue.get_nowait() # FIXME check empty answer exception
-        except queue.Empty:
-            self._logger.exception("Music queue is empty")
+        # FIXME remove retry logic later if not needed
+        for _ in range(settings.player.queue.local.get_music.retries):
+            try:
+                return self._audio_queue.get(
+                    block=settings.player.queue.local.get_music.block,
+                    timeout=settings.player.queue.local.get_music.timeout,
+                )
+            except queue.Empty:
+                if self.size():
+                    self._logger.warning("Next music taking too long to process")
+                else:
+                    self._logger.info("Music queue is empty")
+                    break
         return None
 
     def _submit_fetch(self, sources: Iterable[SourcePair]) -> None:

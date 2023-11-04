@@ -76,7 +76,7 @@ class DisconnectedState(pipo.states.state.State):
     async def resume(self) -> None:  # noqa: D102
         pass
 
-    async def stop(self) -> None:  # noqa: D102
+    async def clear(self) -> None:  # noqa: D102
         pass
 
     async def pause(self) -> None:  # noqa: D102

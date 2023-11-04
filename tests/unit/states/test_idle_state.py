@@ -24,7 +24,7 @@ class TestIdleState:
         await initial_state.join(None)
         await initial_state.skip()
         await initial_state.pause()
-        await initial_state.stop()
+        await initial_state.clear()
 
     @pytest.mark.asyncio
     async def test_idle_timeout(self, initial_state: IdleState):

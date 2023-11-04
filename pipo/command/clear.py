@@ -7,11 +7,11 @@ from pipo.pipo import Pipo
 
 
 @dataclass
-class Stop(Command):
-    """Command to stop music and clear queue."""
+class Clear(Command):
+    """Command to clear queue."""
 
     bot: Pipo
     ctx: Dctx
 
     async def _execute(self) -> None:
-        await self.bot.stop(self.ctx)
+        await self.bot.clear(self.ctx)

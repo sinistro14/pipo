@@ -7,7 +7,6 @@ from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
 
 
 class SourceOracle:
-
     @staticmethod
     def __handlers() -> BaseHandler:
         """Provide handler chain."""
