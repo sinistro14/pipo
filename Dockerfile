@@ -1,8 +1,8 @@
-FROM python:3.9.18-alpine3.18 as base
+FROM python:3.9.16-alpine as base
 
     # python
 ENV APP_NAME="pipo" \
-    PYTHON_VERSION=3.9.18 \
+    PYTHON_VERSION=3.9.16 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -82,14 +82,15 @@ FROM base as production
 
 # app configuration
 ENV ENV=production \
-    USER_UID=1000 \
-    USERNAME=appuser
-ENV USER_GID=$USER_UID \
-    GROUP_NAME=$USERNAME
+    USERNAME=appuser \
+    USER_UID=1000
+ENV USER_GID=$USER_UID
 
-RUN addgroup -g $USER_UID $GROUP_NAME && \
-    adduser -D -H -u $USER_UID -G $GROUP_NAME $USERNAME
-USER $USERNAME
+# RUN adduser -u $USER_UID -G $USER_GID $USERNAME
+# RUN adduser -u $USER_UID -G $USER_GID $USERNAME
+# RUN addgroup -g $USER_GID $USERNAME \
+#     && adduser -u $USER_UID -G $USER_GID $USERNAME
+# USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
