@@ -164,7 +164,9 @@ class Player:
                 except asyncio.CancelledError:
                     self.__logger.info("Play music task cancelled", exc_info=True)
                 except Exception:
-                    self.__logger.warning("Unable to play next music", exc_info=True)
+                    self.__logger.warning(
+                        "Unable to play music '%s'", url, exc_info=True
+                    )
                     await self.__bot.send_message(settings.player.messages.play_error)
             # FIXME possible race check condition, None could be returned due to
             # empty queue and still not enter this condition
@@ -172,10 +174,7 @@ class Player:
                 self.__logger.info("Breaking music play loop due to empty queue")
                 break
             else:
-                self.__logger.info(
-                    "Unable to play next music, obtained invalid url '%s'", url
-                )
-                await self.__bot.send_message(settings.player.messages.play_error)
+                self.__logger.warning("Unable to play music with invalid url '%s'", url)
                 self.can_play.set()
             self.__logger.debug(
                 "Will wait for playing music to complete or exit if queue is empty"
