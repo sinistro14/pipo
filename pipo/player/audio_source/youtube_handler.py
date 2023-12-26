@@ -83,7 +83,7 @@ class YoutubeHandler(BaseHandler):
         if query:
             for attempt in range(settings.player.url_fetch.retries):
                 logging.getLogger(__name__).debug(
-                    "Attempting %s to obtain youtube audio url %s", attempt, query
+                    "Attempt %s to obtain youtube audio url %s", attempt, query
                 )
                 try:
                     with YoutubeDL({"format": "bestaudio/best"}) as ydl:
@@ -97,7 +97,6 @@ class YoutubeHandler(BaseHandler):
                         exc_info=True,
                     )
                 if url:
-                    logging.getLogger(__name__).debug("Obtained audio url '%s'", url)
                     logging.getLogger(__name__).info(
                         "Obtained audio url for query '%s'", query
                     )

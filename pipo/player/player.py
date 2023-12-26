@@ -151,17 +151,9 @@ class Player:
         """
         self.__logger.info("Entering music play loop")
         while await self.can_play.wait():
-            if not self.queue_size():
-                pass
-                # self.__logger.info("Breaking music play loop due to empty queue")
-                # break if needed
             self.can_play.clear()
             self.__logger.debug("Music queue size: %s", self.queue_size())
             url = self._music_queue.get()
-            self.__logger.info(
-                "Obtained music from queue %s",
-                hashlib.sha1(url.encode(), usedforsecurity=False).hexdigest(),
-            )
             if url:
                 try:
                     self.__logger.info(
@@ -184,6 +176,7 @@ class Player:
                     "Unable to play next music, obtained invalid url '%s'", url
                 )
                 await self.__bot.send_message(settings.player.messages.play_error)
+                self.can_play.set()
             self.__logger.debug(
                 "Will wait for playing music to complete or exit if queue is empty"
             )

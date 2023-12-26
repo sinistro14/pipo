@@ -59,6 +59,7 @@ class Pipo(pipo.states.Context):
             )
         finally:
             self.player.can_play.set()
+            self._logger.debug("'can_play' flag was set")
 
     async def join(self, ctx: Dctx):
         self._logger.info("Joined channel")
