@@ -94,6 +94,10 @@ class Pipo(pipo.states.Context):
         self._logger.info("Rebooting...")
         sys.exit(0)
 
+    async def status(self, ctx: Dctx):
+        await self.send_message(self.player.player_status())
+        await self.move_message(ctx)
+
     async def move_message(self, ctx: Dctx):
         msg = ctx.message
         content = msg.content.encode("ascii", "ignore").decode()

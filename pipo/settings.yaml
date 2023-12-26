@@ -21,8 +21,9 @@ default:
       before_options: "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
   player:
     messages:
-      play_error: Unable to play next music. Skipping.
       disconnect: Bye bye !!!
+      play_error: Unable to play next music. Skipping.
+      unavailable_status: Unavailable status for used queue type.
     idle_timeout: 1800  # 30 minutes
     queue:
       type: local

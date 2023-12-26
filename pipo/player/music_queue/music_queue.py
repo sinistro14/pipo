@@ -99,9 +99,41 @@ class MusicQueue(ABC):
     def get_all(self) -> Any:
         pass
 
-    @abstractmethod
     def size(self) -> int:
-        pass
+        """Music to be played.
+
+        Sum of enqueued and yet to process music.
+        Estimates queue size calculating the average of several samples, solving method
+        correctness issues without locks.
+
+        Returns
+        -------
+        int
+            Queue size.
+        """
+        return self.fetch_queue_size() + self.audio_queue_size()
+
+    @abstractmethod
+    def fetch_queue_size(self) -> int:
+        """Queue of yet to process music size.
+
+        Returns
+        -------
+        int
+            Queue size.
+        """
+        return -1
+
+    @abstractmethod
+    def audio_queue_size(self) -> int:
+        """Queue of processed music size.
+
+        Returns
+        -------
+        int
+            Queue size.
+        """
+        return -1
 
     def clear(self) -> None:
         self.__audio_fetch_pool.terminate()

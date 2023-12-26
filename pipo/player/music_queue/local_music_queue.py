@@ -73,21 +73,8 @@ class LocalMusicQueue(MusicQueue):
         """Get enqueued music."""
         return self._audio_queue
 
-    def size(self) -> int:
-        """Queue size.
+    def fetch_queue_size(self) -> int:
+        return 0 if not self._audio_fetch_queue else self._audio_fetch_queue.qsize()
 
-        Sum of enqueued and yet to process music.
-        Estimates queue size calculating the average of several samples, solving method
-        correctness issues without locks.
-
-        Returns
-        -------
-        int
-            Queue size.
-        """
-        size = 0
-        if self._audio_fetch_queue:
-            size += self._audio_fetch_queue.qsize()
-        if self._audio_queue:
-            size += self._audio_queue.qsize()
-        return size
+    def audio_queue_size(self) -> int:
+        return 0 if not self._audio_queue else self._audio_queue.qsize()

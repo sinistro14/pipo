@@ -12,6 +12,7 @@ from pipo.command import (
     Reboot,
     Resume,
     Skip,
+    Status,
 )
 from pipo.config import settings
 from pipo.pipo import Pipo
@@ -106,6 +107,15 @@ class MusicBot(commands.Cog):
     async def skip(self, ctx):  # noqa: D102
         self._logger.info("Received discord command skip")
         await self.command_queue.add(Skip(self.pipo, ctx))
+
+    @commands.command(
+        pass_context=True,
+        brief="Bot status",
+        help="Bot queue status.",
+    )
+    async def status(self, ctx):  # noqa: D102
+        self._logger.info("Received discord command status")
+        await self.command_queue.add(Status(self.pipo, ctx))
 
     @commands.command(pass_context=True, brief="Restart bot")
     async def reboot(self, ctx):  # noqa: D102

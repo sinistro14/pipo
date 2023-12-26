@@ -8,3 +8,4 @@ from pipo.command.reboot import Reboot
 from pipo.command.resume import Resume
 from pipo.command.skip import Skip
 from pipo.command.clear import Clear
+from pipo.command.status import Status

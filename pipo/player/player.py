@@ -82,6 +82,22 @@ class Player:
         """Get music queue size."""
         return self._music_queue.size()
 
+    def fetch_queue_size(self) -> int:
+        """Get yet to process music queue size."""
+        return self._music_queue.fetch_queue_size()
+
+    def audio_queue_size(self) -> int:
+        """Get processed music queue size."""
+        return self._music_queue.audio_queue_size()
+
+    def player_status(self) -> str:
+        audio_queue_size = self.audio_queue_size()
+        fetch_queue_size = self.fetch_queue_size()
+        if audio_queue_size >= 0 and fetch_queue_size >= 0:
+            return f"{25 * '='}\nMusic ready to play: {audio_queue_size}\nMusic to process: {fetch_queue_size}\n{25 * '='}\n"
+        else:
+            return settings.player.messages.unavailable_status
+
     def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
         """Add music to play.
 
@@ -175,7 +191,7 @@ class Player:
                 break
             else:
                 self.__logger.warning("Unable to play music with invalid url '%s'", url)
-                self.can_play.set()
+            self.can_play.set()
             self.__logger.debug(
                 "Will wait for playing music to complete or exit if queue is empty"
             )
