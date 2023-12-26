@@ -42,7 +42,7 @@ pytest-cov = "~4.1.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
 flaky = "~3.7.0"
-ruff = "0.0.280"
+ruff = "0.1.9"
 black = "22.8.0"
 vulture = "2.7"
 
