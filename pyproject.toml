@@ -27,7 +27,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.31"
-yt-dlp = "~2023.10.13"
+yt-dlp = "~2023.11.16"
 discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 
