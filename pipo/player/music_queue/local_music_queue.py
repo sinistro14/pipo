@@ -36,7 +36,6 @@ class LocalMusicQueue(MusicQueue):
 
     def _get(self) -> Optional[str]:
         """Get queue item."""
-        # FIXME remove retry logic later if not needed
         for _ in range(settings.player.queue.local.get_music.retries):
             try:
                 return self._audio_queue.get(

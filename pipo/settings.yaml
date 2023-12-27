@@ -36,8 +36,9 @@ default:
         prefetch_limit: 10
         size_check_iterations: 3
     url_fetch:
-      timeout: 600 # seconds
+      lock_timeout: 3 # seconds
+      timeout: 600    # seconds
       max_cache_size: 64
-      pool_size: 1
+      pool_size: 2
       retries: 3
       wait: 1

@@ -56,10 +56,14 @@ class Player:
     def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""
         self.__logger.info("Clearing Player state...")
-        self.__clear_queue()
-        self.__player_thread.cancel()
+        self._music_queue.clear()
+        self.__logger.info("Cleared queues")
+        if self.__player_thread:
+            self.__player_thread.cancel()
+        self.__logger.info("Canceled player thread")
         self.__bot.voice_client.stop()
-        self.can_play.set()
+        self.__logger.info("Stopped voice client")
+        self.can_play.clear()
         self.__logger.info("Clearing operation completed")
 
     def skip(self) -> None:
@@ -151,10 +155,6 @@ class Player:
         self.can_play.set()
         self.__player_thread = asyncio.create_task(self.__play_music_queue())
 
-    def __clear_queue(self) -> None:
-        """Clear music queue."""
-        self._music_queue.clear()
-
     async def _submit_music(self, url: str) -> None:
         # TODO consider raised exceptions
         await self.__bot.submit_music(url)
@@ -179,10 +179,9 @@ class Player:
                     await self.__bot.submit_music(url)
                 except asyncio.CancelledError:
                     self.__logger.info("Play music task cancelled", exc_info=True)
+                    raise
                 except Exception:
-                    self.__logger.warning(
-                        "Unable to play music '%s'", url, exc_info=True
-                    )
+                    self.__logger.warning("Unable to play music %s", url, exc_info=True)
                     await self.__bot.send_message(settings.player.messages.play_error)
             # FIXME possible race check condition, None could be returned due to
             # empty queue and still not enter this condition

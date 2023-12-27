@@ -16,7 +16,8 @@ class MusicQueue(ABC):
     _audio_queue: Any
     _audio_fetch_queue: Any
     __prefect_limit: int
-    fetch_limit: multiprocessing.Semaphore
+    __fetch_pool_enabled: multiprocessing.Event
+    __fetch_limit: multiprocessing.Semaphore
 
     # TODO define type for audio_queues
     def __init__(
@@ -29,11 +30,14 @@ class MusicQueue(ABC):
         self.__start_queue()
 
     def __start_queue(self):
+        self.__fetch_pool_enabled = multiprocessing.Event()
+        self.__fetch_pool_enabled.set()
         self.__fetch_limit = multiprocessing.Semaphore(self.__prefect_limit)
         self.__audio_fetch_pool = multiprocessing.Pool(
             settings.player.url_fetch.pool_size,
             MusicQueue.fetch_music,
             (
+                self.__fetch_pool_enabled,
                 self.__fetch_limit,
                 self._audio_fetch_queue,
                 self,
@@ -42,16 +46,19 @@ class MusicQueue(ABC):
 
     @staticmethod
     def fetch_music(
+        worker_enabled: multiprocessing.Event,
         fetch_limit: multiprocessing.Semaphore,
-        source_queue: multiprocessing.Queue,
+        source_queue: multiprocessing.Queue,  # FIXME temporary type, change later
         music_queue: Any,
     ):
         while True:
-            fetch_limit.acquire()  # block until new music can be fetched
-            source_pair = source_queue.get()
-            handler = SourceFactory.get_source(source_pair.handler_type)
-            music = handler.fetch(source_pair.query)
-            music_queue._add(music)
+            if worker_enabled.wait() and fetch_limit.acquire(
+                block=True, timeout=settings.player.url_fetch.lock_timeout
+            ):  # block until new music can be fetched
+                source_pair = source_queue.get()
+                handler = SourceFactory.get_source(source_pair.handler_type)
+                music = handler.fetch(source_pair.query)
+                music_queue._add(music)
 
     def add(
         self,
@@ -88,7 +95,7 @@ class MusicQueue(ABC):
     def get(self) -> Optional[str]:
         self.__fetch_limit.release()
         music = self._get()
-        self._logger.debug("Item obtained from music queue: '%s'", music)
+        self._logger.debug("Item obtained from music queue: %s", music)
         return music
 
     @abstractmethod
@@ -136,10 +143,20 @@ class MusicQueue(ABC):
         return -1
 
     def clear(self) -> None:
-        self.__audio_fetch_pool.terminate()
-        self.__audio_fetch_pool.join()
-        self.__start_queue()
-        self._clear()
+        try:
+            self._logger.info("Clearing music queue")
+            self._logger.debug("Temporarily disabling queues")
+            self.__fetch_pool_enabled.clear()
+            self._logger.debug("Clearing queues")
+            self._clear()
+            self._logger.debug("Resetting fetch semaphore")
+            [self.__fetch_limit.release() for _ in range(self.__prefect_limit)]
+            self._logger.debug("Enabling queues")
+            self.__fetch_pool_enabled.set()
+            self._logger.info("Clear operation concluded")
+        except Exception:
+            self._logger.exception("Unable to clear music queue")
+            raise
 
     @abstractmethod
     def _clear(self) -> None:

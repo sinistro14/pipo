@@ -95,8 +95,8 @@ class Pipo(pipo.states.Context):
         sys.exit(0)
 
     async def status(self, ctx: Dctx):
-        await self.send_message(self.player.player_status())
         await self.move_message(ctx)
+        await self.send_message(self.player.player_status())
 
     async def move_message(self, ctx: Dctx):
         msg = ctx.message

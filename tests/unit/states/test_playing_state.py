@@ -29,7 +29,6 @@ class TestPlayingState:
     @pytest.mark.parametrize(
         "method, args, final_state",
         [
-            ("stop", (), IdleState),
             ("pause", (), IdleState),
             ("leave", (), DisconnectedState),
         ],

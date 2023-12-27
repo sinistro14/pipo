@@ -9,7 +9,7 @@ class Command(ABC):
     _logger: logging.Logger
 
     def __init__(self) -> None:
-        logging.getLogger(__name__)
+        self._logger = logging.getLogger(__name__)
 
     async def execute(self) -> None:
         """Command execution method.
