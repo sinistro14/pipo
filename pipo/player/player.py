@@ -95,6 +95,7 @@ class Player:
         return self._music_queue.audio_queue_size()
 
     def player_status(self) -> str:
+        """Player status description."""
         audio_queue_size = self.audio_queue_size()
         fetch_queue_size = self.fetch_queue_size()
         if audio_queue_size >= 0 and fetch_queue_size >= 0:
