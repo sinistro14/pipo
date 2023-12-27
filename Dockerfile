@@ -1,8 +1,8 @@
-FROM python:3.9.18-slim-bullseye as base
+FROM python:3.11.7-slim-bullseye as base
 
     # python
 ENV APP_NAME="pipo" \
-    PYTHON_VERSION=3.9.18 \
+    PYTHON_VERSION=3.11.7 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
