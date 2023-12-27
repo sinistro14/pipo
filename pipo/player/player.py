@@ -98,7 +98,10 @@ class Player:
         audio_queue_size = self.audio_queue_size()
         fetch_queue_size = self.fetch_queue_size()
         if audio_queue_size >= 0 and fetch_queue_size >= 0:
-            return f"{25 * '='}\nMusic ready to play: {audio_queue_size}\nMusic to process: {fetch_queue_size}\n{25 * '='}\n"
+            return (
+                f"{25 * '='}\nMusic ready to play: {audio_queue_size}\n"
+                f"Music to process: {fetch_queue_size}\n{25 * '='}\n"
+            )
         else:
             return settings.player.messages.unavailable_status
 
