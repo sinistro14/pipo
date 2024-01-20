@@ -27,7 +27,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.31"
-yt-dlp = "~2023.11.16"
+yt-dlp = "~2023.12.30"
 discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 
@@ -35,16 +35,16 @@ dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 setuptools = "*"
 sphinx = "~7.2.0"
 pytest = "^7.1"
-mock = "~5.0.0"
-pytest-mock = "~3.10.0"
-pytest-asyncio = "~0.21.0"
+mock = "~5.1.0"
+pytest-mock = "~3.12.0"
+pytest-asyncio = "~0.23.0"
 pytest-cov = "~4.1.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
 flaky = "~3.7.0"
-ruff = "0.1.9"
-black = "22.8.0"
-vulture = "2.7"
+ruff = "0.1.14"
+black = "23.12.1"
+vulture = "2.11"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"
