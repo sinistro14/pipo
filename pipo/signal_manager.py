@@ -1,7 +1,8 @@
 #!usr/bin/env python3
-
 import asyncio
+import logging
 import signal
+from typing import Iterable
 
 
 class SignalManager:
@@ -12,28 +13,49 @@ class SignalManager:
         """Cancel all running async tasks.
 
         Cancel running asyncio tasks, except this one, so they can perform necessary
-        cleanup, when cancelled, by processing an asyncio.CancelledError exception.
+        cleanup by processing an asyncio.CancelledError exception.
 
         Parameters
         ----------
         loop : asyncio.AbstractEventLoop
-            Loop from where tasks should cancelled.
+            Loop from where tasks should be cancelled.
         """
+        logger = logging.getLogger(__name__)
+
+        logger.debug("Received exit signal %s", signal.name)
+        logger.debug(
+            "Current task '%s' will not be deleted", asyncio.current_task().get_name()
+        )
+
         tasks = [
-            task for task in asyncio.all_tasks() if task is not asyncio.current_task()
+            task
+            for task in asyncio.all_tasks()
+            if (
+                (task is not asyncio.current_task())
+                and (task.get_name() != "main_task")
+            )
         ]
 
-        [task.cancel() for task in tasks]
+        for task in tasks:
+            logger.debug("Cancelling task '%s'", task.get_name())
+            task.cancel()
+            logger.debug("Cancelled task '%s'", task.get_name())
+
         await asyncio.gather(*tasks, return_exceptions=True)
+        logger.info("All tasks cancelled")
+        logger.debug("Stopping asyncio loop")
         loop.stop()
+        logger.info("Stopped asyncio loop")
 
     @staticmethod
-    def add_handlers(loop: asyncio.AbstractEventLoop) -> None:
+    def add_handlers(
+        loop: asyncio.AbstractEventLoop, signals: Iterable[signal.Signals]
+    ) -> None:
         """Add signal handlers to manage program execution."""
-        for sig in [signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT]:
+        for sig in signals:
             loop.add_signal_handler(
                 sig,
                 lambda sig=sig: asyncio.create_task(
-                    SignalManager.__shutdown(sig, loop)
+                    SignalManager.__shutdown(sig, loop), name="signal_shutdown"
                 ),
             )

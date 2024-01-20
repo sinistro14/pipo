@@ -6,11 +6,6 @@ from abc import ABC, abstractmethod
 class Command(ABC):
     """Abstract Command."""
 
-    _logger: logging.Logger
-
-    def __init__(self) -> None:
-        self._logger = logging.getLogger(__name__)
-
     async def execute(self) -> None:
         """Command execution method.
 
@@ -19,9 +14,9 @@ class Command(ABC):
         try:
             await self._execute()
         except asyncio.CancelledError:
-            self._logger.info("Cancelling command", exc_info=True)
+            logging.getLogger(__name__).info("Cancelling command")
         except Exception:
-            self._logger.exception("Unable to execute command")
+            logging.getLogger(__name__).exception("Unable to execute command")
 
     @abstractmethod
     async def _execute(self) -> None:

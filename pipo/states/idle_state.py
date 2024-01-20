@@ -33,7 +33,7 @@ class IdleState(pipo.states.state.State):
     idle_tracker: asyncio.Future
     cancel_event: asyncio.Event
 
-    def __init__(self, idle_timeout: int = settings.player.idle_timeout):
+    def __init__(self, idle_timeout: int = settings.player.idle.timeout):
         super().__init__("idle")
         self._idle_timeout = idle_timeout
         self.cancel_event = asyncio.Event()
@@ -41,8 +41,9 @@ class IdleState(pipo.states.state.State):
 
     def _start_idle_tracker(self):
         """Initialize idle timeout tracker."""
-        self.idle_tracker = asyncio.ensure_future(
-            self._idle_tracker_task(self.cancel_event)
+        self.idle_tracker = asyncio.create_task(
+            self._idle_tracker_task(self.cancel_event),
+            name=settings.player.idle.task_name,
         )
 
     async def _stop_idle_tracker(self):
@@ -62,7 +63,7 @@ class IdleState(pipo.states.state.State):
             await self.context.music_channel.send(settings.player.messages.disconnect)
             await self.context.voice_client.disconnect()
         except asyncio.CancelledError:
-            self._logger.info("Cancelling idle tracker task", exc_info=True)
+            self._logger.debug("Cancelling task 'idle_tracker'")
 
     async def _clean_transition_to(self, state: pipo.states.state.State) -> None:
         """Orderly transition to a new state.

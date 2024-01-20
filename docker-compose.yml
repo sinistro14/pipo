@@ -13,7 +13,7 @@ services:
       - backend
     deploy:
       restart_policy:
-        delay: 10s
+        delay: 5s
         max_attempts: 3
         condition: on-failure
       resources:

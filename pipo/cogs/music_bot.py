@@ -6,7 +6,6 @@ from discord.ext import commands
 from pipo.command import (
     Clear,
     CommandQueue,
-    Leave,
     Pause,
     Play,
     Reboot,
@@ -39,34 +38,23 @@ class MusicBot(commands.Cog):
 
     @commands.command(
         pass_context=True,
-        brief="Remove bot from voice channel",
-        help="Remove bot from voice channel.",
-    )
-    async def leave(self, ctx):  # noqa: D102
-        self._logger.info("Received discord command leave")
-        await self.command_queue.add(Leave(self.pipo, ctx))
-
-    @commands.command(
-        pass_context=True,
         brief="Play music",
         help="Add music by providing a youtube music/playlist url or search query.\n"
-        "Use -q <query> to play the most related music.\n"
+        "Use -q <query> to search for the most related and popular music.\n"
         "Use -s <url> to shuffle a playlist.\n"
         "-play [-q] [-s] <query> | <music_url> | <playlist_url>",
     )
     async def play(self, ctx, *query):  # noqa: D102
         self._logger.info("Received discord command play")
-        option = query[0]
-        shuffle = len(query) > 1 and option == settings.commands.shuffle
-        search = len(query) > 1 and option == settings.commands.search
+        option = query[0] if query else ""
+        shuffle = option == settings.commands.shuffle
+        search = option == settings.commands.search
         if shuffle:
             query = query[1:]
         elif search:
             query = " ".join(query[1:])
-        else:
-            option = ""
         self._logger.info(
-            "Received play query %s with option '%s'",
+            "Received play query '%s' with option '%s'",
             query,
             option,
         )
@@ -74,8 +62,8 @@ class MusicBot(commands.Cog):
 
     @commands.command(
         pass_context=True,
-        brief="Clear queued music",
-        help="Clear queued music and bot state.",
+        brief="Clear bot state",
+        help="Clear queued music, bot state and leave voice channel.",
     )
     async def clear(self, ctx):  # noqa: D102
         self._logger.info("Received discord command clear")

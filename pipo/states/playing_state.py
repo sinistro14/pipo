@@ -14,7 +14,6 @@ class PlayingState(pipo.states.state.State):
     Can process commands:
         * :meth:`leave`
         * :meth:`play`
-        * :meth:`stop`
         * :meth:`skip`
         * :meth:`pause`
     """

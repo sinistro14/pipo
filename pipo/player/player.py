@@ -100,8 +100,8 @@ class Player:
         fetch_queue_size = self.fetch_queue_size()
         if audio_queue_size >= 0 and fetch_queue_size >= 0:
             return (
-                f"{25 * '='}\nMusic ready to play: {audio_queue_size}\n"
-                f"Music to process: {fetch_queue_size}\n{25 * '='}\n"
+                f"{25 * '='}\n🎵 Ready to play: {audio_queue_size}\n"
+                f"🎵 Pending processing: {fetch_queue_size}\n{25 * '='}\n"
             )
         else:
             return settings.player.messages.unavailable_status
@@ -157,7 +157,9 @@ class Player:
         Initializes music thread and allows music queue consumption.
         """
         self.can_play.set()
-        self.__player_thread = asyncio.create_task(self.__play_music_queue())
+        self.__player_thread = asyncio.create_task(
+            self.__play_music_queue(), name=settings.player.task_name
+        )
 
     async def _submit_music(self, url: str) -> None:
         # TODO consider raised exceptions
@@ -182,7 +184,9 @@ class Player:
                     )
                     await self.__bot.submit_music(url)
                 except asyncio.CancelledError:
-                    self.__logger.info("Play music task cancelled", exc_info=True)
+                    self.__logger.debug(
+                        "Cancelled task '%s'", settings.player.task_name
+                    )
                     raise
                 except Exception:
                     self.__logger.warning("Unable to play music %s", url, exc_info=True)
@@ -190,7 +194,7 @@ class Player:
             # FIXME possible race check condition, None could be returned due to
             # empty queue and still not enter this condition
             elif not self.queue_size():
-                self.__logger.info("Breaking music play loop due to empty queue")
+                self.__logger.info("Exiting music play loop due to empty queue")
                 break
             else:
                 self.__logger.warning("Unable to play music with invalid url '%s'", url)

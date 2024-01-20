@@ -25,7 +25,9 @@ class CommandQueue:
         command : Command
             Command to execute.
         """
-        task = asyncio.create_task(command.execute())
+        task = asyncio.create_task(
+            command.execute(), name=f"command_{command.__class__.__name__}"
+        )
         self.__scheduled_tasks.add(task)
         task.add_done_callback(self.__scheduled_tasks.discard)
 
