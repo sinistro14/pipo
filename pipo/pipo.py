@@ -58,7 +58,7 @@ class Pipo(pipo.states.Context):
         Parameters
         ----------
         ctx : Dctx, optional
-            Discord context from where to obtain user voice channel, by default None
+            Discord context from where to obtain user voice channel, by default None.
         """
         if self.voice_client:
             self._logger.info("Reconnecting channel %s", self.voice_client.channel.name)
@@ -87,11 +87,30 @@ class Pipo(pipo.states.Context):
             raise
 
     async def send_message(self, message: str) -> None:
+        """Send a message to discord channel."""
         if not self.music_channel:
             self.music_channel = self.bot.get_channel(self.channel_id)
         await self.music_channel.send(message)
 
     async def submit_music(self, url: str) -> None:  # noqa
+        """Submit a music to be played on Discord voice channel.
+
+        Submits a music to Discord voice channel and waits until it is over to
+        proceed to terminate task. This waiting mechanism makes use o sequential voice
+        client state checks and asyncio.sleep invocations.
+        Active reconnection is attempted if a music cannot be played due to connection
+        issues and discarded in all other cases.
+
+        Parameters
+        ----------
+        url : str
+            URL of music to play.
+
+        Raises
+        ------
+        asyncio.CancelledError
+            Asyncio task was cancelled.
+        """
         try:
             self.voice_client.play(
                 discord.FFmpegPCMAudio(url, **settings.pipo.ffmpeg_config)
@@ -110,7 +129,7 @@ class Pipo(pipo.states.Context):
             raise
         except discord.ClientException:
             if not self.voice_client.is_connected():
-                self._logger.debug("Reconnecting client")
+                self._logger.info("Detected connection issues, attempting reconnection")
                 await self.ensure_connection()
                 await self.submit_music(url)
                 return
@@ -123,39 +142,57 @@ class Pipo(pipo.states.Context):
             self._logger.debug("'can_play' flag was set")
 
     async def join(self, ctx: Dctx):
-        self._logger.info("Joined channel")
+        """Join a channel defined in discord context."""
         await self._state.join(ctx)
 
     async def play(self, ctx: Dctx, query: List[str], shuffle: bool):
+        """Add music to play.
+
+        Parameters
+        ----------
+        ctx : Dctx
+            Bot context.
+        query : List[str]
+            Music to play.
+        shuffle : bool
+            Randomize play order when multiple musics are provided.
+        """
         await self._state.play(ctx, query, shuffle)
         await self.move_message(ctx)
 
     async def pause(self, ctx: Dctx):
+        """Pause currently playing music."""
         await self._state.pause()
         await self.move_message(ctx)
 
     async def resume(self, ctx: Dctx):
+        """Resume previously playing music."""
         await self._state.resume()
         await self.move_message(ctx)
 
     async def clear(self, ctx: Dctx):
+        """Clear music queue and bot state."""
         await self._state.clear()
         await self.move_message(ctx)
 
     async def skip(self, ctx: Dctx):
+        """Skip currently playing music."""
         await self._state.skip()
         await self.move_message(ctx)
 
     async def reboot(self, ctx: Dctx):
+        """Reboot bot."""
         await self._state.leave()  # transitions to Disconnected state
         self._logger.info("Rebooting")
         signal.raise_signal(signal.SIGUSR1)
 
     async def status(self, ctx: Dctx):
+        """Send current status to discord channel."""
         await self.move_message(ctx)
         await self.send_message(self.player.player_status())
 
     async def move_message(self, ctx: Dctx):
+        """Move discord processed message request to default music channel."""
         msg = ctx.message
         content = msg.content.encode("ascii", "ignore").decode()
         await msg.delete(delay=settings.pipo.move_message_delay)

@@ -8,8 +8,7 @@ from pipo.player.audio_source.source_pair import SourcePair
 class SourceHandler(ABC):
     """Base source handler.
 
-    Declares a method for building the chain of handlers.
-    Also declares a method for executing a request.
+    Declares methods for building the chain of handlers and executing requests.
     """
 
     name: str
@@ -21,12 +20,15 @@ class SourceHandler(ABC):
 
     @abstractmethod
     def set_next(self, handler):
+        """Define next handler."""
         pass
 
     @abstractmethod
     def handle(self, source: Iterable[str]) -> SourcePair:
+        """Check whether handler is able to process source."""
         pass
 
     @abstractmethod
     def fetch(self, source: str) -> Optional[str]:
+        """Process source."""
         pass

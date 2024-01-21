@@ -17,6 +17,7 @@ class YoutubeHandler(BaseHandler):
 
     @staticmethod
     def __valid_source(source: Iterable[str]) -> bool:
+        """Check whether source is a youtube url."""
         return source and ("youtube" in source and source.startswith(("http", "https")))
 
     def handle(self, source: str) -> SourcePair:
@@ -45,7 +46,7 @@ class YoutubeHandler(BaseHandler):
                     SourcePair(entry, YoutubeHandler.name) for entry in audio
                 ]
         else:
-            parsed_query = [  # noqa
+            parsed_query = [
                 SourcePair(query, YoutubeHandler.name),
             ]
         return parsed_query

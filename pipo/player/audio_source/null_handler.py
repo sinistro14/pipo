@@ -11,8 +11,10 @@ class NullHandler(BaseHandler):
     name = SourceType.NULL
 
     def handle(self, source: Iterable[str]) -> SourcePair:
+        """Create handler pair."""
         return SourcePair(query=source, handler_type=NullHandler.name)
 
     @staticmethod
     def fetch(source: str) -> Optional[str]:
+        """Return `None`."""
         return None

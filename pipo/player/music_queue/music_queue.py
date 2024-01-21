@@ -11,6 +11,16 @@ from pipo.player.audio_source.source_pair import SourcePair
 
 
 class MusicQueue(ABC):
+    """Music queue.
+
+    Handles added music prefetch and storage.
+    Prefetch operations are transparently scheduled by the music queue but such method's
+    are implemented by _submit_fetch and _add.
+    Music queries are initially sent to prefetch queue from where initial information
+    will be extracted. Afterwards music is obtained up to defined __prefetch_limit value
+    until a music is extract from the queue.
+    """
+
     _logger: logging.Logger
     _audio_queue: Any
     _audio_fetch_queue: Any
@@ -18,7 +28,6 @@ class MusicQueue(ABC):
     __fetch_pool_enabled: multiprocessing.Event
     __fetch_limit: multiprocessing.Semaphore
 
-    # TODO define type for audio_queues
     def __init__(
         self, prefetch_limit: int, audio_fetch_queue: Any, audio_queue: Any
     ) -> None:
@@ -29,6 +38,7 @@ class MusicQueue(ABC):
         self.__start_queue()
 
     def __start_queue(self):
+        """Initialize music queue."""
         self.__fetch_pool_enabled = multiprocessing.Event()
         self.__fetch_pool_enabled.set()
         self.__fetch_limit = multiprocessing.Semaphore(self.__prefect_limit)
@@ -50,6 +60,21 @@ class MusicQueue(ABC):
         source_queue: multiprocessing.Queue,  # FIXME temporary type, change later
         music_queue: Any,
     ):
+        """Fetch music task.
+
+        Task used by workers to process source data into music urls.
+
+        Parameters
+        ----------
+        worker_enabled : multiprocessing.Event
+            Controls whether workers are enabled.
+        fetch_limit : multiprocessing.Semaphore
+            Defines max music queries to process.
+        source_queue : multiprocessing.Queue
+            Queue from were to obtain source data.
+        music_queue : Any
+            Queue were resultant music is added.
+        """
         while True:
             if worker_enabled.wait() and fetch_limit.acquire(
                 block=True, timeout=settings.player.url_fetch.lock_timeout
@@ -63,10 +88,18 @@ class MusicQueue(ABC):
         self,
         query: Union[str, Iterable[str]],
         shuffle: bool = False,
-        source_type: str = None,
     ) -> None:
+        """Add music query to queue.
+
+        Parameters
+        ----------
+        query : Union[str, Iterable[str]]
+            Music query to add.
+        shuffle : bool, optional
+            Whether to shuffle music order, by default False.
+        """
         query = list(query) if not isinstance(query, list) else query
-        sources = SourceOracle.get_sources(query, source_type)
+        sources = SourceOracle.process_queries(query)
         sources = self._parse(sources)
         if shuffle:
             random.shuffle(sources)
@@ -74,7 +107,20 @@ class MusicQueue(ABC):
             self._submit_fetch(sources)
 
     def _parse(self, sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
-        # prepare request to be submitted, depending on queue type, override if needed
+        """Parse source pairs.
+
+        Prepare request to be submitted, depending on queue type. Override if needed.
+
+        Parameters
+        ----------
+        sources : Iterable[SourcePair]
+            _description_
+
+        Returns
+        -------
+        Iterable[SourcePair]
+            _description_
+        """
         parsed_sources = []
         for source in sources:
             parsed_sources.extend(
@@ -84,7 +130,7 @@ class MusicQueue(ABC):
 
     @abstractmethod
     def _submit_fetch(self, sources: Iterable[SourcePair]) -> None:
-        # send request to fetch_queue
+        """Submit request to fetch queue."""
         pass
 
     @abstractmethod
@@ -92,6 +138,7 @@ class MusicQueue(ABC):
         pass
 
     def get(self) -> Optional[str]:
+        """Get one music from queue."""
         self.__fetch_limit.release()
         music = self._get()
         self._logger.debug("Item obtained from music queue: %s", music)
@@ -103,6 +150,7 @@ class MusicQueue(ABC):
 
     @abstractmethod
     def get_all(self) -> Any:
+        """Get all musics from queue."""
         pass
 
     def size(self) -> int:
@@ -142,6 +190,7 @@ class MusicQueue(ABC):
         return -1
 
     def clear(self) -> None:
+        """Clear all queues."""
         try:
             self._logger.info("Clearing music queue")
             self._logger.debug("Temporarily disabling queues")

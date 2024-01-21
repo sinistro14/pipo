@@ -10,7 +10,7 @@ from pipo.player.music_queue.music_queue import MusicQueue
 class LocalMusicQueue(MusicQueue):
     """Thread safe local music queue.
 
-    Local FIFO music queue with thread safe implementation.
+    Local thread safe FIFO music queue.
 
     Attributes
     ----------
@@ -73,7 +73,9 @@ class LocalMusicQueue(MusicQueue):
         return self._audio_queue
 
     def fetch_queue_size(self) -> int:
+        """Fetch queue size."""
         return 0 if not self._audio_fetch_queue else self._audio_fetch_queue.qsize()
 
     def audio_queue_size(self) -> int:
+        """Audio queue queue size."""
         return 0 if not self._audio_queue else self._audio_queue.qsize()

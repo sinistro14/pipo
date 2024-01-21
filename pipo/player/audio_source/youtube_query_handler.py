@@ -22,6 +22,7 @@ class YoutubeQueryHandler(BaseHandler):
 
     @staticmethod
     def __valid_source(source: str) -> bool:
+        """Check whether source is an url."""
         return source and (not source.startswith(("http", "https")))
 
     def handle(self, source: str) -> SourcePair:

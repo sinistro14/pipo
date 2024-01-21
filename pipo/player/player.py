@@ -100,8 +100,8 @@ class Player:
         fetch_queue_size = self.fetch_queue_size()
         if audio_queue_size >= 0 and fetch_queue_size >= 0:
             return (
-                f"{25 * '='}\n🎵 Ready to play: {audio_queue_size}\n"
-                f"🎵 Pending processing: {fetch_queue_size}\n{25 * '='}\n"
+                f"{25 * '='}\n🎵\tReady to play: {audio_queue_size}\n"
+                f"🎵\tPending processing: {fetch_queue_size}\n{25 * '='}\n"
             )
         else:
             return settings.player.messages.unavailable_status
@@ -149,7 +149,7 @@ class Player:
         self._music_queue.add(
             queries,
             shuffle,
-        )  # source_type) TODO decide how to use
+        )
 
     def _start_music_queue(self) -> None:
         """Initialize music thread.

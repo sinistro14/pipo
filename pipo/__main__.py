@@ -12,7 +12,6 @@ from pipo.config import settings
 
 
 async def run_bot():
-
     channel = settings.channel
     voice_channel = settings.voice_channel
     token = settings.token
@@ -33,7 +32,6 @@ async def run_bot():
 
 
 def main():
-
     logging.basicConfig(
         level=settings.log.level,
         format=settings.log.format,

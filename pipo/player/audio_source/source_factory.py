@@ -5,8 +5,11 @@ from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
 
 
 class SourceFactory:
+    """Source handler factory."""
+
     @staticmethod
     def get_source(source_type: str) -> BaseHandler:
+        """Get source by name."""
         handlers = (
             YoutubeHandler,
             YoutubeQueryHandler,
