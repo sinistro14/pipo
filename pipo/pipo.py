@@ -15,6 +15,10 @@ from pipo.config import settings
 
 
 class Pipo(pipo.states.Context):
+    """Music player bot.
+
+    Converts application side logic to Discord requests.
+    """
 
     _logger: logging.Logger
     bot: discord.ext.commands.Bot
@@ -33,16 +37,29 @@ class Pipo(pipo.states.Context):
         self.player = pipo.player.Player(self)
 
     def current_state(self) -> str:
+        """Provide current state name."""
         return self._state.__name__  # noqa
 
     def become_idle(self) -> None:
+        """Transition bot to idle state."""
         self.transition_to(pipo.states.idle_state.IdleState())
 
     def queue_size(self) -> int:
+        """Provide current queue size."""
         return self.player.queue_size()
 
     async def ensure_connection(self, ctx: Dctx = None) -> None:
-        """Connect bot to voice channel."""
+        """Ensure a discord channel connection is established.
+
+        If a connection was already established, retries connecting to channel.
+        If no connection was established, creates a connection to the same voice
+        channel the caller user was in or to a default channel otherwise.
+
+        Parameters
+        ----------
+        ctx : Dctx, optional
+            Discord context from where to obtain user voice channel, by default None
+        """
         if self.voice_client:
             self._logger.info("Reconnecting channel %s", self.voice_client.channel.name)
             channel_id = self.voice_client.channel.id

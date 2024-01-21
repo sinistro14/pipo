@@ -8,7 +8,6 @@ from pipo.states.disconnected_state import DisconnectedState
 
 
 class TestPlayingState:
-
     __state_name = "playing"
 
     @pytest.fixture(scope="function")

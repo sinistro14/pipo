@@ -11,7 +11,6 @@ from pipo.player.audio_source.source_pair import SourcePair
 
 
 class MusicQueue(ABC):
-
     _logger: logging.Logger
     _audio_queue: Any
     _audio_fetch_queue: Any

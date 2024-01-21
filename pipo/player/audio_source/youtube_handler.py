@@ -22,7 +22,7 @@ class YoutubeHandler(BaseHandler):
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):
             logging.getLogger(__name__).info(
-                "Processing youtube audio source %s", source
+                "Processing youtube audio source '%s'", source
             )
             return SourcePair(query=source, handler_type=YoutubeHandler.name)
         else:
@@ -54,7 +54,7 @@ class YoutubeHandler(BaseHandler):
     def fetch(source: str) -> Optional[str]:
         if YoutubeHandler.__valid_source(source):
             logging.getLogger(__name__).info(
-                "Processing youtube audio source %s", source
+                "Processing youtube audio source '%s'", source
             )
             return YoutubeHandler.get_audio(source)
         return None

@@ -8,17 +8,12 @@ from pipo.states.disconnected_state import DisconnectedState
 
 
 class TestDisconnectedState:
-
     __state_name = "disconnected"
 
     @pytest.fixture(scope="function")
     def initial_state(self, mocker) -> DisconnectedState:
         mocker.patch(
             "pipo.states.disconnected_state.DisconnectedState.context",
-            new=mock.AsyncMock(),
-        )
-        mocker.patch(
-            "pipo.states.disconnected_state.DisconnectedState._join",
             new=mock.AsyncMock(),
         )
         return DisconnectedState()
