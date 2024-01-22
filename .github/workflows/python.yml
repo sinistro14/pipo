@@ -16,6 +16,8 @@ jobs:
   python:
     name: Test Application
     runs-on: ubuntu-22.04
+    env:
+      APP: pipo
     strategy:
       fail-fast: false
       matrix:
@@ -31,7 +33,6 @@ jobs:
 
     - name: Install Poetry
       run: |
-        echo "APP=pipo" > .env
         make poetry_setup
 
     - name: Load cached venv
@@ -46,25 +47,17 @@ jobs:
       run: |
         make dev_setup
 
-    - name: Run isort
+    - name: Run ruff
       run: |
-        make isort
+        make ruff
 
     - name: Run black
       run: |
         make black
 
-    - name: Run mypy
+    - name: Run vulture
       run: |
-        make mypy
-
-    - name: Run pylint
-      run: |
-        make pylint
-
-    - name: Run bandit
-      run: |
-        make bandit
+        make vulture
 
     - name: Test
       run: |

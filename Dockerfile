@@ -1,8 +1,8 @@
-FROM python:3.9.16-slim-bullseye as base
+FROM python:3.11.7-slim-bookworm as base
 
     # python
 ENV APP_NAME="pipo" \
-    PYTHON_VERSION=3.9.16 \
+    PYTHON_VERSION=3.11.7 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -16,7 +16,7 @@ ENV APP_NAME="pipo" \
     \
     # poetry
     # https://python-poetry.org/docs/configuration/#using-environment-variables
-    POETRY_VERSION=1.2.2 \
+    POETRY_VERSION=1.7.1 \
     # make poetry install to this location
     POETRY_HOME="/opt/poetry" \
     # make poetry create the virtual environment in the project's root
@@ -26,8 +26,7 @@ ENV APP_NAME="pipo" \
     # do not ask interactive questions
     POETRY_NO_INTERACTION=1 \
     \
-    # paths
-    # where requirements + virtual environment will be
+    # requirements + virtual environment paths
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv"
 
@@ -52,7 +51,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         make \
-        gcc \
+        build-essential \
         libc-dev \
         libssl-dev \
         # discord.py[voice] dependencies

@@ -6,10 +6,18 @@ networks:
 
 services:
   app:
-    container_name: "$APP"
+    container_name: pipo
     build: .
-    restart: unless-stopped
-    env_file:
-      - .env
+    env_file: .env
     networks:
       - backend
+    deploy:
+      restart_policy:
+        delay: 5s
+        max_attempts: 3
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 250M
+        limits:
+          memory: 400M

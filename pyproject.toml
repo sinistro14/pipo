@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pipo"
-version = "0.0.1"
-description = "Bot to play music in a discord channel based on user input"
+version = "0.1.0"
+description = "Bot to play music in a discord channel"
 
 license = "MIT"
 
@@ -16,6 +16,8 @@ keywords = ['python', 'discord', 'music', 'bot']
 
 classifiers = [
     'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     'Operating System :: OS Independent',
     'Natural Language :: English',
     'Topic :: Multimedia :: Sound/Audio',
@@ -23,20 +25,27 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"  # compatible python versions must be declared here
-psutil = "~5.9.0"
-discord-py = { version = "~2.0.0", extras = ["voice"] }
-pytube = "~12.1.0"
+python = "^3.9"
+requests = "^2.31"
+yt-dlp = "~2023.12.30"
+discord-py = { version = "~2.3.0", extras = ["voice"] }
+dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 
 [tool.poetry.dev-dependencies]
+setuptools = "*"
+sphinx = "~7.2.0"
+numpydoc = "~1.6.0"
 pytest = "^7.1"
-mock = "~4.0.0"
-pytest-mock = "~3.8.0"
-pylint = "~2.13.0"
-mypy = "0.971"
-black = "22.8.0"
-bandit = "~1.7.0"
-isort = "~5.10.0"
+mock = "~5.1.0"
+pytest-mock = "~3.12.0"
+pytest-asyncio = "~0.23.0"
+pytest-cov = "~4.1.0"
+types-mock = "^5.0.0"
+dpytest = "0.7.0"
+flaky = "~3.7.0"
+ruff = "0.1.14"
+black = "23.12.1"
+vulture = "2.11"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"
@@ -45,26 +54,56 @@ pipo = "pipo.__main__:main"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.mypy]
-python_version = "3.9"
-warn_return_any = true
-warn_unused_configs = true
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+mock_use_standalone_module = true
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
-[tool.pylint]
-max-line-length = 88
-disable = [
-    "C0330",
+[tool.coverage.run]
+source = ['pipo']
+[tool.coverage.report]
+fail_under = 65
+omit = [
+    '*__init__.py',
+    '*__main__.py',
 ]
 
-[tool.black]
+[tool.ruff]
+select = [
+    "E",        #pycodestyle error
+    "W",        #pycodestyle warning
+    "D",        #pydocstyle
+    "F",        #pyflakes
+    "I",        #isort
+    "B",        #bugbear
+    "S",        #bandit
+    "N",        #pep8-naming
+    "G",        #flake8-logging-format
+    "PL",       #pylint
+    "FLY",      #flynt
+    "TRY",      #tryceratops
+    "TCH",      #flake8-type-checking
+    "C90",      #McCabe complexity
+    "ASYNC",    #flake8-async
+]
+extend-exclude = [
+    "tests",
+    "*__main__.py",
+    "*__init__.py",
+]
 line-length = 88
-target-version = ['py37']
-include = '\.pyi?$'
+ignore = [
+    "D100", # missing docstring in public module
+]
 
-[tool.isort]
-profile = "black"
+[tool.ruff.pydocstyle]
+convention = "numpy"
 
-[tool.bandit]
-exclude_dirs = ["tests"]
-tests = ["B201", "B301"]
-skips = ["B101", "B601"]
+[tool.vulture]
+paths = ["pipo/"]
+make_whitelist = true
+min_confidence = 70
+sort_by_size = true

@@ -1,6 +1,7 @@
 # Pipo
 
-## Description
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+
 Bot to play music in a discord channel based on user input.
 
 ## Installation
@@ -32,7 +33,7 @@ make image
 ## How to run
 After docker and docker compose one may run:
 
-### Containarized application (Docker)
+### Containerized application (Docker)
 Before running more commands, please make sure file '.env' was created in accordance with the available [example](.env.example).
 
 Start a single container with
@@ -47,7 +48,3 @@ make run_app
 
 ## License
 This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## Disclaimer
-This software was develop as a code challenge for Codacy, therefore,
-no enterprise level reliability assurances can be provided.
