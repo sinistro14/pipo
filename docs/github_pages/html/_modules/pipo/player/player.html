@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pipo.player.player &#8212; pipo 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pipo.player.player</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;Music Player.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pipo.config</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">pipo.player.music_queue.music_queue</span> <span class="kn">import</span> <span class="n">MusicQueue</span>
+<span class="kn">from</span> <span class="nn">pipo.player.music_queue.music_queue_factory</span> <span class="kn">import</span> <span class="n">MusicQueueFactory</span>
+
+
+<div class="viewcode-block" id="Player">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player">[docs]</a>
+<span class="k">class</span> <span class="nc">Player</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manage music and Discord voice channel interactions.</span>
+
+<span class="sd">    Acts as facilitator to manage audio information while interacting with Discord.</span>
+<span class="sd">    Maintains a music queue to which new audio sources are asynchronously added when</span>
+<span class="sd">    calling :meth:`~Player.play`. A thread is used to stream audio to Discord</span>
+<span class="sd">    until the music queue is exhausted. Whether such thread is allowed to continue</span>
+<span class="sd">    consuming the queue is specified using :attr:`~Player.can_play`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    __bot : :class:`~pipo.bot.PipoBot`</span>
+<span class="sd">        Client Discord bot.</span>
+<span class="sd">    __logger : logging.Logger</span>
+<span class="sd">        Class logger.</span>
+<span class="sd">    __player_thread : asyncio.Task</span>
+<span class="sd">        Obtains and plays music from :attr:`~Player._music_queue`.</span>
+<span class="sd">    _music_queue : :class:`~pipo.player.music_queue.music_queue.MusicQueue`</span>
+<span class="sd">        Stores music to play.</span>
+<span class="sd">    can_play : asyncio.Event</span>
+<span class="sd">        Whether new music from queue can be played.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__bot</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="n">__logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
+    <span class="n">__player_thread</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span>
+    <span class="n">_music_queue</span><span class="p">:</span> <span class="n">MusicQueue</span>
+    <span class="n">can_play</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build music player.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bot : :class:`~pipo.bot.PipoBot`</span>
+<span class="sd">            Client Discord bot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span> <span class="o">=</span> <span class="n">MusicQueueFactory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Player.clear">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.clear">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset music queue and halt currently playing audio.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Clearing Player state...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cleared queues&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Canceled player thread&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">voice_client</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Stopped voice client&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Clearing operation completed&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Player.skip">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.skip">[docs]</a>
+    <span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Skip currently playing music.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">voice_client</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.pause">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.pause">[docs]</a>
+    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause currently playing music.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">voice_client</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.resume">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.resume">[docs]</a>
+    <span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume previously paused music.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">voice_client</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.leave">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.leave">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">leave</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make bot leave the current server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">voice_client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.queue_size">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.queue_size">[docs]</a>
+    <span class="k">def</span> <span class="nf">queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get music queue size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span><span class="o">.</span><span class="n">size</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.fetch_queue_size">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.fetch_queue_size">[docs]</a>
+    <span class="k">def</span> <span class="nf">fetch_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get yet to process music queue size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span><span class="o">.</span><span class="n">fetch_queue_size</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.audio_queue_size">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.audio_queue_size">[docs]</a>
+    <span class="k">def</span> <span class="nf">audio_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get processed music queue size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span><span class="o">.</span><span class="n">audio_queue_size</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Player.player_status">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.player_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">player_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Player status description.&quot;&quot;&quot;</span>
+        <span class="n">audio_queue_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">audio_queue_size</span><span class="p">()</span>
+        <span class="n">fetch_queue_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_queue_size</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">audio_queue_size</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">fetch_queue_size</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="mi">25</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="s1">&#39;=&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">🎵</span><span class="se">\t</span><span class="s2">Ready to play: </span><span class="si">{</span><span class="n">audio_queue_size</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;🎵</span><span class="se">\t</span><span class="s2">Pending processing: </span><span class="si">{</span><span class="n">fetch_queue_size</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="mi">25</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="s1">&#39;=&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">unavailable_status</span></div>
+
+
+<div class="viewcode-block" id="Player.play">
+<a class="viewcode-back" href="../../../pipo.player.html#pipo.player.player.Player.play">[docs]</a>
+    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add music to play.</span>
+
+<span class="sd">        Enqueues music to be played when player thread is free and broadcasts such</span>
+<span class="sd">        availability. Music thread is initialized if not yet available.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        queries : Union[str, List[str]]</span>
+<span class="sd">            Single/list of music or playlist urls. If a query string is provided</span>
+<span class="sd">            the best guess music is played.</span>
+<span class="sd">        shuffle : bool, optional</span>
+<span class="sd">            Randomize play order when multiple musics are provided, by default False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span><span class="o">.</span><span class="n">done</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span><span class="o">.</span><span class="n">cancelled</span><span class="p">())</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_music_queue</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>  <span class="c1"># ensure an Iterable is used</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">queries</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__add_music</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__add_music</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add music to play queue.</span>
+
+<span class="sd">        Enqueues music to be played when player thread is free and broadcasts such</span>
+<span class="sd">        availability. Music thread is initialized if not yet available.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        queries : List[str]</span>
+<span class="sd">            List comprised of music, search query or playlist urls. If a query string is</span>
+<span class="sd">            found the best guess music is played.</span>
+<span class="sd">        shuffle : bool</span>
+<span class="sd">            Randomize order by which queries are added to play queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processing music query </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">queries</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">queries</span><span class="p">,</span>
+            <span class="n">shuffle</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_start_music_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize music thread.</span>
+
+<span class="sd">        Initializes music thread and allows music queue consumption.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__player_thread</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__play_music_queue</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">task_name</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_submit_music</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># TODO consider raised exceptions</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">submit_music</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__play_music_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Play music task.</span>
+
+<span class="sd">        Obtains a music from :attr:`~pipo.play.player.Player._music_queue` and creates</span>
+<span class="sd">        a task to submit to the Discord bot to be played.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entering music play loop&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span><span class="o">.</span><span class="n">wait</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Music queue size: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue_size</span><span class="p">())</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_music_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Submitting music </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">usedforsecurity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">submit_music</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;Cancelled task &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">task_name</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to play music </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">play_error</span><span class="p">)</span>
+            <span class="c1"># FIXME possible race check condition, None could be returned due to</span>
+            <span class="c1"># empty queue and still not enter this condition</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue_size</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Exiting music play loop due to empty queue&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to play music with invalid url &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Will wait for playing music to complete or exit if queue is empty&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_play</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Exiting play music queue loop&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bot</span><span class="o">.</span><span class="n">become_idle</span><span class="p">()</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">pipo</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pipo.html">pipo package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, Tiago Gonçalves, André Gonçalves.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
