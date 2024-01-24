@@ -13,7 +13,9 @@ on:
     types:
       - completed
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "dev" ]
+  push:
+    branches: [ "main" ]
 
 jobs:
   docker:
