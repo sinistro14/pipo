@@ -12,10 +12,8 @@ on:
     workflows: [ "Test Application" ]
     types:
       - completed
-  push:
-    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   docker:
