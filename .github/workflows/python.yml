@@ -8,7 +8,7 @@ name: Test Application
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "**" ]
 
 jobs:
   python:
