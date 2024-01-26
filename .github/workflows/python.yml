@@ -22,7 +22,6 @@ jobs:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
 
     steps:
-<<<<<<< HEAD
     - uses: actions/checkout@v4
 
     - name: Git Version
@@ -31,12 +30,6 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
-=======
-    - uses: actions/checkout@v3
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
->>>>>>> main
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -46,11 +39,7 @@ jobs:
 
     - name: Load cached venv
       id: cached-poetry-dependencies
-<<<<<<< HEAD
       uses: actions/cache@v4
-=======
-      uses: actions/cache@v3
->>>>>>> main
       with:
         path: .venv
         key: ${{ runner.os }}-venv-python${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
@@ -60,13 +49,10 @@ jobs:
       run: |
         make dev_setup
 
-<<<<<<< HEAD
     - name: Set project version
       run: |
         make set_version VERSION=${{ steps.version.outputs.version }}
 
-=======
->>>>>>> main
     - name: Run ruff
       run: |
         make ruff
