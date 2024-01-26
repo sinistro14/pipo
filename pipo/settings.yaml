@@ -1,0 +1,49 @@
+default:
+  log:
+    level: INFO
+    encoding: utf-8
+    format: "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+  # Application name
+  app:
+  # Discord channel
+  channel:
+  # Discord default voice channel
+  voice_channel:
+  bot_description: Discord Music Bot
+  commands:
+    prefix: "-"
+    # ensure same values are used in help messages
+    search: -q
+    shuffle: -s
+  pipo:
+    move_message_delay: 0.2       # seconds
+    check_if_playing_frequency: 3 # seconds
+    on_exit_disconnect_timeout: 5 # seconds
+    ffmpeg_config:
+      options: "-vn"
+      before_options: "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
+  player:
+    task_name: play_music_queue
+    messages:
+      disconnect: Bye bye !!!
+      play_error: Unable to play next music. Skipping.
+      unavailable_status: Status unavailable for used queue type.
+    idle:
+      task_name: idle_tracker
+      timeout: 1800  # 30 minutes
+    queue:
+      type: local
+      default: local
+      local:
+        get_music:
+          retries: 3
+          block: true
+          timeout: 8
+        prefetch_limit: 10
+        size_check_iterations: 3
+    url_fetch:
+      lock_timeout: 3 # seconds
+      timeout: 600    # seconds
+      pool_size: 2
+      retries: 3
+      wait: 1
