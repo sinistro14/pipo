@@ -5,16 +5,19 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "saturday"
     target-branch: "dependencies"
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "saturday"
     target-branch: "dependencies"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "saturday"
     open-pull-requests-limit: 10
