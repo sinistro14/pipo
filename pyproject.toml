@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pipo"
-version = "0.1.0"
+version = "0.0.0" # managed from CI only
 description = "Bot to play music in a discord channel"
 
 license = "MIT"

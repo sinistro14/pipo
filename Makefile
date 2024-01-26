@@ -65,6 +65,10 @@ coverage:
 docs:
 	$(POETRY) run make -C docs html
 
+.PHONY: set_version
+set_version:
+	$(POETRY) version $$VERSION
+
 .PHONY: dist
 dist:
 	$(POETRY) dist
