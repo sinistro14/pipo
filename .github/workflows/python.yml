@@ -23,10 +23,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0                # fetch the whole repo history
 
     - name: Git Version
       id: version
       uses: codacy/git-version@2.8.0
+      with:
+        release-branch: ${{ github.event.repository.default_branch }}
+
+    - name: Set variables
+      if: success()
+      id: prepare
+      shell: bash
+      run: |
+        echo "version=${TAG | cut -d '-' -f 1}" >> $GITHUB_OUTPUT
+      env:
+        TAG: ${{ steps.version.outputs.version }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
@@ -51,7 +65,7 @@ jobs:
 
     - name: Set project version
       run: |
-        make set_version VERSION=${{ steps.version.outputs.version }}
+        make set_version VERSION=${{ steps.prepare.outputs.version }}
 
     - name: Run ruff
       run: |
