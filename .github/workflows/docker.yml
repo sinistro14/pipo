@@ -105,3 +105,18 @@ jobs:
         username: ${{ secrets.DOCKER_CI_USERNAME }}
         password: ${{ secrets.DOCKER_CI_ACCESS_TOKEN }}
         repository: ${{ steps.prepare.outputs.image }}
+
+    - name: Push Tag
+      if: ${{ env.PUBLISH }}
+      run: |
+        git tag $TAG
+        git push origin $TAG
+      env:
+        TAG: ${{ steps.version.outputs.version }}
+    
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.version.outputs.version }}
+        makeLatest: true
+        generateReleaseNotes: true
