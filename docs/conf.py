@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "pipo"
-copyright = "2023, Tiago Gonçalves, André Gonçalves"
-author = "Tiago Gonçalves, André Gonçalves"
+copyright = "2024, Tiago Gonçalves"
+author = "Tiago Gonçalves, André Gonçalves, Miguel Peixoto"
 
 version = "0.1.0"
 release = version

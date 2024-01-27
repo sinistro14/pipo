@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pipo"
-version = "0.1.0"
+version = "0.0.0" # managed from CI only
 description = "Bot to play music in a discord channel"
 
 license = "MIT"
@@ -8,6 +8,7 @@ license = "MIT"
 authors = [
     "André Gonçalves <andrecg95@gmail.com>",
     "Tiago Gonçalves <tiago14_ribeiro@hotmail.com>",
+    "Miguel Peixoto <miguel.peixoto.99@gmail.com>",
 ]
 
 readme = 'README.md'
