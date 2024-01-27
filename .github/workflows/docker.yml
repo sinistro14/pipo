@@ -97,6 +97,8 @@ jobs:
           ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         platforms: ${{ steps.prepare.outputs.platforms }}
+        cache-from: type=registry,ref=${{ steps.prepare.outputs.image }}:buildcache
+        cache-to: type=registry,ref=${{ steps.prepare.outputs.image }}:buildcache,mode=max,image-manifest=true
 
     - name: Update Docker Hub description
       if: ${{ env.PUBLISH }}
