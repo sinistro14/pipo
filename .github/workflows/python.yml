@@ -52,14 +52,14 @@ jobs:
         make poetry_setup
 
     - name: Load cached venv
-      id: cached-poetry-dependencies
+      id: cached-dependencies
       uses: actions/cache@v4
       with:
         path: .venv
         key: ${{ runner.os }}-venv-python${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
     - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      if: steps.cached-dependencies.outputs.cache-hit != 'true'
       run: |
         make dev_setup
 
