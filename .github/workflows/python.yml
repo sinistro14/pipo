@@ -38,7 +38,7 @@ jobs:
       id: prepare
       shell: bash
       run: |
-        echo "version=${TAG%%-*}" >> $GITHUB_OUTPUT
+        echo version=${TAG%%-*} >> $GITHUB_OUTPUT
       env:
         TAG: ${{ steps.version.outputs.version }}
 

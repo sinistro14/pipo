@@ -55,7 +55,7 @@ jobs:
       run: |
         echo image=${GITHUB_REPOSITORY@L} >> $GITHUB_OUTPUT
         echo platforms=${TARGET_PLATFORMS} >> $GITHUB_OUTPUT
-        echo "version=${TAG | cut -d '-' -f 1}" >> $GITHUB_OUTPUT
+        echo version=${TAG%%-*} >> $GITHUB_OUTPUT
       env:
         TAG: ${{ steps.version.outputs.version }}
 
