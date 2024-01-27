@@ -1,4 +1,4 @@
-FROM python:3.11.7-slim-bookworm as base
+FROM python:3.12.1-slim-bookworm as base
 
     # python
 ENV APP_NAME="pipo" \
