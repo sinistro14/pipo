@@ -45,7 +45,7 @@ types-mock = "^5.0.0"
 dpytest = "0.7.0"
 flaky = "~3.7.0"
 ruff = "0.1.14"
-black = "23.12.1"
+black = "24.1.1"
 vulture = "2.11"
 
 [tool.poetry.scripts]
