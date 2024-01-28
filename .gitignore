@@ -1,5 +1,7 @@
 ### Custom ###
 poetry.lock
+.ruff_cache
+docs/_build
 
 ### PyCharm+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -665,3 +667,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Ignore dynaconf secret files
+*.secrets.*

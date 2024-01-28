@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pipo package &#8212; pipo 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pipo.cogs package" href="pipo.cogs.html" />
+    <link rel="prev" title="Welcome to pipo’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pipo-package">
+<h1>pipo package<a class="headerlink" href="#pipo-package" title="Link to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pipo.cogs.html">pipo.cogs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipo.cogs.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.cogs.html#module-pipo.cogs.music_bot">pipo.cogs.music_bot module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot"><code class="docutils literal notranslate"><span class="pre">MusicBot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.clear"><code class="docutils literal notranslate"><span class="pre">MusicBot.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.pause"><code class="docutils literal notranslate"><span class="pre">MusicBot.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.play"><code class="docutils literal notranslate"><span class="pre">MusicBot.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.reboot"><code class="docutils literal notranslate"><span class="pre">MusicBot.reboot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.resume"><code class="docutils literal notranslate"><span class="pre">MusicBot.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.skip"><code class="docutils literal notranslate"><span class="pre">MusicBot.skip</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.cogs.html#pipo.cogs.music_bot.MusicBot.status"><code class="docutils literal notranslate"><span class="pre">MusicBot.status</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.cogs.html#module-pipo.cogs">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipo.command.html">pipo.command package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.command">pipo.command.command module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.command.Command"><code class="docutils literal notranslate"><span class="pre">Command</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.command.Command.execute"><code class="docutils literal notranslate"><span class="pre">Command.execute</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.command_queue">pipo.command.command_queue module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.command_queue.CommandQueue"><code class="docutils literal notranslate"><span class="pre">CommandQueue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.command_queue.CommandQueue.add"><code class="docutils literal notranslate"><span class="pre">CommandQueue.add</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.command_queue.CommandQueue.stop"><code class="docutils literal notranslate"><span class="pre">CommandQueue.stop</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#pipo-command-join-module">pipo.command.join module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#pipo-command-leave-module">pipo.command.leave module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.pause">pipo.command.pause module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.pause.Pause"><code class="docutils literal notranslate"><span class="pre">Pause</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.pause.Pause.bot"><code class="docutils literal notranslate"><span class="pre">Pause.bot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.pause.Pause.ctx"><code class="docutils literal notranslate"><span class="pre">Pause.ctx</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.play">pipo.command.play module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.play.Play"><code class="docutils literal notranslate"><span class="pre">Play</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.play.Play.bot"><code class="docutils literal notranslate"><span class="pre">Play.bot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.play.Play.ctx"><code class="docutils literal notranslate"><span class="pre">Play.ctx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.play.Play.query"><code class="docutils literal notranslate"><span class="pre">Play.query</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.play.Play.shuffle"><code class="docutils literal notranslate"><span class="pre">Play.shuffle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.reboot">pipo.command.reboot module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.reboot.Reboot"><code class="docutils literal notranslate"><span class="pre">Reboot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.reboot.Reboot.bot"><code class="docutils literal notranslate"><span class="pre">Reboot.bot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.reboot.Reboot.ctx"><code class="docutils literal notranslate"><span class="pre">Reboot.ctx</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.resume">pipo.command.resume module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.resume.Resume"><code class="docutils literal notranslate"><span class="pre">Resume</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.resume.Resume.bot"><code class="docutils literal notranslate"><span class="pre">Resume.bot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.resume.Resume.ctx"><code class="docutils literal notranslate"><span class="pre">Resume.ctx</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command.skip">pipo.command.skip module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html#pipo.command.skip.Skip"><code class="docutils literal notranslate"><span class="pre">Skip</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.skip.Skip.bot"><code class="docutils literal notranslate"><span class="pre">Skip.bot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.command.html#pipo.command.skip.Skip.ctx"><code class="docutils literal notranslate"><span class="pre">Skip.ctx</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#pipo-command-stop-module">pipo.command.stop module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.command.html#module-pipo.command">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipo.player.html">pipo.player package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipo.player.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.player.html#module-pipo.player.player">pipo.player.player module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.audio_queue_size"><code class="docutils literal notranslate"><span class="pre">Player.audio_queue_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.can_play"><code class="docutils literal notranslate"><span class="pre">Player.can_play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.clear"><code class="docutils literal notranslate"><span class="pre">Player.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.fetch_queue_size"><code class="docutils literal notranslate"><span class="pre">Player.fetch_queue_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.leave"><code class="docutils literal notranslate"><span class="pre">Player.leave</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.pause"><code class="docutils literal notranslate"><span class="pre">Player.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.play"><code class="docutils literal notranslate"><span class="pre">Player.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.player_status"><code class="docutils literal notranslate"><span class="pre">Player.player_status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.queue_size"><code class="docutils literal notranslate"><span class="pre">Player.queue_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.resume"><code class="docutils literal notranslate"><span class="pre">Player.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.player.html#pipo.player.player.Player.skip"><code class="docutils literal notranslate"><span class="pre">Player.skip</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.player.html#module-pipo.player">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipo.states.html">pipo.states package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipo.states.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.states.html#module-pipo.states.disconnected_state">pipo.states.disconnected_state module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState"><code class="docutils literal notranslate"><span class="pre">DisconnectedState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.clear"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.join"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.join</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.leave"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.leave</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.name"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.pause"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.play"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.resume"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.disconnected_state.DisconnectedState.skip"><code class="docutils literal notranslate"><span class="pre">DisconnectedState.skip</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.states.html#module-pipo.states.idle_state">pipo.states.idle_state module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState"><code class="docutils literal notranslate"><span class="pre">IdleState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.cancel_event"><code class="docutils literal notranslate"><span class="pre">IdleState.cancel_event</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.clear"><code class="docutils literal notranslate"><span class="pre">IdleState.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.idle_tracker"><code class="docutils literal notranslate"><span class="pre">IdleState.idle_tracker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.join"><code class="docutils literal notranslate"><span class="pre">IdleState.join</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.leave"><code class="docutils literal notranslate"><span class="pre">IdleState.leave</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.pause"><code class="docutils literal notranslate"><span class="pre">IdleState.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.play"><code class="docutils literal notranslate"><span class="pre">IdleState.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.resume"><code class="docutils literal notranslate"><span class="pre">IdleState.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.idle_state.IdleState.skip"><code class="docutils literal notranslate"><span class="pre">IdleState.skip</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.states.html#module-pipo.states.playing_state">pipo.states.playing_state module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState"><code class="docutils literal notranslate"><span class="pre">PlayingState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.clear"><code class="docutils literal notranslate"><span class="pre">PlayingState.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.join"><code class="docutils literal notranslate"><span class="pre">PlayingState.join</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.leave"><code class="docutils literal notranslate"><span class="pre">PlayingState.leave</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.name"><code class="docutils literal notranslate"><span class="pre">PlayingState.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.pause"><code class="docutils literal notranslate"><span class="pre">PlayingState.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.play"><code class="docutils literal notranslate"><span class="pre">PlayingState.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.resume"><code class="docutils literal notranslate"><span class="pre">PlayingState.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.playing_state.PlayingState.skip"><code class="docutils literal notranslate"><span class="pre">PlayingState.skip</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.states.html#module-pipo.states.state">pipo.states.state module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.states.html#pipo.states.state.Context"><code class="docutils literal notranslate"><span class="pre">Context</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.Context.transition_to"><code class="docutils literal notranslate"><span class="pre">Context.transition_to</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pipo.states.html#pipo.states.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.clear"><code class="docutils literal notranslate"><span class="pre">State.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.context"><code class="docutils literal notranslate"><span class="pre">State.context</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.join"><code class="docutils literal notranslate"><span class="pre">State.join</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.leave"><code class="docutils literal notranslate"><span class="pre">State.leave</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.name"><code class="docutils literal notranslate"><span class="pre">State.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.pause"><code class="docutils literal notranslate"><span class="pre">State.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.play"><code class="docutils literal notranslate"><span class="pre">State.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.resume"><code class="docutils literal notranslate"><span class="pre">State.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pipo.states.html#pipo.states.state.State.skip"><code class="docutils literal notranslate"><span class="pre">State.skip</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pipo.states.html#module-pipo.states">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-pipo.bot">
+<span id="pipo-bot-module"></span><h2>pipo.bot module<a class="headerlink" href="#module-pipo.bot" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pipo.bot.PipoBot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pipo.bot.</span></span><span class="sig-name descname"><span class="pre">PipoBot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/bot.html#PipoBot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.bot.PipoBot" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Bot</span></code></p>
+<p>Top level Discord bot.</p>
+<p>Discord bot where functionality Cogs are integrated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">activity</span></code></dt><dd><p>Optional[<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivity</span></code>]: The activity being used upon logging in.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">allowed_mentions</span></code></dt><dd><p>Optional[<code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedMentions</span></code>]: The allowed mention configuration.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">application</span></code></dt><dd><p>Optional[<code class="xref py py-class docutils literal notranslate"><span class="pre">AppInfo</span></code>]: The client’s application info.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">application_flags</span></code></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ApplicationFlags</span></code>: The client’s application flags.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">application_id</span></code></dt><dd><p>Optional[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]: The client’s application ID.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cached_messages</span></code></dt><dd><p>Sequence[<code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code>]: Read-only list of messages the connected client has cached.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cogs</span></code></dt><dd><p>Mapping[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Cog</span></code>]: A read-only mapping of cog name to cog.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">commands</span></code></dt><dd><p>Set[<a class="reference internal" href="pipo.command.html#pipo.command.command.Command" title="pipo.command.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a>]: A unique set of commands without aliases that are registered.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">emojis</span></code></dt><dd><p>Sequence[<code class="xref py py-class docutils literal notranslate"><span class="pre">Emoji</span></code>]: The emojis that the connected client has.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">extensions</span></code></dt><dd><p>Mapping[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">py:types.ModuleType</span></code>]: A read-only mapping of extension name to extension.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">guilds</span></code></dt><dd><p>Sequence[<code class="xref py py-class docutils literal notranslate"><span class="pre">Guild</span></code>]: The guilds that the connected client is a member of.</p>
+</dd>
+<dt><strong>help_command</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">intents</span></code></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Intents</span></code>: The intents configured for this connection.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">latency</span></code></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>: Measures latency between a HEARTBEAT and a HEARTBEAT_ACK in seconds.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">persistent_views</span></code></dt><dd><p>Sequence[<code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code>]: A sequence of persistent views added to the client.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">private_channels</span></code></dt><dd><p>Sequence[<code class="xref py py-class docutils literal notranslate"><span class="pre">abc.PrivateChannel</span></code>]: The private channels that the connected client is participating on.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Status</span></code>:</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">stickers</span></code></dt><dd><p>Sequence[<code class="xref py py-class docutils literal notranslate"><span class="pre">GuildSticker</span></code>]: The stickers that the connected client has.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree</span></code></dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandTree</span></code>: The command tree responsible for handling the application commands</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">user</span></code></dt><dd><p>Optional[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientUser</span></code>]: Represents the connected client.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">users</span></code></dt><dd><p>List[<code class="xref py py-class docutils literal notranslate"><span class="pre">User</span></code>]: Returns a list of all the users the bot can see.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">voice_clients</span></code></dt><dd><p>List[<code class="xref py py-class docutils literal notranslate"><span class="pre">VoiceProtocol</span></code>]: Represents a list of voice connections.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_check</span></code>(func, /, *[, call_once])</p></td>
+<td><p>Adds a global check to the bot.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_cog</span></code>(cog, /, *[, override, guild, guilds])</p></td>
+<td><p><a href="#id1"><span class="problematic" id="id2">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_command</span></code>(command, /)</p></td>
+<td><p>Adds a <a class="reference internal" href="pipo.command.html#pipo.command.command.Command" title="pipo.command.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a> into the internal list of commands.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_listener</span></code>(func, /[, name])</p></td>
+<td><p>The non decorator alternative to <code class="xref py py-meth docutils literal notranslate"><span class="pre">listen</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_view</span></code>(view, *[, message_id])</p></td>
+<td><p>Registers a <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code> for persistent listening.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">after_invoke</span></code>(coro, /)</p></td>
+<td><p>A decorator that registers a coroutine as a post-invoke hook.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">application_info</span></code>()</p></td>
+<td><p><a href="#id3"><span class="problematic" id="id4">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">before_identify_hook</span></code>(shard_id, *[, initial])</p></td>
+<td><p><a href="#id5"><span class="problematic" id="id6">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">before_invoke</span></code>(coro, /)</p></td>
+<td><p>A decorator that registers a coroutine as a pre-invoke hook.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_presence</span></code>(*[, activity, status])</p></td>
+<td><p><a href="#id7"><span class="problematic" id="id8">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code>(func, /)</p></td>
+<td><p>A decorator that adds a global check to the bot.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_once</span></code>(func, /)</p></td>
+<td><p>A decorator that adds a &quot;call once&quot; global check to the bot.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>()</p></td>
+<td><p>Clears the internal state of the bot.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code>()</p></td>
+<td><p><a href="#id9"><span class="problematic" id="id10">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">command</span></code>([name, cls])</p></td>
+<td><p>A shortcut decorator that invokes <code class="xref py py-func docutils literal notranslate"><span class="pre">command</span></code> and adds it to the internal command list via <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_command</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code>(*[, reconnect])</p></td>
+<td><p><a href="#id11"><span class="problematic" id="id12">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_dm</span></code>(user)</p></td>
+<td><p><a href="#id13"><span class="problematic" id="id14">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_guild</span></code>(*, name[, icon, code])</p></td>
+<td><p><a href="#id15"><span class="problematic" id="id16">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_invite</span></code>(invite, /)</p></td>
+<td><p><a href="#id17"><span class="problematic" id="id18">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code>(coro, /)</p></td>
+<td><p>A decorator that registers an event to listen to.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_channel</span></code>(channel_id, /)</p></td>
+<td><p><a href="#id19"><span class="problematic" id="id20">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_guild</span></code>(guild_id, /, *[, with_counts])</p></td>
+<td><p><a href="#id21"><span class="problematic" id="id22">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_guilds</span></code>(*[, limit, before, after, ...])</p></td>
+<td><p>Retrieves an <span class="xref std std-term">asynchronous iterator</span> that enables receiving your guilds.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_invite</span></code>(url, *[, with_counts, ...])</p></td>
+<td><p><a href="#id23"><span class="problematic" id="id24">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_premium_sticker_packs</span></code>()</p></td>
+<td><p><a href="#id25"><span class="problematic" id="id26">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_stage_instance</span></code>(channel_id, /)</p></td>
+<td><p><a href="#id27"><span class="problematic" id="id28">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_sticker</span></code>(sticker_id, /)</p></td>
+<td><p><a href="#id29"><span class="problematic" id="id30">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_template</span></code>(code)</p></td>
+<td><p><a href="#id31"><span class="problematic" id="id32">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_user</span></code>(user_id, /)</p></td>
+<td><p><a href="#id33"><span class="problematic" id="id34">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_webhook</span></code>(webhook_id, /)</p></td>
+<td><p><a href="#id35"><span class="problematic" id="id36">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_widget</span></code>(guild_id, /)</p></td>
+<td><p><a href="#id37"><span class="problematic" id="id38">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_channels</span></code>()</p></td>
+<td><p>A generator that retrieves every <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.GuildChannel</span></code> the client can 'access'.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_members</span></code>()</p></td>
+<td><p>Returns a generator with every <code class="xref py py-class docutils literal notranslate"><span class="pre">Member</span></code> the client can see.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_channel</span></code>(id, /)</p></td>
+<td><p>Returns a channel or thread with the given ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cog</span></code>(name, /)</p></td>
+<td><p>Gets the cog instance requested.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_command</span></code>(name, /)</p></td>
+<td><p>Get a <a class="reference internal" href="pipo.command.html#pipo.command.command.Command" title="pipo.command.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a> from the internal list of commands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_context</span></code>(origin, /, *[, cls])</p></td>
+<td><p><a href="#id39"><span class="problematic" id="id40">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_emoji</span></code>(id, /)</p></td>
+<td><p>Returns an emoji with the given ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_guild</span></code>(id, /)</p></td>
+<td><p>Returns a guild with the given ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.bot.PipoBot.get_intents" title="pipo.bot.PipoBot.get_intents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_intents</span></code></a>()</p></td>
+<td><p>Define required intents for bot.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_partial_messageable</span></code>(id, *[, guild_id, type])</p></td>
+<td><p>Returns a partial messageable with the given channel ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_prefix</span></code>(message, /)</p></td>
+<td><p><a href="#id41"><span class="problematic" id="id42">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_stage_instance</span></code>(id, /)</p></td>
+<td><p>Returns a stage instance with the given stage channel ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sticker</span></code>(id, /)</p></td>
+<td><p>Returns a guild sticker with the given ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_user</span></code>(id, /)</p></td>
+<td><p>Returns a user with the given ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">group</span></code>([name, cls])</p></td>
+<td><p>A shortcut decorator that invokes <code class="xref py py-func docutils literal notranslate"><span class="pre">group</span></code> and adds it to the internal command list via <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_command</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hybrid_command</span></code>([name, with_app_command])</p></td>
+<td><p>A shortcut decorator that invokes <code class="xref py py-func docutils literal notranslate"><span class="pre">hybrid_command</span></code> and adds it to the internal command list via <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_command</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hybrid_group</span></code>([name, with_app_command])</p></td>
+<td><p>A shortcut decorator that invokes <code class="xref py py-func docutils literal notranslate"><span class="pre">hybrid_group</span></code> and adds it to the internal command list via <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_command</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">invoke</span></code>(ctx, /)</p></td>
+<td><p><a href="#id43"><span class="problematic" id="id44">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_closed</span></code>()</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>: Indicates if the websocket connection is closed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_owner</span></code>(user, /)</p></td>
+<td><p><a href="#id45"><span class="problematic" id="id46">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_ready</span></code>()</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>: Specifies if the client's internal cache is ready for use.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_ws_ratelimited</span></code>()</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>: Whether the websocket is currently rate limited.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">listen</span></code>([name])</p></td>
+<td><p>A decorator that registers another function as an external event listener.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_extension</span></code>(name, *[, package])</p></td>
+<td><p><a href="#id47"><span class="problematic" id="id48">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">login</span></code>(token)</p></td>
+<td><p><a href="#id49"><span class="problematic" id="id50">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_command_error</span></code>(context, exception, /)</p></td>
+<td><p><a href="#id51"><span class="problematic" id="id52">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_error</span></code>(event_method, /, *args, **kwargs)</p></td>
+<td><p><a href="#id53"><span class="problematic" id="id54">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.bot.PipoBot.on_ready" title="pipo.bot.PipoBot.on_ready"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_ready</span></code></a>()</p></td>
+<td><p>Triggered when bot reaches a stable functionality state.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_commands</span></code>(message, /)</p></td>
+<td><p><a href="#id55"><span class="problematic" id="id56">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload_extension</span></code>(name, *[, package])</p></td>
+<td><p><a href="#id57"><span class="problematic" id="id58">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_check</span></code>(func, /, *[, call_once])</p></td>
+<td><p>Removes a global check from the bot.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_cog</span></code>(name, /, *[, guild, guilds])</p></td>
+<td><p><a href="#id59"><span class="problematic" id="id60">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_command</span></code>(name, /)</p></td>
+<td><p>Remove a <a class="reference internal" href="pipo.command.html#pipo.command.command.Command" title="pipo.command.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a> from the internal list of commands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_listener</span></code>(func, /[, name])</p></td>
+<td><p>Removes a listener from the pool of listeners.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code>(token, *[, reconnect, log_handler, ...])</p></td>
+<td><p>A blocking call that abstracts away the event loop initialisation from you.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_hook</span></code>()</p></td>
+<td><p><a href="#id61"><span class="problematic" id="id62">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code>(token, *[, reconnect])</p></td>
+<td><p><a href="#id63"><span class="problematic" id="id64">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unload_extension</span></code>(name, *[, package])</p></td>
+<td><p><a href="#id65"><span class="problematic" id="id66">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for</span></code>(event, /, *[, check, timeout])</p></td>
+<td><p><a href="#id67"><span class="problematic" id="id68">|coro|</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_until_ready</span></code>()</p></td>
+<td><p><a href="#id69"><span class="problematic" id="id70">|coro|</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk_commands</span></code>()</p></td>
+<td><p>An iterator that recursively walks through all commands and subcommands.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>can_run</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>dispatch</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_message</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>recursively_remove_all_commands</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.bot.PipoBot.get_intents">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_intents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Intents</span></span></span><a class="reference internal" href="_modules/pipo/bot.html#PipoBot.get_intents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.bot.PipoBot.get_intents" title="Link to this definition">¶</a></dt>
+<dd><p>Define required intents for bot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>discord.Intents</dt><dd><p>Intents required for bot to function.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.bot.PipoBot.on_ready">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/bot.html#PipoBot.on_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.bot.PipoBot.on_ready" title="Link to this definition">¶</a></dt>
+<dd><p>Triggered when bot reaches a stable functionality state.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pipo.config">
+<span id="pipo-config-module"></span><h2>pipo.config module<a class="headerlink" href="#module-pipo.config" title="Link to this heading">¶</a></h2>
+<p>Common configuration.</p>
+<p>Load importable settings from configuration files.</p>
+</section>
+<section id="module-pipo.pipo">
+<span id="pipo-pipo-module"></span><h2>pipo.pipo module<a class="headerlink" href="#module-pipo.pipo" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pipo.pipo.</span></span><span class="sig-name descname"><span class="pre">Pipo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Bot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipo.states.html#pipo.states.state.Context" title="pipo.states.state.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a></p>
+<p>Music player bot.</p>
+<p>Converts application side logic to Discord requests.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.become_idle" title="pipo.pipo.Pipo.become_idle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">become_idle</span></code></a>()</p></td>
+<td><p>Transition bot to idle state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.clear" title="pipo.pipo.Pipo.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>(ctx)</p></td>
+<td><p>Clear music queue and bot state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.current_state" title="pipo.pipo.Pipo.current_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_state</span></code></a>()</p></td>
+<td><p>Provide current state name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.ensure_connection" title="pipo.pipo.Pipo.ensure_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_connection</span></code></a>([ctx])</p></td>
+<td><p>Ensure a discord channel connection is established.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.join" title="pipo.pipo.Pipo.join"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join</span></code></a>(ctx)</p></td>
+<td><p>Join a channel defined in discord context.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.move_message" title="pipo.pipo.Pipo.move_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_message</span></code></a>(ctx)</p></td>
+<td><p>Move discord processed message request to default music channel.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.pause" title="pipo.pipo.Pipo.pause"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pause</span></code></a>(ctx)</p></td>
+<td><p>Pause currently playing music.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.play" title="pipo.pipo.Pipo.play"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play</span></code></a>(ctx, query, shuffle)</p></td>
+<td><p>Add music to play.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.queue_size" title="pipo.pipo.Pipo.queue_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">queue_size</span></code></a>()</p></td>
+<td><p>Provide current queue size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.reboot" title="pipo.pipo.Pipo.reboot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reboot</span></code></a>(ctx)</p></td>
+<td><p>Reboot bot.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.resume" title="pipo.pipo.Pipo.resume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resume</span></code></a>(ctx)</p></td>
+<td><p>Resume previously playing music.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.send_message" title="pipo.pipo.Pipo.send_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_message</span></code></a>(message)</p></td>
+<td><p>Send a message to discord channel.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.skip" title="pipo.pipo.Pipo.skip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skip</span></code></a>(ctx)</p></td>
+<td><p>Skip currently playing music.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.status" title="pipo.pipo.Pipo.status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></a>(ctx)</p></td>
+<td><p>Send current status to discord channel.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pipo.pipo.Pipo.submit_music" title="pipo.pipo.Pipo.submit_music"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_music</span></code></a>(url)</p></td>
+<td><p>Submit a music to be played on Discord voice channel.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transition_to</span></code>(state)</p></td>
+<td><p>Transition state to a new one.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.become_idle">
+<span class="sig-name descname"><span class="pre">become_idle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.become_idle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.become_idle" title="Link to this definition">¶</a></dt>
+<dd><p>Transition bot to idle state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.bot">
+<span class="sig-name descname"><span class="pre">bot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Bot</span></em><a class="headerlink" href="#pipo.pipo.Pipo.bot" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.clear">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear music queue and bot state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.current_state">
+<span class="sig-name descname"><span class="pre">current_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.current_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.current_state" title="Link to this definition">¶</a></dt>
+<dd><p>Provide current state name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.ensure_connection">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ensure_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.ensure_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.ensure_connection" title="Link to this definition">¶</a></dt>
+<dd><p>Ensure a discord channel connection is established.</p>
+<p>If a connection was already established, retries connecting to channel.
+If no connection was established, creates a connection to the same voice
+channel the caller user was in or to a default channel otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ctx</strong><span class="classifier">Dctx, optional</span></dt><dd><p>Discord context from where to obtain user voice channel, by default None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.join">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.join" title="Link to this definition">¶</a></dt>
+<dd><p>Join a channel defined in discord context.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.move_message">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">move_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.move_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.move_message" title="Link to this definition">¶</a></dt>
+<dd><p>Move discord processed message request to default music channel.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.music_channel">
+<span class="sig-name descname"><span class="pre">music_channel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">VoiceChannel</span></em><a class="headerlink" href="#pipo.pipo.Pipo.music_channel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.pause">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.pause"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.pause" title="Link to this definition">¶</a></dt>
+<dd><p>Pause currently playing music.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.play">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.play"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.play" title="Link to this definition">¶</a></dt>
+<dd><p>Add music to play.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ctx</strong><span class="classifier">Dctx</span></dt><dd><p>Bot context.</p>
+</dd>
+<dt><strong>query</strong><span class="classifier">List[str]</span></dt><dd><p>Music to play.</p>
+</dd>
+<dt><strong>shuffle</strong><span class="classifier">bool</span></dt><dd><p>Randomize play order when multiple musics are provided.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.player">
+<span class="sig-name descname"><span class="pre">player</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pipo.player.html#pipo.player.player.Player" title="pipo.player.player.Player"><span class="pre">Player</span></a></em><a class="headerlink" href="#pipo.pipo.Pipo.player" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.queue_size">
+<span class="sig-name descname"><span class="pre">queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.queue_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.queue_size" title="Link to this definition">¶</a></dt>
+<dd><p>Provide current queue size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.reboot">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reboot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.reboot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.reboot" title="Link to this definition">¶</a></dt>
+<dd><p>Reboot bot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.resume">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.resume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.resume" title="Link to this definition">¶</a></dt>
+<dd><p>Resume previously playing music.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.send_message">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.send_message" title="Link to this definition">¶</a></dt>
+<dd><p>Send a message to discord channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.skip">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">skip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.skip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.skip" title="Link to this definition">¶</a></dt>
+<dd><p>Skip currently playing music.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.status">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.status" title="Link to this definition">¶</a></dt>
+<dd><p>Send current status to discord channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.submit_music">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">submit_music</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/pipo/pipo.html#Pipo.submit_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipo.pipo.Pipo.submit_music" title="Link to this definition">¶</a></dt>
+<dd><p>Submit a music to be played on Discord voice channel.</p>
+<p>Submits a music to Discord voice channel and waits until it is over to
+proceed to terminate task. This waiting mechanism makes use o sequential voice
+client state checks and asyncio.sleep invocations.
+Active reconnection is attempted if a music cannot be played due to connection
+issues and discarded in all other cases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>url</strong><span class="classifier">str</span></dt><dd><p>URL of music to play.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>asyncio.CancelledError</dt><dd><p>Asyncio task was cancelled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pipo.pipo.Pipo.voice_client">
+<span class="sig-name descname"><span class="pre">voice_client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">VoiceClient</span></em><a class="headerlink" href="#pipo.pipo.Pipo.voice_client" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pipo">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pipo" title="Link to this heading">¶</a></h2>
+<p>Bot to play music in a discord channel.</p>
+<p>Discord bot to play music in a voice channel using online sources.
+Available sources include:
+- Youtube</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pipo</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pipo package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipo.cogs.html">pipo.cogs package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipo.command.html">pipo.command package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipo.player.html">pipo.player package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipo.states.html">pipo.states package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pipo.bot">pipo.bot module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pipo.bot.PipoBot"><code class="docutils literal notranslate"><span class="pre">PipoBot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.bot.PipoBot.get_intents"><code class="docutils literal notranslate"><span class="pre">PipoBot.get_intents</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.bot.PipoBot.on_ready"><code class="docutils literal notranslate"><span class="pre">PipoBot.on_ready</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pipo.config">pipo.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pipo.pipo">pipo.pipo module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pipo.pipo.Pipo"><code class="docutils literal notranslate"><span class="pre">Pipo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.become_idle"><code class="docutils literal notranslate"><span class="pre">Pipo.become_idle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.bot"><code class="docutils literal notranslate"><span class="pre">Pipo.bot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.clear"><code class="docutils literal notranslate"><span class="pre">Pipo.clear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.current_state"><code class="docutils literal notranslate"><span class="pre">Pipo.current_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.ensure_connection"><code class="docutils literal notranslate"><span class="pre">Pipo.ensure_connection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.join"><code class="docutils literal notranslate"><span class="pre">Pipo.join</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.move_message"><code class="docutils literal notranslate"><span class="pre">Pipo.move_message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.music_channel"><code class="docutils literal notranslate"><span class="pre">Pipo.music_channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.pause"><code class="docutils literal notranslate"><span class="pre">Pipo.pause</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.play"><code class="docutils literal notranslate"><span class="pre">Pipo.play</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.player"><code class="docutils literal notranslate"><span class="pre">Pipo.player</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.queue_size"><code class="docutils literal notranslate"><span class="pre">Pipo.queue_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.reboot"><code class="docutils literal notranslate"><span class="pre">Pipo.reboot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.resume"><code class="docutils literal notranslate"><span class="pre">Pipo.resume</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.send_message"><code class="docutils literal notranslate"><span class="pre">Pipo.send_message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.skip"><code class="docutils literal notranslate"><span class="pre">Pipo.skip</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.status"><code class="docutils literal notranslate"><span class="pre">Pipo.status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.submit_music"><code class="docutils literal notranslate"><span class="pre">Pipo.submit_music</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipo.pipo.Pipo.voice_client"><code class="docutils literal notranslate"><span class="pre">Pipo.voice_client</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pipo">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to pipo’s documentation!</a></li>
+      <li>Next: <a href="pipo.cogs.html" title="next chapter">pipo.cogs package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Tiago Gonçalves.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/pipo.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

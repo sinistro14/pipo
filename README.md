@@ -1,6 +1,11 @@
 # Pipo
+![License](https://img.shields.io/github/license/sinistro14/pipo)
+![Build](https://img.shields.io/github/actions/workflow/status/sinistro14/pipo/docker.yml)
+![Version](https://img.shields.io/github/v/tag/sinistro14/pipo)
+[![Docker Image](https://img.shields.io/docker/image-size/sinistro14/pipo/latest)](https://hub.docker.com/r/sinistro14/pipo)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![Sphinx](https://img.shields.io/badge/Docs-Sphinx-%230000?style=flat&logo=sphinx&color=%230A507A)](https://www.sphinx-doc.org/)
 
-## Description
 Bot to play music in a discord channel based on user input.
 
 ## Installation
@@ -32,7 +37,7 @@ make image
 ## How to run
 After docker and docker compose one may run:
 
-### Containarized application (Docker)
+### Containerized application (Docker)
 Before running more commands, please make sure file '.env' was created in accordance with the available [example](.env.example).
 
 Start a single container with
@@ -47,7 +52,3 @@ make run_app
 
 ## License
 This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## Disclaimer
-This software was develop as a code challenge for Codacy, therefore,
-no enterprise level reliability assurances can be provided.
