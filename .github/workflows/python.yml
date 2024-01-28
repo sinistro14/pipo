@@ -8,7 +8,7 @@ name: Test Application
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "**" ]
 
 jobs:
   python:
@@ -22,10 +22,28 @@ jobs:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0                # fetch the whole repo history
+
+    - name: Git Version
+      id: version
+      uses: codacy/git-version@2.8.0
+      with:
+        release-branch: ${{ github.event.repository.default_branch }}
+
+    - name: Set variables
+      if: success()
+      id: prepare
+      shell: bash
+      run: |
+        echo version=${TAG%%-*} >> $GITHUB_OUTPUT
+      env:
+        TAG: ${{ steps.version.outputs.version }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -34,16 +52,20 @@ jobs:
         make poetry_setup
 
     - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v3
+      id: cached-dependencies
+      uses: actions/cache@v4
       with:
         path: .venv
         key: ${{ runner.os }}-venv-python${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
     - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      if: steps.cached-dependencies.outputs.cache-hit != 'true'
       run: |
         make dev_setup
+
+    - name: Set project version
+      run: |
+        make set_version VERSION=${{ steps.prepare.outputs.version }}
 
     - name: Run ruff
       run: |

@@ -16,6 +16,7 @@ help:
 	$(PRINT) "    docs          generate code documentation"
 	$(PRINT) "    test          run test suite"
 	$(PRINT) "    coverage      run coverage analysis"
+	$(PRINT) "    set_version   set program version"
 	$(PRINT) "    dist          package application for distribution"
 	$(PRINT) "    image         build app docker image"
 	$(PRINT) "    run_image     run app docker image in a container"
@@ -64,6 +65,10 @@ coverage:
 .PHONY: docs
 docs:
 	$(POETRY) run make -C docs html
+
+.PHONY: set_version
+set_version:
+	$(POETRY) version $$VERSION
 
 .PHONY: dist
 dist:

@@ -66,6 +66,8 @@ RUN apt-get update \
 # copy project requirement files to ensure they will be cached
 WORKDIR $PYSETUP_PATH
 COPY pyproject.toml ./
+ARG PROGRAM_VERSION=0.0.0
+RUN poetry version $PROGRAM_VERSION
 
 # install runtime dependencies, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
 RUN poetry install --without dev

@@ -1,7 +1,7 @@
 # This workflow will
 # - ensure branch dependencies is up to date in accordance to dev.
 
-name: Automatic Rebase
+name: Rebase 'dependencies' branch
 
 on:
   push:
@@ -9,10 +9,10 @@ on:
 
 jobs:
   rebase:
-    name: Rebase `dependencies` with `dev`
+    name: Rebase 'dependencies' with 'dev'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # otherwise, one would need to push refs to dest repo
           ref: dependencies
