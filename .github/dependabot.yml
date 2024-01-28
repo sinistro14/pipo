@@ -7,6 +7,9 @@ updates:
       interval: "weekly"
       day: "saturday"
     target-branch: "dependencies"
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
 
   - package-ecosystem: "docker"
     directory: "/"
@@ -21,3 +24,7 @@ updates:
       interval: "weekly"
       day: "saturday"
     open-pull-requests-limit: 10
+    groups:
+      github-actions:
+        patterns:
+          - "*"
