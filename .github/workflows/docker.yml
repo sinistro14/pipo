@@ -29,7 +29,7 @@ jobs:
       REGISTRY: docker.io
       TARGET_PLATFORMS: linux/amd64,linux/arm/v7,linux/arm64
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
     - uses: actions/checkout@v4
@@ -121,6 +121,7 @@ jobs:
         git push origin $TAG
       env:
         TAG: ${{ steps.version.outputs.version }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Create Release
       if: ${{ env.PUBLISH }}
@@ -129,3 +130,5 @@ jobs:
         tag: ${{ steps.version.outputs.version }}
         makeLatest: true
         generateReleaseNotes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
