@@ -22,7 +22,7 @@ jobs:
     name: Build + Publish Docker Image
     runs-on: ubuntu-22.04
     env:
-      PUBLISH: ${{ github.event_name != 'pull_request' && github.event.workflow_run.conclusion == 'success'}}
+      PUBLISH: ${{ github.ref_name == github.event.repository.default_branch && github.event.workflow_run.conclusion == 'success'}}
       REGISTRY: docker.io
       TARGET_PLATFORMS: linux/amd64,linux/arm/v7,linux/arm64
     permissions:
