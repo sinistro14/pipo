@@ -106,16 +106,21 @@ jobs:
         username: ${{ secrets.DOCKER_CI_USERNAME }}
         password: ${{ secrets.DOCKER_CI_ACCESS_TOKEN }}
         repository: ${{ steps.prepare.outputs.image }}
+        enable-url-completion: true
+        short-description: ${{ github.event.repository.description }}
 
     - name: Push Tag
       if: ${{ env.PUBLISH }}
       run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
         git tag $TAG
         git push origin $TAG
       env:
         TAG: ${{ steps.version.outputs.version }}
     
     - name: Create Release
+      if: ${{ env.PUBLISH }}
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.version.outputs.version }}
