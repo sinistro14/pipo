@@ -4,6 +4,7 @@
 name: Rebase 'dependencies' branch
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "dev" ]
 
