@@ -7,6 +7,7 @@
 name: Test Application
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "**" ]
 

@@ -8,14 +8,11 @@
 name: Build/Publish Docker Image
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: [ "Test Application" ]
-    types:
-      - completed
-  pull_request:
-    branches: [ "dev" ]
-  push:
-    branches: [ "main" ]
+    types: [ "completed" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   docker:
