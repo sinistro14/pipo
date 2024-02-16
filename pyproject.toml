@@ -73,6 +73,14 @@ omit = [
 ]
 
 [tool.ruff]
+extend-exclude = [
+    "tests",
+    "*__main__.py",
+    "*__init__.py",
+]
+line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",        #pycodestyle error
     "W",        #pycodestyle warning
@@ -89,18 +97,13 @@ select = [
     "TCH",      #flake8-type-checking
     "C90",      #McCabe complexity
     "ASYNC",    #flake8-async
+    "PERF",     #perflint
 ]
-extend-exclude = [
-    "tests",
-    "*__main__.py",
-    "*__init__.py",
-]
-line-length = 88
 ignore = [
     "D100", # missing docstring in public module
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.vulture]
