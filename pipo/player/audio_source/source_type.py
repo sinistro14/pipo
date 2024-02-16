@@ -1,4 +1,5 @@
 """Music Queue Types."""
+
 try:
     # breaking change introduced in python 3.11
     from enum import StrEnum
