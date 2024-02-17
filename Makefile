@@ -4,6 +4,8 @@ APP=$(PIPO_APP)
 CONFIG_PATH=pyproject.toml
 POETRY=poetry
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
+DOCUMENTATION=docs
+DIAGRAMS_FORMAT=plantuml
 
 .PHONY: help
 help:
@@ -64,7 +66,11 @@ coverage:
 
 .PHONY: docs
 docs:
-	$(POETRY) run make -C docs html
+	$(POETRY) run pyreverse -p $(APP) \
+		--colorized \
+		-o $(DIAGRAMS_FORMAT) \
+		-d $(DOCUMENTATION)/diagrams/src $(APP)
+	$(POETRY) run make -C $(DOCUMENTATION) html
 
 .PHONY: set_version
 set_version:

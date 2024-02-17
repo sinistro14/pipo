@@ -47,6 +47,7 @@ flaky = "~3.7.0"
 ruff = "0.2.1"
 black = "24.1.1"
 vulture = "2.11"
+pylint = "~3.0.0"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"
