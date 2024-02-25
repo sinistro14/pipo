@@ -38,7 +38,6 @@ jobs:
           publish: false
           python_version: '3.11'
           sphinx_version: '7.2.*'
-          sphinx_build_options: '-M'
           documentation_path: ${{ env.DOCUMENTATION_PATH }}
       - name: Fix file permissions
         if: runner.os == 'Linux'
