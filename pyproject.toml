@@ -34,7 +34,7 @@ dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 
 [tool.poetry.dev-dependencies]
 setuptools = "*"
-sphinx = "~7.2.0"
+sphinx = "~7.2.0" # ensure minor version in sync with CI
 numpydoc = "~1.6.0"
 pytest = "^8.0"
 mock = "~5.1.0"
