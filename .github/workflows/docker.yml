@@ -1,9 +1,6 @@
-# This workflow will
-# - build docker image with arm7 as target (as used by Raspberry Pi 4 Model B);
-# - push image to a repository.
-# For more information see:
-# https://github.com/docker/setup-buildx-action
-# https://github.com/marketplace/actions/build-and-push-docker-images
+# Workflow will
+# - build docker image with linux/amd64, linux/arm/v7, linux/arm64 targets;
+# - push image to a Docker Hub and Github Releases.
 
 name: Build/Publish Docker Image
 

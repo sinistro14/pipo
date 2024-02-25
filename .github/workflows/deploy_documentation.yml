@@ -1,0 +1,42 @@
+name: deploy_documentation
+
+on:
+  workflow_call:
+    inputs:
+      documentation_path:
+        description: Path to documentation source folder
+        required: true
+        type: string
+      artifact:
+        description: Directory where artifact with HTML documentation is available
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      pages: write      # deploy to Pages
+      id-token: write   # verify deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      DOCUMENTATION_PATH: ${{ inputs.documentation_path }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clean documentation
+        run: |
+          rm -rf "$DOCUMENTATION_PATH"
+          mkdir "$DOCUMENTATION_PATH"
+      - name: Download Documentation Artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          run_id: ${{ github.event.workflow_call.id }}
+          name: ${{ inputs.artifact }}
+          path: ${{ inputs.documentation_path }}
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ inputs.artifact }}

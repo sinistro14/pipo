@@ -1,0 +1,62 @@
+name: build_documentation
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+env:
+  DOCUMENTATION_PATH: docs
+
+jobs:
+  build:
+    name: Build Github Pages resources 
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: plantuml
+        id: plantuml
+        uses: grassedge/generate-plantuml-action@v1.5
+        with:
+          path: ${{ env.DOCUMENTATION_PATH }}/diagrams/src
+          message: Render PlantUML files
+        # FIXME ignore plantuml failure for now
+      - uses: sphinx-notes/pages@v3
+        id: sphinx
+        if: success() || failure() 
+        with:
+          cache: true
+          publish: false
+          python_version: '3.11'
+          sphinx_version: '7.2.*'
+          sphinx_build_options: '-M'
+          documentation_path: ${{ env.DOCUMENTATION_PATH }}
+      - name: Fix file permissions
+        if: runner.os == 'Linux'
+        run: |
+          chmod -c -R +rX "$DOCUMENTATION_PATH" | while read line; do
+            echo "::warning title=Invalid file permissions fixed::$line"
+          done
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ env.DOCUMENTATION_PATH }}
+
+  publish:
+    name: Publish Github Pages
+    runs-on: ubuntu-22.04
+    needs: build
+    if: ${{ github.ref_name == github.event.repository.default_branch }}
+    steps:
+      - uses: ./.github/workflows/deploy_documentation.yml
+        with:
+          artifact: gh-pages-${{ github.sha }}
+          documentation_path: ${{ env.DOCUMENTATION_PATH }}
