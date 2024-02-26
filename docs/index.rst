@@ -8,7 +8,7 @@ Welcome to pipo's documentation!
 
 .. toctree::
    :maxdepth: 4
-   :caption: Contents:
+   :caption: Content
 
    pipo
 
