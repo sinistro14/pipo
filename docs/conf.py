@@ -10,8 +10,7 @@ project = "pipo"
 copyright = "2024, Tiago Gonçalves"
 author = "Tiago Gonçalves, André Gonçalves, Miguel Peixoto"
 
-version = "0.1.0"
-release = version
+version = release = "0.1.0"
 
 nitpicky = True
 
@@ -26,11 +25,11 @@ extensions = [
     "sphinx.ext.githubpages",
 ]
 
+master_doc = 'index'
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-
+show_authors = True
 add_function_parentheses = False
-
 language = "en"
 
 # -- Options for HTML output -------------------------------------------------
@@ -38,6 +37,12 @@ language = "en"
 
 html_theme = "alabaster"
 html_static_path = ["_static"]
+html_theme_options = {
+    "source_repository": "https://github.com/sinistro14/pipo/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+}
+html_baseurl = 'https://sinistro14.github.io/pipo'
 
 # -- Options for todo extension ----------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#configuration
