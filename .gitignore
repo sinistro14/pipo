@@ -2,7 +2,8 @@
 poetry.lock
 .ruff_cache
 docs/_build
-docs/diagrams
+docs/_static
+docs/_diagrams
 docs/github_pages
 requirements.txt
 
