@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       artifact:
-        description: Directory where artifact with HTML documentation is available
+        description: Workflow artifact where HTML documentation is available
         required: true
         type: string
 
