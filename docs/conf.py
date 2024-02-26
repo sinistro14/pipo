@@ -1,8 +1,3 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -18,24 +13,36 @@ nitpicky = True
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "numpydoc",
-    "sphinx.ext.autodoc",
+    "autoapi.extension",
+    "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
+    "sphinx_immaterial",
 ]
 
-master_doc = 'index'
+master_doc = "index"
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "_templates"]
 show_authors = True
 add_function_parentheses = False
 language = "en"
 
+# -- Options for autoapi ----------------------------------------------
+autoapi_dirs = ['../pipo']
+
+# -- Options for napoleon ----------------------------------------------
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+napoleon_include_private_with_doc = True
+napoleon_include_special_with_doc = False
+napoleon_preprocess_types = True
+napoleon_attr_annotations = True
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = 'sphinx_immaterial'
 html_extra_path = []
 html_static_path = ["_static"]
 html_theme_options = {
@@ -47,5 +54,4 @@ html_baseurl = 'https://sinistro14.github.io/pipo'
 
 # -- Options for todo extension ----------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#configuration
-
 todo_include_todos = True

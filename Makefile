@@ -66,10 +66,11 @@ coverage:
 
 .PHONY: docs
 docs:
+	mkdir -p $(DOCUMENTATION)/_static $(DOCUMENTATION)/_diagrams
 	$(POETRY) run pyreverse -p $(APP) \
 		--colorized \
 		-o $(DIAGRAMS_FORMAT) \
-		-d $(DOCUMENTATION)/diagrams/src $(APP)
+		-d $(DOCUMENTATION)/_diagrams/src $(APP)
 	$(POETRY) run make -C $(DOCUMENTATION) html
 
 .PHONY: set_version
