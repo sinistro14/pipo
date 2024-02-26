@@ -29,12 +29,6 @@ jobs:
         run: |
           rm -rf "$DOCUMENTATION_PATH"
           mkdir "$DOCUMENTATION_PATH"
-      - name: Download Documentation Artifact
-        uses: dawidd6/action-download-artifact@v3
-        with:
-          run_id: ${{ github.event.workflow_call.id }}
-          name: ${{ inputs.artifact }}
-          path: ${{ inputs.documentation_path }}
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
