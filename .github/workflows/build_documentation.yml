@@ -55,3 +55,6 @@ jobs:
     name: Publish Github Pages
     needs: build
     uses: ./.github/workflows/deploy_documentation.yml
+    with:
+      artifact: gh-pages-${{ github.sha }}
+      documentation_path: docs
