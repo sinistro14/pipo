@@ -41,23 +41,19 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
+      - name: Install poetry export plugin
+        run: poetry self add poetry-plugin-export
+      - name: Load poetry lock
+        id: cached-poetry-lock
         uses: actions/cache@v3
         with:
-          path: .venv
-          key: docs-venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-      - name: Install poetry export plugin
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry self add poetry-plugin-export
+          path: poetry.lock
+          key: docs-lock-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Poetry lock
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry lock
+        run: poetry lock --no-update
       - name: Export requirements.txt
         run: |
           poetry export -n --without-hashes --only=docs -f requirements.txt -o requirements.txt
-      - name: Make project visible to Sphinx
-        run: cp -r pipo /tmp/
       - uses: sphinx-notes/pages@v3
         id: sphinx
         if: success() || failure()
