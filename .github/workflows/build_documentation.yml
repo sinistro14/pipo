@@ -53,11 +53,5 @@ jobs:
 
   publish:
     name: Publish Github Pages
-    runs-on: ubuntu-22.04
     needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/deploy_documentation.yml
-        with:
-          artifact: gh-pages-${{ github.sha }}
-          documentation_path: ${{ env.DOCUMENTATION_PATH }}
+    uses: ./.github/workflows/deploy_documentation.yml
