@@ -61,6 +61,7 @@ jobs:
         if: success() || failure()
         with:
           cache: true
+          checkout: false
           publish: false
           python_version: '3.11'
           sphinx_version: '7.2.*'
