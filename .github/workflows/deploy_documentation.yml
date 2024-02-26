@@ -3,10 +3,6 @@ name: deploy_documentation
 on:
   workflow_call:
     inputs:
-      documentation_path:
-        description: Path to documentation source folder
-        required: true
-        type: string
       artifact:
         description: Directory where artifact with HTML documentation is available
         required: true
@@ -21,8 +17,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    env:
-      DOCUMENTATION_PATH: ${{ inputs.documentation_path }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

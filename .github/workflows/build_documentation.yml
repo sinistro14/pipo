@@ -40,17 +40,11 @@ jobs:
           sphinx_version: '7.2.*'
           documentation_path: ${{ env.DOCUMENTATION_PATH }}
           requirements_path: ${{ env.DOCUMENTATION_PATH }}/requirements.txt
-      - name: Fix file permissions
-        if: runner.os == 'Linux'
-        run: |
-          chmod -c -R +rX "$DOCUMENTATION_PATH" | while read line; do
-            echo "::warning title=Invalid file permissions fixed::$line"
-          done
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           name: gh-pages-${{ github.sha }}
-          path: ${{ env.DOCUMENTATION_PATH }}
+          path: ${{ steps.sphinx.outputs.artifact }}
 
   publish:
     name: Publish Github Pages
@@ -58,4 +52,3 @@ jobs:
     uses: ./.github/workflows/deploy_documentation.yml
     with:
       artifact: gh-pages-${{ github.sha }}
-      documentation_path: docs

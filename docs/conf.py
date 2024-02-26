@@ -36,6 +36,7 @@ language = "en"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "alabaster"
+html_extra_path = []
 html_static_path = ["_static"]
 html_theme_options = {
     "source_repository": "https://github.com/sinistro14/pipo/",
