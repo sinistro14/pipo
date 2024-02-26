@@ -32,10 +32,8 @@ yt-dlp = "~2023.12.30"
 discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 setuptools = "*"
-sphinx = "~7.2.0"   # ensure version in sync with CI
-numpydoc = "~1.6.0" # ensure version in sync with CI
 pytest = "^8.0"
 mock = "~5.1.0"
 pytest-mock = "~3.12.0"
@@ -48,6 +46,13 @@ ruff = "0.2.1"
 black = "24.1.1"
 vulture = "2.11"
 pylint = "~3.0.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "~7.2.0"
+numpydoc = "~1.6.0"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"

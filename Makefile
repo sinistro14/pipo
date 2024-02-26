@@ -35,7 +35,7 @@ setup:
 
 .PHONY: dev_setup
 dev_setup:
-	$(POETRY) install
+	$(POETRY) install --with docs
 
 .PHONY: black
 black:
