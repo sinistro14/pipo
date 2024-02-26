@@ -4,6 +4,7 @@ poetry.lock
 docs/_build
 docs/diagrams
 docs/github_pages
+requirements.txt
 
 ### PyCharm+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
