@@ -34,7 +34,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -58,10 +58,10 @@ jobs:
         id: sphinx
         if: success() || failure()
         with:
-          cache: false
+          cache: true
           checkout: false
           publish: false
-          python_version: '3.10'
+          python_version: '3.11'
           sphinx_version: '7.2.*'
           documentation_path: ${{ env.DOCUMENTATION_PATH }}
           requirements_path: requirements.txt
