@@ -24,11 +24,6 @@ jobs:
     env:
       DOCUMENTATION_PATH: ${{ inputs.documentation_path }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Clean documentation
-        run: |
-          rm -rf "$DOCUMENTATION_PATH"
-          mkdir "$DOCUMENTATION_PATH"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
