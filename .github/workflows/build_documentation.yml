@@ -50,9 +50,12 @@ jobs:
       - name: Install poetry export plugin
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry self add poetry-plugin-export
+      - name: Poetry lock
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry lock
       - name: Export requirements.txt
         run: |
-          poetry export --without-hashes --only docs -f requirements.txt --output ${{ env.DOCUMENTATION_PATH }}/requirements.txt
+          poetry export -n --without-hashes --only=docs -f requirements.txt -o ${{ env.DOCUMENTATION_PATH }}/requirements.txt
       - uses: sphinx-notes/pages@v3
         id: sphinx
         if: success() || failure() 
@@ -63,6 +66,7 @@ jobs:
           sphinx_version: '7.2.*'
           documentation_path: ${{ env.DOCUMENTATION_PATH }}
           requirements_path: ${{ env.DOCUMENTATION_PATH }}/requirements.txt
+          pyproject_extras: ''
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
