@@ -68,8 +68,8 @@ jobs:
           python_version: '3.11'
           sphinx_version: '7.2.*'
           documentation_path: ${{ env.DOCUMENTATION_PATH }}
-          requirements_path: requirements.txt
-          pyproject_extras: ''
+          requirements_path: ''
+          pyproject_extras: docs
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
