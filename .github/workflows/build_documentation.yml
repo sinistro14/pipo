@@ -39,6 +39,7 @@ jobs:
           python_version: '3.11'
           sphinx_version: '7.2.*'
           documentation_path: ${{ env.DOCUMENTATION_PATH }}
+          requirements_path: ${{ env.DOCUMENTATION_PATH }}/requirements.txt
       - name: Fix file permissions
         if: runner.os == 'Linux'
         run: |
