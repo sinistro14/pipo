@@ -32,11 +32,9 @@ yt-dlp = "~2023.12.30"
 discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 setuptools = "*"
-sphinx = "~7.2.0"
-numpydoc = "~1.6.0"
-pytest = "^7.1"
+pytest = "^8.0"
 mock = "~5.1.0"
 pytest-mock = "~3.12.0"
 pytest-asyncio = "~0.23.0"
@@ -44,9 +42,18 @@ pytest-cov = "~4.1.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
 flaky = "~3.7.0"
-ruff = "0.1.14"
-black = "23.12.1"
+ruff = "0.2.1"
+black = "24.1.1"
 vulture = "2.11"
+pylint = "~3.0.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "~7.2.0"
+sphinx-autoapi = "~3.0.0"
+sphinx-immaterial = "~0.11.10"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"
@@ -73,6 +80,14 @@ omit = [
 ]
 
 [tool.ruff]
+extend-exclude = [
+    "tests",
+    "*__main__.py",
+    "*__init__.py",
+]
+line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",        #pycodestyle error
     "W",        #pycodestyle warning
@@ -89,18 +104,13 @@ select = [
     "TCH",      #flake8-type-checking
     "C90",      #McCabe complexity
     "ASYNC",    #flake8-async
+    "PERF",     #perflint
 ]
-extend-exclude = [
-    "tests",
-    "*__main__.py",
-    "*__init__.py",
-]
-line-length = 88
 ignore = [
     "D100", # missing docstring in public module
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.vulture]
