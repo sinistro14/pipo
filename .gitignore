@@ -4,7 +4,6 @@ poetry.lock
 docs/_build
 docs/_static
 docs/_diagrams
-docs/github_pages
 requirements.txt
 
 ### PyCharm+all ###
