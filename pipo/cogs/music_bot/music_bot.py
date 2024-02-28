@@ -3,6 +3,7 @@ import logging
 
 from discord.ext import commands
 
+from pipo.cogs.music_bot.input_parser import InputParser
 from pipo.command import (
     Clear,
     CommandQueue,
@@ -13,7 +14,6 @@ from pipo.command import (
     Skip,
     Status,
 )
-from pipo.config import settings
 from pipo.pipo import Pipo
 
 
@@ -27,10 +27,12 @@ class MusicBot(commands.Cog):
     """
 
     _logger: logging.Logger
+    __input_parser: InputParser
 
     def __init__(self, bot, channel_id, voice_channel_id):
         self._logger = logging.getLogger(__name__)
         self.bot = bot
+        self.__input_parser = InputParser()
         self.pipo = Pipo(self.bot)
         self.pipo.channel_id = channel_id
         self.pipo.voice_channel_id = voice_channel_id
@@ -45,20 +47,13 @@ class MusicBot(commands.Cog):
         "-play [-q] [-s] <query> | <music_url> | <playlist_url>",
     )
     async def play(self, ctx, *query):  # noqa: D102
-        self._logger.info("Received discord command play")
-        option = query[0] if query else ""
-        shuffle = option == settings.commands.shuffle
-        search = option == settings.commands.search
-        if shuffle:
-            query = query[1:]
-        elif search:
-            query = " ".join(query[1:])
-        self._logger.info(
-            "Received play query '%s' with option '%s'",
-            query,
-            option,
-        )
-        await self.command_queue.add(Play(self.pipo, ctx, query, shuffle))
+        self._logger.info("Received discord command play: %s", query)
+        args = self.__input_parser.parse_play(query)
+        self._logger.info("Processed play command '%s'", args)
+        if args and args.query:
+            query = args.query
+            query = " ".join(query) if args.search else query
+            await self.command_queue.add(Play(self.pipo, ctx, query, args.shuffle))
 
     @commands.command(
         pass_context=True,
