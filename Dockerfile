@@ -70,7 +70,7 @@ ARG PROGRAM_VERSION=0.0.0
 RUN poetry version $PROGRAM_VERSION
 
 # install runtime dependencies, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
-RUN poetry install --without dev
+RUN poetry install --all-extras --without dev
 
 
 # `production` image used for runtime
