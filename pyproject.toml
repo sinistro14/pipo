@@ -11,7 +11,15 @@ authors = [
     "Miguel Peixoto <miguel.peixoto.99@gmail.com>",
 ]
 
+maintainers = [
+    "Tiago Gonçalves <tiago14_ribeiro@hotmail.com>",
+]
+
 readme = 'README.md'
+
+homepage = "https://sinistro14.github.io/pipo/"
+
+repository = "https://github.com/sinistro14/pipo"
 
 keywords = ['python', 'discord', 'music', 'bot']
 
@@ -19,6 +27,7 @@ classifiers = [
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Operating System :: OS Independent',
     'Natural Language :: English',
     'Topic :: Multimedia :: Sound/Audio',
@@ -28,9 +37,14 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.31"
-yt-dlp = "~2023.12.30"
-discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
+discord-py = { version = "~2.3.0", extras = ["voice"] }
+yt-dlp = { version = "~2023.12.30", optional = true }
+spotipy = { version = "~2.23.0", optional = true }
+
+[tool.poetry.extras]
+youtube = ["yt-dlp"]
+spotify = ["spotipy"]
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "*"

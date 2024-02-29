@@ -31,11 +31,11 @@ poetry_setup:
 
 .PHONY: setup
 setup:
-	$(POETRY) install --without dev
+	$(POETRY) install --all-extras --without dev
 
 .PHONY: dev_setup
 dev_setup:
-	$(POETRY) install --with docs
+	$(POETRY) install --all-extras --with docs
 
 .PHONY: black
 black:
