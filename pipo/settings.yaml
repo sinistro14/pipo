@@ -47,3 +47,8 @@ default:
       pool_size: 2
       retries: 3
       wait: 1
+    source:
+      youtube:
+      spotify:
+        playlist_limit: 100
+        album_limit: 100

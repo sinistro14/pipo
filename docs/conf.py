@@ -29,7 +29,7 @@ add_function_parentheses = False
 language = "en"
 
 # -- Options for autoapi ----------------------------------------------
-autoapi_dirs = ['../pipo']
+autoapi_dirs = ["../pipo"]
 
 # -- Options for napoleon ----------------------------------------------
 napoleon_google_docstring = False
@@ -42,7 +42,7 @@ napoleon_attr_annotations = True
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_immaterial'
+html_theme = "sphinx_immaterial"
 html_extra_path = []
 html_static_path = ["_static"]
 html_theme_options = {
@@ -50,7 +50,7 @@ html_theme_options = {
     "source_branch": "main",
     "source_directory": "docs/",
 }
-html_baseurl = 'https://sinistro14.github.io/pipo'
+html_baseurl = "https://sinistro14.github.io/pipo"
 
 # -- Options for todo extension ----------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#configuration
