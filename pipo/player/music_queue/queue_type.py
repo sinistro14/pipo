@@ -16,3 +16,4 @@ class QueueType(StrEnum):
 
     NONE = ""
     LOCAL = "local"
+    RABBITMQ = "rabbitmq"

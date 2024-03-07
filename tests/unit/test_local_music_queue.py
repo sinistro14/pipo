@@ -4,7 +4,7 @@ import pytest
 from flaky import flaky
 
 import tests.constants
-from pipo.player.music_queue.local_music_queue import LocalMusicQueue
+from pipo.player.music_queue.local.local_music_queue import LocalMusicQueue
 
 
 class TestLocalMusicQueue:

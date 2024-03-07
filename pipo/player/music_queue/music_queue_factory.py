@@ -1,5 +1,5 @@
 from pipo.config import settings
-from pipo.player.music_queue.local_music_queue import LocalMusicQueue
+from pipo.player.music_queue.local.local_music_queue import LocalMusicQueue
 from pipo.player.music_queue.music_queue import MusicQueue
 from pipo.player.music_queue.queue_type import QueueType
 
