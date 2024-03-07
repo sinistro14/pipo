@@ -42,7 +42,7 @@ class LocalMusicQueue(MusicQueue):
                     block=settings.player.queue.local.get_music.block,
                     timeout=settings.player.queue.local.get_music.timeout,
                 )
-            except queue.Empty:
+            except queue.Empty:  # noqa: PERF203
                 if self.size():
                     self._logger.warning("Next music taking too long to process")
                 else:
