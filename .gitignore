@@ -673,3 +673,6 @@ FodyWeavers.xsd
 
 # Ignore dynaconf secret files
 *.secrets.*
+
+# Ignore macOS DS_Store
+**/.DS_Store
