@@ -31,11 +31,11 @@ poetry_setup:
 
 .PHONY: setup
 setup:
-	$(POETRY) install --without dev
+	$(POETRY) install --all-extras --without dev
 
 .PHONY: dev_setup
 dev_setup:
-	$(POETRY) install --with docs
+	$(POETRY) install --all-extras --with docs
 
 .PHONY: black
 black:
@@ -82,7 +82,7 @@ dist:
 	$(POETRY) dist
 
 .PHONY: image
-image: docs
+image:
 	docker build . -t $(APP):latest
 
 .PHONY: run_image
@@ -90,5 +90,5 @@ run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
 
 .PHONY: run_app
-run_app: docs
+run_app:
 	docker compose up -d --build --remove-orphans

@@ -32,8 +32,8 @@ default:
       task_name: idle_tracker
       timeout: 1800  # 30 minutes
     queue:
-      type: local
-      default: local
+      type: amqp
+      default: amqp
       local:
         get_music:
           retries: 3
@@ -41,6 +41,21 @@ default:
           timeout: 8
         prefetch_limit: 10
         size_check_iterations: 3
+      amqp:
+        block: true
+        prefetch_limit: 10
+        channel_pool_limit: 5
+        serializer: json
+        audio_fetch:
+          queue_name: audio_fetch_queue
+          exchange_name: audio_fetch_exchange
+          exchange_type: direct
+          routing_key: prefetch
+        audio:
+          queue_name: audio_queue
+          exchange_name: audio_exchange
+          exchange_type: direct
+          routing_key: music
     url_fetch:
       lock_timeout: 3 # seconds
       timeout: 600    # seconds
