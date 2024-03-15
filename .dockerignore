@@ -17,8 +17,10 @@ coverage.xml
 *.cover
 *.log
 .git
+.github
 .mypy_cache
 .pytest_cache
 .hypothesis
 .mypy_cache
 *.example
+.devcontainer
