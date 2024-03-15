@@ -17,11 +17,11 @@ class TestPlayer:
         "url, queue_size",
         [
             ("", 0),
-            (tests.constants.URL_1, 1),
-            (tests.constants.URL_2, 1),
-            (tests.constants.URL_3, 1),
-            (tests.constants.URL_4, 1),
-            (tests.constants.URL_5, 1),
+            (tests.constants.YOUTUBE_URL_1, 1),
+            (tests.constants.YOUTUBE_URL_2, 1),
+            (tests.constants.YOUTUBE_URL_3, 1),
+            (tests.constants.YOUTUBE_URL_4, 1),
+            (tests.constants.YOUTUBE_URL_5, 1),
         ],
     )
     async def test_play_single_url(self, player, url, queue_size):
@@ -30,25 +30,25 @@ class TestPlayer:
 
     @flaky(max_runs=3, min_passes=1)
     @pytest.mark.parametrize(
-        "url_list",
+        "YOUTUBE_URL_list",
         [
             [],
-            tests.constants.URL_SIMPLE_LIST,
-            tests.constants.URL_COMPLEX_LIST,
+            tests.constants.YOUTUBE_URL_SIMPLE_LIST,
+            tests.constants.YOUTUBE_URL_COMPLEX_LIST,
         ],
     )
-    async def test_play_multiple_url(self, player, url_list):
-        player.play(url_list)
-        assert player.queue_size() == len(url_list)
+    async def test_play_multiple_url(self, player, YOUTUBE_URL_list):
+        player.play(YOUTUBE_URL_list)
+        assert player.queue_size() == len(YOUTUBE_URL_list)
 
     @flaky(max_runs=3, min_passes=1)
     @pytest.mark.parametrize(
         "playlist, playlist_size",
         [
-            (tests.constants.PLAYLIST_SOURCE_1, 1),
-            (tests.constants.PLAYLIST_1, 1),
-            (tests.constants.PLAYLIST_SOURCE_2, 5),
-            (tests.constants.PLAYLIST_2, 5),
+            (tests.constants.YOUTUBE_PLAYLIST_SOURCE_1, 1),
+            (tests.constants.YOUTUBE_PLAYLIST_1, 1),
+            (tests.constants.YOUTUBE_PLAYLIST_SOURCE_2, 5),
+            (tests.constants.YOUTUBE_PLAYLIST_2, 5),
         ],
     )
     async def test_playlist(self, player, playlist, playlist_size):

@@ -50,5 +50,12 @@ default:
     source:
       youtube:
       spotify:
-        playlist_limit: 100
-        album_limit: 100
+        playlist:
+          limit: 50
+          filter: "items.track.name,items.track.artists.name"
+        album:
+          limit: 50     # max allowed by Spotify API
+test:
+  dynaconf_merge: true
+  log:
+    level: DEBUG

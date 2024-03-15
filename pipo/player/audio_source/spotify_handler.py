@@ -8,6 +8,11 @@ from pipo.player.audio_source.base_handler import BaseHandler
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
 from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
+from pipo.player.audio_source.schemas.spotify import (
+    SpotifyPlaylist,
+    SpotifyAlbum,
+    SpotifyTrack,
+)
 
 
 class SpotifyHandler(BaseHandler):
@@ -30,29 +35,52 @@ class SpotifyHandler(BaseHandler):
             return super().handle(source)
 
     @staticmethod
+    def __parse(track: SpotifyTrack) -> SourcePair:
+        song = track.name
+        artist = track.artists[0].name if track.artists else ""
+        entry = f"{song} - {artist}" if artist else song
+        return SourcePair(entry, YoutubeQueryHandler.name)
+
+    @staticmethod
     def parse(pair: SourcePair) -> Iterable[SourcePair]:
+        tracks = []
         query = pair.query
-        spotify = spotipy.Spotify()
-        # TODO handle exceptions
-        if "playlist" in query:
-            logging.getLogger(__name__).info("Processing spotify playlist '%s'", query)
-            tracks = spotify.playlist_tracks(
-                query,
-                fields=["name", "artists"],
-                limit=settings.player.source.spotify.playlist_limit,
+        try:
+            spotify = spotipy.Spotify(
+                client_credentials_manager=spotipy.SpotifyClientCredentials(
+                    client_id=settings.spotify.client,
+                    client_secret=settings.spotify.secret,
+                )
             )
-        elif "album" in query:
-            logging.getLogger(__name__).info("Processing spotify album '%s'", query)
-            tracks = spotify.album_tracks(
-                query, limit=settings.player.source.spotify.album_limit
+            if "playlist" in query:
+                logging.getLogger(__name__).info(
+                    "Processing spotify playlist '%s'", query
+                )
+                tracks = spotify.playlist_items(
+                    query,
+                    fields=[settings.player.source.spotify.playlist.filter],
+                    limit=settings.player.source.spotify.playlist.limit,
+                )
+                tracks = SpotifyPlaylist(**tracks).items
+            elif "album" in query:
+                logging.getLogger(__name__).info("Processing spotify album '%s'", query)
+                tracks = spotify.album_tracks(
+                    query,
+                    limit=settings.player.source.spotify.album.limit,
+                )
+                tracks = SpotifyAlbum(**tracks).items
+            else:
+                logging.getLogger(__name__).info("Processing spotify track '%s'", query)
+                track = spotify.track(query)
+                tracks = [SpotifyTrack(**track)]
+        except spotipy.oauth2.SpotifyOauthError:
+            logging.getLogger(__name__).exception(
+                "Unable to access spotify API. \
+                Confirm API credentials are correct."
             )
-        else:
-            logging.getLogger(__name__).info("Processing spotify track '%s'", query)
-            tracks = [spotify.track(query)]
-        parsed_query = []
-        for track in tracks:
-            song = track["name"]
-            artist = track["artists"][0] if track["artists"] else ""
-            entry = f"{song} - {artist}" if artist else song
-            parsed_query.append(SourcePair(entry, YoutubeQueryHandler.name))
-        return parsed_query
+        except spotipy.exceptions.SpotifyException:
+            logging.getLogger(__name__).exception(
+                "Unable to process spotify query '%s'", query
+            )
+        tracks = tracks or []
+        return [SpotifyHandler.__parse(track) for track in tracks]

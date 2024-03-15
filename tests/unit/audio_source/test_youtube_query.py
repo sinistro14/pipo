@@ -15,8 +15,8 @@ class TestYoutubeQuerySource:
     @pytest.mark.parametrize(
         "query",
         [
-            tests.constants.QUERY_1,
-            tests.constants.QUERY_2,
+            tests.constants.YOUTUBE_QUERY_1,
+            tests.constants.YOUTUBE_QUERY_2,
         ],
     )
     def test_query(self, music_handler, query):

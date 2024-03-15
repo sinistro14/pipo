@@ -3,9 +3,11 @@
 APP=$(PIPO_APP)
 CONFIG_PATH=pyproject.toml
 POETRY=poetry
+POETRY_VERSION=1.7.1
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
 DOCUMENTATION=docs
 DIAGRAMS_FORMAT=plantuml
+TEST_SECRETS=./.secrets.test.yaml
 
 .PHONY: help
 help:
@@ -26,8 +28,7 @@ help:
 
 .PHONY: poetry_setup
 poetry_setup:
-	curl -sSL https://install.python-poetry.org | python3 -
-	poetry config virtualenvs.in-project true
+	curl -sSL https://install.python-poetry.org | python - --version $(POETRY_VERSION)
 
 .PHONY: setup
 setup:
@@ -37,17 +38,21 @@ setup:
 dev_setup:
 	$(POETRY) install --all-extras --with docs
 
+.PHONY: update_deps
+update_deps:
+	$(POETRY) update
+
 .PHONY: black
 black:
 	-$(POETRY) run black .
 
 .PHONY: ruff
 ruff:
-	-$(POETRY) run ruff .
+	-$(POETRY) run ruff check .
 
 .PHONY: ruff_fix
 ruff_fix:
-	-$(POETRY) run ruff --fix .
+	-$(POETRY) run ruff format .
 
 .PHONY: vulture
 vulture:
@@ -58,7 +63,8 @@ lint: black ruff vulture
 
 .PHONY: test
 test:
-	$(POETRY) run pytest --cov
+	export SECRETS_FOR_DYNACONF=$(realpath .secrets.test.yaml) && \
+	$(POETRY) run pytest
 
 .PHONY: coverage
 coverage:
