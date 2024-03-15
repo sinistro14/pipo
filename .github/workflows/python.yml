@@ -81,7 +81,7 @@ jobs:
         make vulture
 
     - name: Test
-      run: >
+      run: >-
         echo "y" | poetry run dynaconf write yaml -p ./tests/ -e test
           -s spotify__client=${{ secrets.TEST_SPOTIFY_CLIENT }}
           -s spotify__secret=${{ secrets.TEST_SPOTIFY_SECRET }};
