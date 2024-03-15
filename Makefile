@@ -14,8 +14,9 @@ help:
 	$(PRINT) "Usage:"
 	$(PRINT) "    help          show this message"
 	$(PRINT) "    poetry_setup  install poetry to manage python envs and workflows"
-	$(PRINT) "    setup         create virtual environment and install dependencies"
-	$(PRINT) "    dev_setup     create virtual environment and install dev dependencies"
+	$(PRINT) "    setup         build virtual environment and install dependencies"
+	$(PRINT) "    test_setup    build virtual environment and install test dependencies"
+	$(PRINT) "    dev_setup     build virtual environment and install dev dependencies"
 	$(PRINT) "    lint          run dev utilities for code quality assurance"
 	$(PRINT) "    docs          generate code documentation"
 	$(PRINT) "    test          run test suite"
@@ -33,6 +34,10 @@ poetry_setup:
 .PHONY: setup
 setup:
 	$(POETRY) install --all-extras --without dev
+
+.PHONY: test_setup
+test_setup:
+	$(POETRY) install --all-extras
 
 .PHONY: dev_setup
 dev_setup:
