@@ -7,7 +7,8 @@ POETRY_VERSION=1.7.1
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
 DOCUMENTATION=docs
 DIAGRAMS_FORMAT=plantuml
-TEST_SECRETS:=$(shell realpath ./.secrets.test.yaml)
+TEST_FOLDER=./tests
+TEST_SECRETS:=$(shell realpath $(TEST_FOLDER)/.secrets.*)
 
 .PHONY: help
 help:

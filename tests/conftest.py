@@ -29,9 +29,7 @@ def random():
 
 @pytest.fixture(scope="session", autouse=True)
 def set_test_settings():
-    settings.configure(
-        FORCE_ENV_FOR_DYNACONF="test", DOTENV_PATH_FOR_DYNACONF="/tests/.env.test"
-    )
+    settings.configure(FORCE_ENV_FOR_DYNACONF="test")
     logging.basicConfig(
         level=settings.log.level,
         format=settings.log.format,
