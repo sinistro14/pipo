@@ -63,7 +63,7 @@ lint: black ruff vulture
 
 .PHONY: test
 test:
-	if [ ! -z $(TEST_SECRETS) ]; then \
+	if [ -f $(TEST_SECRETS) ]; then \
 		export SECRETS_FOR_DYNACONF=$(TEST_SECRETS) && $(POETRY) run pytest; \
 	else \
 		$(POETRY) run pytest; \
