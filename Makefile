@@ -63,8 +63,11 @@ lint: black ruff vulture
 
 .PHONY: test
 test:
-	[ -z $(TEST_SECRETS) ] || export SECRETS_FOR_DYNACONF=$(TEST_SECRETS); \
-	$(POETRY) run pytest
+	if [ ! -z $(TEST_SECRETS) ]; then \
+		export SECRETS_FOR_DYNACONF=$(TEST_SECRETS) && $(POETRY) run pytest; \
+	else \
+		$(POETRY) run pytest; \
+	fi
 
 .PHONY: coverage
 coverage:
