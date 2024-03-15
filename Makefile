@@ -19,6 +19,7 @@ help:
 	$(PRINT) "    test_setup    build virtual environment and install test dependencies"
 	$(PRINT) "    dev_setup     build virtual environment and install dev dependencies"
 	$(PRINT) "    lint          run dev utilities for code quality assurance"
+	$(PRINT) "    format        run dev utilities for code format assurance"
 	$(PRINT) "    docs          generate code documentation"
 	$(PRINT) "    test          run test suite"
 	$(PRINT) "    coverage      run coverage analysis"
@@ -56,8 +57,8 @@ black:
 ruff:
 	-$(POETRY) run ruff check .
 
-.PHONY: ruff_fix
-ruff_fix:
+.PHONY: format
+format:
 	-$(POETRY) run ruff format .
 
 .PHONY: vulture
@@ -81,7 +82,7 @@ coverage:
 
 .PHONY: docs
 docs:
-	mkdir -p $(DOCUMENTATION)/_static $(DOCUMENTATION)/_diagrams
+	mkdir -p $(DOCUMENTATION)/_static $(DOCUMENTATION)/_diagrams/src
 	$(POETRY) run pyreverse -p $(APP) \
 		--colorized \
 		-o $(DIAGRAMS_FORMAT) \
@@ -105,5 +106,5 @@ run_image: image
 	docker run -d --name $(APP) --env-file .env $(APP):latest
 
 .PHONY: run_app
-run_app: docs
+run_app:
 	docker compose up -d --build --remove-orphans

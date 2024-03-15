@@ -76,6 +76,8 @@ YOUTUBE_QUERY_2 = "submarine"
 # Spotify
 SPOTIFY_URL_NO_HTTPS = "http://open.spotify.com/track/7gaA3wERFkFkgivjwbSvkG"
 SPOTIFY_URL_1 = "https://open.spotify.com/track/7gaA3wERFkFkgivjwbSvkG"
+SPOTIFY_URL_2 = "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V"
+SPOTIFY_URL_3 = "https://open.spotify.com/track/6y4GYuZszeXNOXuBFsJlos"
 SPOTIFY_PLAYLIST_1 = "https://open.spotify.com/playlist/5137tjFBaaMh9dcH8i9fHR"
 SPOTIFY_ALBUM_1 = "https://open.spotify.com/album/1amYhlukNF8WdaQC3gKkgL"
 

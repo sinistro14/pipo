@@ -1,6 +1,7 @@
-from typing import Any, List, Dict, Optional
-from typing_extensions import Annotated
+from typing import Any, Dict, List, Optional
+
 from pydantic import AfterValidator, BaseModel
+from typing_extensions import Annotated
 
 
 class SpotifyArtist(BaseModel):

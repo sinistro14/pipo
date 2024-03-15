@@ -5,14 +5,14 @@ import spotipy
 
 from pipo.config import settings
 from pipo.player.audio_source.base_handler import BaseHandler
+from pipo.player.audio_source.schemas.spotify import (
+    SpotifyAlbum,
+    SpotifyPlaylist,
+    SpotifyTrack,
+)
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
 from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
-from pipo.player.audio_source.schemas.spotify import (
-    SpotifyPlaylist,
-    SpotifyAlbum,
-    SpotifyTrack,
-)
 
 
 class SpotifyHandler(BaseHandler):
@@ -48,8 +48,8 @@ class SpotifyHandler(BaseHandler):
         try:
             spotify = spotipy.Spotify(
                 client_credentials_manager=spotipy.SpotifyClientCredentials(
-                    client_id=settings.spotify.client,
-                    client_secret=settings.spotify.secret,
+                    client_id=settings.spotify_client,
+                    client_secret=settings.spotify_secret,
                 )
             )
             if "playlist" in query:

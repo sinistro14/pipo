@@ -72,9 +72,9 @@ jobs:
       run: |
         make ruff
 
-    - name: Run black
+    - name: Format
       run: |
-        make black
+        make format
 
     - name: Run vulture
       run: |
@@ -83,6 +83,6 @@ jobs:
     - name: Test
       run: |
         echo "y" | poetry run dynaconf write yaml -p ./tests/ -e test \
-          -s spotify__client=${{ secrets.TEST_SPOTIFY_CLIENT }} \
-          -s spotify__secret=${{ secrets.TEST_SPOTIFY_SECRET }}; \
+          -s spotify_client=${{ secrets.TEST_SPOTIFY_CLIENT }} \
+          -s spotify_secret=${{ secrets.TEST_SPOTIFY_SECRET }}; \
         make test
