@@ -7,7 +7,7 @@ POETRY_VERSION=1.7.1
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
 DOCUMENTATION=docs
 DIAGRAMS_FORMAT=plantuml
-TEST_SECRETS=./.secrets.test.yaml
+TEST_SECRETS:=$(shell realpath ./.secrets.test.yaml)
 
 .PHONY: help
 help:
@@ -63,7 +63,7 @@ lint: black ruff vulture
 
 .PHONY: test
 test:
-	export SECRETS_FOR_DYNACONF=$(realpath .secrets.test.yaml) && \
+	[ -z $(TEST_SECRETS) ] || export SECRETS_FOR_DYNACONF=$(TEST_SECRETS); \
 	$(POETRY) run pytest
 
 .PHONY: coverage
