@@ -30,16 +30,16 @@ class TestPlayer:
 
     @flaky(max_runs=3, min_passes=1)
     @pytest.mark.parametrize(
-        "YOUTUBE_URL_list",
+        "url_list",
         [
             [],
             tests.constants.YOUTUBE_URL_SIMPLE_LIST,
             tests.constants.YOUTUBE_URL_COMPLEX_LIST,
         ],
     )
-    async def test_play_multiple_url(self, player, YOUTUBE_URL_list):
-        player.play(YOUTUBE_URL_list)
-        assert player.queue_size() == len(YOUTUBE_URL_list)
+    async def test_play_multiple_url(self, player, url_list):
+        player.play(url_list)
+        assert player.queue_size() == len(url_list)
 
     @flaky(max_runs=3, min_passes=1)
     @pytest.mark.parametrize(
