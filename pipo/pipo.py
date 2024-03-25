@@ -113,7 +113,9 @@ class Pipo(pipo.states.Context):
         """
         try:
             self.voice_client.play(
-                discord.FFmpegPCMAudio(url, **settings.pipo.ffmpeg_config)
+                await discord.FFmpegOpusAudio.from_probe(
+                    url, method="fallback", **settings.pipo.ffmpeg_config
+                )
             )
             while self.voice_client.is_playing() or self.voice_client.is_paused():
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)

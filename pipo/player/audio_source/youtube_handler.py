@@ -87,7 +87,9 @@ class YoutubeHandler(BaseHandler):
                     "Attempt %s to obtain youtube audio url %s", attempt, query
                 )
                 try:
-                    with YoutubeDL({"format": "bestaudio/best"}) as ydl:
+                    with YoutubeDL(
+                        settings.player.source.youtube.downloader_config
+                    ) as ydl:
                         url = ydl.extract_info(url=query, download=False).get(
                             "url", None
                         )

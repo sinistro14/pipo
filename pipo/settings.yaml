@@ -49,6 +49,8 @@ default:
       wait: 1
     source:
       youtube:
+        downloader_config: # YoutubeDL music download method args
+          format: bestaudio/best
       spotify:
         playlist:
           limit: 50
