@@ -57,14 +57,14 @@ pytest-cov = "~4.1.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
 flaky = "~3.8.0"
-ruff = "0.3.2"
+ruff = "0.3.4"
 vulture = "2.11"
-pylint = "~3.0.0"
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
+pylint = "~3.0.0"
 sphinx = "~7.2.0"
 sphinx-autoapi = "~3.0.0"
 sphinx-immaterial = "~0.11.10"

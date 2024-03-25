@@ -49,10 +49,6 @@ dev_setup:
 update_deps:
 	$(POETRY) update
 
-.PHONY: black
-black:
-	-$(POETRY) run black .
-
 .PHONY: ruff
 ruff:
 	-$(POETRY) run ruff check .
@@ -66,7 +62,7 @@ vulture:
 	-$(POETRY) run vulture
 
 .PHONY: lint
-lint: black ruff vulture
+lint: ruff vulture
 
 .PHONY: test
 test:
