@@ -2,6 +2,7 @@ from typing import Iterable
 
 from pipo.player.audio_source.base_handler import BaseHandler
 from pipo.player.audio_source.source_pair import SourcePair
+from pipo.player.audio_source.spotify_handler import SpotifyHandler
 from pipo.player.audio_source.youtube_handler import YoutubeHandler
 from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
 
@@ -13,7 +14,7 @@ class SourceOracle:
     def __handlers() -> BaseHandler:
         """Provide handler chain."""
         handlers = YoutubeHandler()
-        handlers.set_next(YoutubeQueryHandler())
+        handlers.set_next(YoutubeQueryHandler()).set_next(SpotifyHandler())
         return handlers
 
     @staticmethod

@@ -18,7 +18,7 @@ class YoutubeHandler(BaseHandler):
     @staticmethod
     def __valid_source(source: Iterable[str]) -> bool:
         """Check whether source is a youtube url."""
-        return source and ("youtube" in source and source.startswith(("http", "https")))
+        return source and ("youtube" in source and source.startswith(("https", "http")))
 
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):
@@ -87,7 +87,9 @@ class YoutubeHandler(BaseHandler):
                     "Attempt %s to obtain youtube audio url %s", attempt, query
                 )
                 try:
-                    with YoutubeDL({"format": "bestaudio/best"}) as ydl:
+                    with YoutubeDL(
+                        settings.player.source.youtube.downloader_config
+                    ) as ydl:
                         url = ydl.extract_info(url=query, download=False).get(
                             "url", None
                         )

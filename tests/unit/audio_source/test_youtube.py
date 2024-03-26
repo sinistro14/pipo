@@ -15,11 +15,11 @@ class TestYoutubeSource:
     @pytest.mark.parametrize(
         "url",
         [
-            tests.constants.URL_1,
-            tests.constants.URL_2,
-            tests.constants.URL_3,
-            tests.constants.URL_4,
-            tests.constants.URL_5,
+            tests.constants.YOUTUBE_URL_1,
+            tests.constants.YOUTUBE_URL_2,
+            tests.constants.YOUTUBE_URL_3,
+            tests.constants.YOUTUBE_URL_4,
+            tests.constants.YOUTUBE_URL_5,
         ],
     )
     def test_url(self, music_handler, url):

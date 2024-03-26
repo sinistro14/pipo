@@ -4,7 +4,7 @@ import functools
 from typing import Iterable
 
 import pytest
-from dynaconf import settings
+from pipo.config import settings
 
 
 class Helpers:
@@ -30,4 +30,8 @@ def random():
 @pytest.fixture(scope="session", autouse=True)
 def set_test_settings():
     settings.configure(FORCE_ENV_FOR_DYNACONF="test")
-    logging.basicConfig(encoding="utf-8", level=logging.DEBUG)
+    logging.basicConfig(
+        level=settings.log.level,
+        format=settings.log.format,
+        encoding=settings.log.encoding,
+    )
