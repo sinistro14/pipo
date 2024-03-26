@@ -32,7 +32,7 @@ help:
 .PHONY: poetry_setup
 poetry_setup:
 	curl -sSL https://install.python-poetry.org | python - --version $(POETRY_VERSION)
-	poetry config --local virtualenvs.in-project true
+	poetry config virtualenvs.in-project true --local
 
 .PHONY: setup
 setup:
