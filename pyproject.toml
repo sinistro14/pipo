@@ -11,42 +11,64 @@ authors = [
     "Miguel Peixoto <miguel.peixoto.99@gmail.com>",
 ]
 
-readme = 'README.md'
+maintainers = [
+    "Tiago Gonçalves <tiago14_ribeiro@hotmail.com>",
+]
 
-keywords = ['python', 'discord', 'music', 'bot']
+readme = "README.md"
+
+homepage = "https://sinistro14.github.io/pipo"
+
+repository = "https://github.com/sinistro14/pipo"
+
+keywords = ["python", "discord", "spotify", "music", "bot"]
 
 classifiers = [
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Operating System :: OS Independent',
-    'Natural Language :: English',
-    'Topic :: Multimedia :: Sound/Audio',
-    'Topic :: Multimedia :: Sound/Audio :: Players',
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Players",
 ]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.31"
-yt-dlp = "~2023.12.30"
-discord-py = { version = "~2.3.0", extras = ["voice"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
+discord-py = { version = "~2.3.0", extras = ["voice"] }
+yt-dlp = { version = "~2024.3.10", optional = true }
+spotipy = { version = "~2.23.0", optional = true }
+pydantic = { version = "~2.6.0", optional = true } 
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.extras]
+youtube = ["yt-dlp"]
+spotify = ["spotipy", "pydantic"]
+
+[tool.poetry.group.dev.dependencies]
 setuptools = "*"
-sphinx = "~7.2.0"
-numpydoc = "~1.6.0"
-pytest = "^7.1"
+pytest = "~8.1.0"
+pytest-xdist = { version = "~3.5.0", extras = ["psutil"] }
 mock = "~5.1.0"
 pytest-mock = "~3.12.0"
 pytest-asyncio = "~0.23.0"
 pytest-cov = "~4.1.0"
 types-mock = "^5.0.0"
 dpytest = "0.7.0"
-flaky = "~3.7.0"
-ruff = "0.1.14"
-black = "23.12.1"
+flaky = "~3.8.0"
+ruff = "0.3.4"
 vulture = "2.11"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+pylint = "~3.0.0"
+sphinx = "~7.2.0"
+sphinx-autoapi = "~3.0.0"
+sphinx-immaterial = "~0.11.10"
 
 [tool.poetry.scripts]
 pipo = "pipo.__main__:main"
@@ -56,6 +78,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
+addopts = "--cov -n logical"
 asyncio_mode = "auto"
 mock_use_standalone_module = true
 log_cli = true
@@ -64,15 +87,23 @@ log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.coverage.run]
-source = ['pipo']
+source = ["pipo"]
 [tool.coverage.report]
 fail_under = 65
 omit = [
-    '*__init__.py',
-    '*__main__.py',
+    "*__init__.py",
+    "*__main__.py",
 ]
 
 [tool.ruff]
+extend-exclude = [
+    "tests",
+    "*__main__.py",
+    "*__init__.py",
+]
+line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",        #pycodestyle error
     "W",        #pycodestyle warning
@@ -89,18 +120,13 @@ select = [
     "TCH",      #flake8-type-checking
     "C90",      #McCabe complexity
     "ASYNC",    #flake8-async
+    "PERF",     #perflint
 ]
-extend-exclude = [
-    "tests",
-    "*__main__.py",
-    "*__init__.py",
-]
-line-length = 88
 ignore = [
     "D100", # missing docstring in public module
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.vulture]

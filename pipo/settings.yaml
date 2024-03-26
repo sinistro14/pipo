@@ -47,3 +47,17 @@ default:
       pool_size: 2
       retries: 3
       wait: 1
+    source:
+      youtube:
+        downloader_config: # YoutubeDL music download method args
+          format: bestaudio/best
+      spotify:
+        playlist:
+          limit: 50
+          filter: "items.track.name,items.track.artists.name"
+        album:
+          limit: 50     # max allowed by Spotify API
+test:
+  dynaconf_merge: true
+  log:
+    level: DEBUG

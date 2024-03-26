@@ -28,7 +28,6 @@ class BaseHandler(SourceHandler):
         return [sources]
 
     @staticmethod
-    @abstractmethod
     def fetch(source: str) -> Optional[str]:
         """Fetch resources from source."""
         return None

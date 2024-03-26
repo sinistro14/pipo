@@ -1,4 +1,5 @@
 """Music Queue Types."""
+
 try:
     # breaking change introduced in python 3.11
     from enum import StrEnum
@@ -17,3 +18,4 @@ class SourceType(StrEnum):
     NULL = "null"
     YOUTUBE = "youtube"
     YOUTUBE_QUERY = "youtube_query"
+    SPOTIFY = "spotify"

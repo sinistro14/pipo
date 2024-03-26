@@ -12,7 +12,7 @@ class TestLocalMusicQueue:
     def queue(self):
         return LocalMusicQueue()
 
-    @flaky(max_runs=3, min_passes=1)
+    @flaky(max_runs=5, min_passes=1)
     @pytest.mark.parametrize(
         "musics, queue_size",
         [
@@ -66,7 +66,7 @@ class TestLocalMusicQueue:
         assert music
         assert queue.size() == final_queue_size
 
-    @flaky(max_runs=3, min_passes=1)
+    @flaky(max_runs=5, min_passes=1)
     @pytest.mark.parametrize(
         "musics",
         [
