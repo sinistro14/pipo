@@ -5,8 +5,8 @@
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
     "features": {
-        "ghcr.io/devcontainers/features/docker-inside-docker:1": {},
         "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
         "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
         "ghcr.io/devcontainers/features/python:1": {"version": "3.11"}
     }
