@@ -14,13 +14,6 @@ class TestIdleState:
     __state_name = "idle"
 
     @pytest.fixture(scope="function")
-    def initial_state(self, mocker) -> IdleState:
-        mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())
-        state = IdleState(tests.constants.IDLE_TIMEOUT)
-        yield state
-        state._stop_idle_tracker()
-
-    @pytest.fixture(scope="function")
     def state_tracker_disabled(self, mocker) -> IdleState:
         mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())
         mocker.patch("pipo.states.idle_state.IdleState._start_idle_tracker")
@@ -34,14 +27,16 @@ class TestIdleState:
         await state_tracker_disabled.pause()
         await state_tracker_disabled.clear()
 
-    @pytest.mark.xfail(reason="fails stating asyncio loop not running")
     @pytest.mark.asyncio
-    async def test_idle_timeout(self, initial_state: IdleState):
-        assert initial_state.name == self.__state_name
+    async def test_idle_timeout(self, mocker):
+        mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())
+        state = IdleState(tests.constants.IDLE_TIMEOUT)
+        assert state.name == self.__state_name
         await asyncio.sleep(tests.constants.IDLE_TIMEOUT + 1)
-        assert len(initial_state.context.transition_to.call_args.args) == 1
-        next_state = initial_state.context.transition_to.call_args.args[0]
+        assert len(state.context.transition_to.call_args.args) == 1
+        next_state = state.context.transition_to.call_args.args[0]
         assert next_state.name == DisconnectedState().name
+        state._stop_idle_tracker()
 
     @pytest.mark.parametrize(
         "method, args, final_state",
