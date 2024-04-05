@@ -21,7 +21,7 @@ homepage = "https://sinistro14.github.io/pipo"
 
 repository = "https://github.com/sinistro14/pipo"
 
-keywords = ["python", "discord", "spotify", "music", "bot"]
+keywords = ["python", "music", "bot", "discord"]
 
 classifiers = [
     "Programming Language :: Python :: 3.9",
