@@ -1,5 +1,6 @@
 #!usr/bin/env python3
 """Music Player."""
+
 import asyncio
 import hashlib
 import logging

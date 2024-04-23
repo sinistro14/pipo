@@ -62,7 +62,7 @@ jobs:
     - name: Install dependencies
       if: steps.cached-dependencies.outputs.cache-hit != 'true'
       run: |
-        make dev_setup
+        make test_setup
 
     - name: Set project version
       run: |
@@ -72,9 +72,9 @@ jobs:
       run: |
         make ruff
 
-    - name: Run black
+    - name: Format
       run: |
-        make black
+        make format
 
     - name: Run vulture
       run: |
@@ -82,4 +82,7 @@ jobs:
 
     - name: Test
       run: |
+        echo "y" | poetry run dynaconf write yaml -p ./tests/ -e test \
+          -s spotify_client=${{ secrets.TEST_SPOTIFY_CLIENT }} \
+          -s spotify_secret=${{ secrets.TEST_SPOTIFY_SECRET }}; \
         make test

@@ -4,10 +4,15 @@ import asyncio
 
 import pytest
 
+from pipo.config import settings
+
 
 class TestPytest:
     def test_pytest(self):
         assert True
+
+    def test_pytest_configuration(self):
+        assert settings.current_env == "test"
 
     @pytest.mark.asyncio
     async def test_pytest_asyncio(self):

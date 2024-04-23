@@ -35,10 +35,16 @@ make image
 ```
 
 ## How to run
-After docker and docker compose one may run:
+
+### Test suite
+Before running the suite make sure file '/tests/.secrets.yaml' was created in accordance with the available [example](.secrets.example.yaml).
+
+```bash
+make test
+```
 
 ### Containerized application (Docker)
-Before running more commands, please make sure file '.env' was created in accordance with the available [example](.env.example).
+Before running more commands make sure file '.env' was created in accordance with the available [example](.env.example).
 
 Start a single container with
 ```bash
