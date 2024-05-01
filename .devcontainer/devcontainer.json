@@ -5,6 +5,7 @@
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
     "features": {
+<<<<<<< HEAD
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
         "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
         "ghcr.io/devcontainers/features/python:1": {"version": "3.11"}
@@ -18,6 +19,14 @@
     },
     "postCreateCommand": "make poetry_setup; make dev_setup",
     "runArgs": ["--name", "pipo-devcontainer"]
+=======
+        "ghcr.io/devcontainers/features/docker-inside-docker:1": {},
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+        "ghcr.io/devcontainers/features/python:1": {"version": "3.11"}
+    }
+
+>>>>>>> main
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
 
