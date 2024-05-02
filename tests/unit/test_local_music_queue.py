@@ -6,13 +6,19 @@ from flaky import flaky
 import tests.constants
 from pipo.player.music_queue.local_music_queue import LocalMusicQueue
 
+def assert_music(music):
+    assert music, f"Invalid music, received {music}"
 
+def assert_queue_size(actual, expected):
+    assert actual == expected, \
+        f"Expected queue of size {expected}, received {actual}"
+
+@flaky(max_runs=5, min_passes=1)
 class TestLocalMusicQueue:
     @pytest.fixture(scope="function", autouse=True)
     def queue(self):
         return LocalMusicQueue()
 
-    @flaky(max_runs=5, min_passes=1)
     @pytest.mark.parametrize(
         "musics, queue_size",
         [
@@ -24,7 +30,7 @@ class TestLocalMusicQueue:
     def test_individual_add(self, queue, musics, queue_size):
         [queue.add(music) for music in musics]
         time.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
-        assert queue.size() == queue_size
+        assert_queue_size(queue.size(), queue_size)
 
     @pytest.mark.parametrize(
         "musics, queue_size",
@@ -36,7 +42,7 @@ class TestLocalMusicQueue:
     )
     def test_multiple_add(self, queue, musics, queue_size):
         queue.add(musics)
-        assert queue.size() == queue_size
+        assert_queue_size(queue.size(), queue_size)
 
     @pytest.mark.parametrize(
         "musics, final_queue_size",
@@ -48,9 +54,8 @@ class TestLocalMusicQueue:
     def test_get_after_individual_add(self, queue, musics, final_queue_size):
         [queue.add(music) for music in musics]
         time.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
-        music = queue.get()
-        assert music
-        assert queue.size() == final_queue_size
+        assert_music(queue.get())
+        assert_queue_size(queue.size(), final_queue_size)
 
     @pytest.mark.parametrize(
         "musics, final_queue_size",
@@ -62,11 +67,9 @@ class TestLocalMusicQueue:
     def test_get_after_multiple_add(self, queue, musics, final_queue_size):
         queue.add(musics)
         time.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
-        music = queue.get()
-        assert music
-        assert queue.size() == final_queue_size
+        assert_music(queue.get())
+        assert_queue_size(queue.size(), final_queue_size)
 
-    @flaky(max_runs=5, min_passes=1)
     @pytest.mark.parametrize(
         "musics",
         [
@@ -77,6 +80,6 @@ class TestLocalMusicQueue:
     def test_clear(self, queue, musics):
         queue.add(musics)
         time.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
-        assert queue.size() == len(musics)
+        assert_queue_size(queue.size(), len(musics))
         queue.clear()
-        assert queue.size() == 0
+        assert_queue_size(queue.size(), 0)
