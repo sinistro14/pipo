@@ -21,7 +21,7 @@ homepage = "https://sinistro14.github.io/pipo"
 
 repository = "https://github.com/sinistro14/pipo"
 
-keywords = ["python", "music", "bot", "discord"]
+keywords = ["python", "spotify", "music", "bot", "discord"]
 
 classifiers = [
     "Programming Language :: Python :: 3.9",
@@ -91,7 +91,6 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.coverage.run]
 source = ["pipo"]
-
 [tool.coverage.report]
 fail_under = 65
 omit = [
