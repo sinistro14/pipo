@@ -3,11 +3,17 @@
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
     // available features: https://containers.dev/features
     "features": {
-        "ghcr.io/devcontainers/features/git:1": {},
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
         "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
         "ghcr.io/devcontainers/features/python:1": {"version": "3.11", "installTools": false}
     },
-
-    "postCreateCommand": "make poetry_setup dev_setup"
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": ".venv/bin/python"
+            }
+        }
+    },
+    "postCreateCommand": "make poetry_setup dev_setup",
+    "runArgs": ["--name", "pipo-devcontainer"]
 }
