@@ -7,10 +7,8 @@ from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, Rabbit
 from pipo.player.audio_source.source_factory import SourceFactory
 from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
-from pipo.player.music_queue.models.fetch import Fetch
-from pipo.player.music_queue.models.music import Music
-from pipo.player.music_queue.models.music_request import MusicRequest
-from pipo.player.music_queue.models.prefetch import Parse, Prefetch
+from pipo.player.music_queue.models import Fetch, Music, MusicRequest, Prefetch
+
 
 def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
     return "0"
@@ -36,7 +34,7 @@ youtube_queue = RabbitQueue(
 )
 
 spotify_queue = RabbitQueue(
-    "spotify", 
+    "spotify",
     routing_key="provider.spotify.*",
     durable=True,
 )
@@ -127,7 +125,7 @@ async def fetch_youtube(
 async def fetch_spotify(
     request: Fetch,
 ) -> None:
-    source = get_source() # TODO implement
+    source = "" # get_source() TODO implement
     if source:
         music = Music(
             uuid=request.uuid,
