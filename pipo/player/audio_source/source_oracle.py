@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, List
 
 from pipo.player.audio_source.base_handler import BaseHandler
 from pipo.player.audio_source.source_pair import SourcePair
@@ -20,7 +20,7 @@ class SourceOracle:
     @staticmethod
     def process_queries(
         queries: Iterable[str],
-    ) -> Iterable[SourcePair]:
+    ) -> List[SourcePair]:
         """Match queries with most fitting handlers.
 
         Parameters
