@@ -36,16 +36,18 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
+uuid6 = "^2024.1"
 requests = "^2.31"
+pydantic = "~2.7.0"
+faststream = { version = "0.5.5", extras = ["rabbit"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 discord-py = { version = "~2.3.0", extras = ["voice"] }
-yt-dlp = { version = "~2024.3.10", optional = true }
+yt-dlp = { version = "^2024.4", optional = true }
 spotipy = { version = "~2.23.0", optional = true }
-pydantic = { version = "~2.6.0", optional = true } 
 
 [tool.poetry.extras]
 youtube = ["yt-dlp"]
-spotify = ["spotipy", "pydantic"]
+spotify = ["yt-dlp", "spotipy", "pydantic"]
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "*"
