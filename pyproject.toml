@@ -41,7 +41,7 @@ pydantic = "~2.7.0"
 faststream = { version = "0.5.5", extras = ["rabbit"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 discord-py = { version = "~2.3.0", extras = ["voice"] }
-yt-dlp = { version = "^2024.4", optional = true }
+yt-dlp = { version = "^2024.7", optional = true }
 spotipy = { version = "~2.23.0", optional = true }
 
 [tool.poetry.extras]
