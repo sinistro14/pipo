@@ -45,6 +45,9 @@ YOUTUBE_URL_2 = "https://www.youtube.com/watch?v=imSefM4GPpE"
 YOUTUBE_URL_3 = "https://www.youtube.com/watch?v=04mfKJWDSzI"
 YOUTUBE_URL_4 = "https://www.youtube.com/watch?v=04WuoQMhhxw"
 YOUTUBE_URL_5 = "https://www.youtube.com/watch?v=LFTE4W--Htk"
+YOUTUBE_URL_SINGLE_ELEMENT_LIST = [
+    YOUTUBE_URL_1,
+]
 YOUTUBE_URL_SIMPLE_LIST = [
     YOUTUBE_URL_1,
     YOUTUBE_URL_2,

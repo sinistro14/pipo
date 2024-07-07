@@ -2,6 +2,7 @@ import random
 from typing import Iterable, List, Union
 
 import uuid6
+from faststream import Context  # TODO use as logger
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
 from pipo.player.audio_source.source_factory import SourceFactory
@@ -9,6 +10,9 @@ from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.music_queue.models import Fetch, Music, MusicRequest, Prefetch
 
+
+def _get_uuid():
+    return str(uuid6.uuid7())
 
 def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
     return "0"
@@ -45,32 +49,35 @@ server_queue = RabbitQueue(
     durable=True,
 )
 
-@broker.publisher("parser")
+parser_publisher = broker.publisher("parser", description="TODO")
+@parser_publisher
 async def add(
     query: Union[str, List[str]],
     shuffle: bool = False,
 ) -> MusicRequest:
     query = list(query) if not isinstance(query, list) else query
     return MusicRequest(
-        uuid=str(uuid6.uuid7()),
+        uuid=_get_uuid(),
         server_id=_get_server_id(),
         shuffle=shuffle,
         query=query,
     )
 
-@broker.subscriber("parser")
-@broker.publisher("pre_fetch")
-async def parse( # FIXME get better name
+prefetch_publisher = broker.publisher("pre_fetch", description="TODO")
+@prefetch_publisher
+@broker.subscriber("parser", description="TODO")
+async def on_parse( # FIXME get better name
     request: MusicRequest,
-) -> None:
+) -> Prefetch:
     sources = SourceOracle.process_queries(request.query)
     return Prefetch(
         uuid=request.uuid,
+        shuffle=request.shuffle,
         server_id=request.server_id,
         source_pairs=sources,
     )
 
-@broker.subscriber("pre_fetch")
+@broker.subscriber("pre_fetch", description="TODO")
 async def pre_fetch(
     request: Prefetch,
 ) -> None:
@@ -115,13 +122,13 @@ def _pre_fetch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
         )
     return parsed_sources
 
-@broker.subscriber(youtube_queue, music_processing_exch)
+@broker.subscriber(youtube_queue, music_processing_exch, description="TODO")
 async def fetch_youtube(
     request: Fetch,
 ) -> None:
     pass
 
-@broker.subscriber(spotify_queue, music_processing_exch)
+@broker.subscriber(spotify_queue, music_processing_exch, description="TODO")
 async def fetch_spotify(
     request: Fetch,
 ) -> None:

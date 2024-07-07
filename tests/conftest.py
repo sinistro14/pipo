@@ -1,6 +1,7 @@
 import random as rand
 import logging
 import functools
+import uuid6
 from typing import Iterable
 
 import pytest
@@ -15,6 +16,10 @@ class Helpers:
             map(lambda p, q: p == q, iter_1, iter_2),
             True,
         )
+    
+    @staticmethod
+    def generate_uuid() -> str:
+        return str(uuid6.uuid7())
 
 
 @pytest.fixture
