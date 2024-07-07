@@ -38,11 +38,11 @@ python = "^3.10"
 uuid6 = "^2024.1"
 requests = "^2.31"
 pydantic = "~2.7.0"
-faststream = { version = "0.5.5", extras = ["rabbit"] }
+faststream = { version = "0.5.14", extras = ["rabbit"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
-discord-py = { version = "~2.3.0", extras = ["voice"] }
+discord-py = { version = "~2.4.0", extras = ["voice"] }
 yt-dlp = { version = "^2024.7", optional = true }
-spotipy = { version = "~2.23.0", optional = true }
+spotipy = { version = "~2.24.0", optional = true }
 
 [tool.poetry.extras]
 youtube = ["yt-dlp"]
@@ -51,7 +51,7 @@ spotify = ["yt-dlp", "spotipy", "pydantic"]
 [tool.poetry.group.dev.dependencies]
 setuptools = "*"
 pytest = "~8.2.0"
-pytest-xdist = { version = "~3.5.0", extras = ["psutil"] }
+pytest-xdist = { version = "~3.6.0", extras = ["psutil"] }
 mock = "~5.1.0"
 pytest-mock = "~3.14.0"
 pytest-asyncio = "~0.23.0"
@@ -79,7 +79,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--cov -n logical"
+addopts = "--cov -n auto"
 asyncio_mode = "auto"
 mock_use_standalone_module = true
 log_cli = true
