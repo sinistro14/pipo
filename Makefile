@@ -3,7 +3,7 @@
 APP=$(PIPO_APP)
 CONFIG_PATH=pyproject.toml
 POETRY=poetry
-POETRY_VERSION=1.7.1
+POETRY_VERSION=1.8.3
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
 DOCUMENTATION=docs
 DIAGRAMS_FORMAT=plantuml
@@ -36,15 +36,15 @@ poetry_setup:
 
 .PHONY: setup
 setup:
-	$(POETRY) install --all-extras --without dev
+	$(POETRY) install -n --all-extras --without dev
 
 .PHONY: test_setup
 test_setup:
-	$(POETRY) install --all-extras
+	$(POETRY) install -n --all-extras
 
 .PHONY: dev_setup
 dev_setup:
-	$(POETRY) install --all-extras --with docs
+	$(POETRY) install -n --all-extras --with docs
 
 .PHONY: update_deps
 update_deps:

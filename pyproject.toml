@@ -24,7 +24,6 @@ repository = "https://github.com/sinistro14/pipo"
 keywords = ["python", "discord", "spotify", "music", "bot"]
 
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -35,7 +34,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 uuid6 = "^2024.1"
 requests = "^2.31"
 pydantic = "~2.7.0"
