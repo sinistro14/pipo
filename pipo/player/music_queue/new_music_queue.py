@@ -5,6 +5,7 @@ import uuid6
 from faststream import Context  # TODO use as logger
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
+from pipo.config import settings
 from pipo.player.audio_source.source_factory import SourceFactory
 from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
@@ -17,7 +18,7 @@ def _get_uuid():
 def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
     return "0"
 
-broker = RabbitBroker("amqp://guest:guest@localhost:5672/") # TODO use settings
+broker = RabbitBroker(url=settings.player.queue.remote.url) # TODO add other config options
 
 music_processing_exch = RabbitExchange(
     "music_processing",

@@ -1,8 +1,8 @@
-FROM python:3.11.7-slim-bookworm as base
+FROM python:3.11.9-slim-bookworm AS base
 
     # python
 ENV APP_NAME="pipo" \
-    PYTHON_VERSION=3.11.7 \
+    PYTHON_VERSION=3.11.9 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -16,7 +16,7 @@ ENV APP_NAME="pipo" \
     \
     # poetry
     # https://python-poetry.org/docs/configuration/#using-environment-variables
-    POETRY_VERSION=1.7.1 \
+    POETRY_VERSION=1.8.3 \
     # make poetry install to this location
     POETRY_HOME="/opt/poetry" \
     # make poetry create the virtual environment in the project's root
@@ -44,7 +44,7 @@ RUN apt-get update \
 
 # `builder-base` stage is used to build deps + create virtual environment
 #FROM base as builder-base
-FROM base as builder-base
+FROM base AS builder-base
 
 # gcc and python3-dev will be used for proj dependencies install, not being removed here
 RUN apt-get update \
@@ -74,7 +74,7 @@ RUN poetry install --all-extras --without dev
 
 
 # `production` image used for runtime
-FROM base as production
+FROM base AS production
 
 # app configuration
 ENV ENV=production \
@@ -89,4 +89,4 @@ USER $USERNAME
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
-ENTRYPOINT $VENV_PATH/bin/python -m $APP_NAME
+ENTRYPOINT ["${VENV_PATH}/bin/python", "-m", "start"]

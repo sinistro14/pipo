@@ -41,6 +41,8 @@ default:
           timeout: 8
         prefetch_limit: 10
         size_check_iterations: 3
+      remote:
+        url:
     url_fetch:
       lock_timeout: 3 # seconds
       timeout: 600    # seconds
