@@ -2,7 +2,6 @@ import random
 from typing import Iterable, List, Union
 
 import uuid6
-from faststream import Context  # TODO use as logger
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
 from pipo.config import settings
