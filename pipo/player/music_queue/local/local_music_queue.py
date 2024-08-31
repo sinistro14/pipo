@@ -4,7 +4,7 @@ from typing import Any, Iterable, Optional
 
 from pipo.config import settings
 from pipo.player.audio_source.source_pair import SourcePair
-from pipo.player.music_queue.music_queue import MusicQueue
+from pipo.player.music_queue.local.music_queue import MusicQueue
 
 
 class LocalMusicQueue(MusicQueue):

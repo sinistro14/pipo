@@ -7,8 +7,8 @@ import logging
 from typing import List, Union
 
 from pipo.config import settings
-from pipo.player.music_queue.music_queue import MusicQueue
-from pipo.player.music_queue.music_queue_factory import MusicQueueFactory
+from pipo.player.player_queue import PlayerQueue
+from pipo.player.player_queue_factory import PlayerQueueFactory
 
 
 class Player:
@@ -37,7 +37,7 @@ class Player:
     __bot: None
     __logger: logging.Logger
     __player_thread: asyncio.Task
-    _music_queue: MusicQueue
+    _player_queue: PlayerQueue
     can_play: asyncio.Event
 
     def __init__(self, bot) -> None:
@@ -52,12 +52,12 @@ class Player:
         self.__logger = logging.getLogger(__name__)
         self.__player_thread = None
         self.can_play = asyncio.Event()
-        self._music_queue = MusicQueueFactory.get(settings.player.queue.type)
+        self._player_queue = PlayerQueueFactory.get(settings.player.queue.type)
 
     def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""
         self.__logger.info("Clearing Player state...")
-        self._music_queue.clear()
+        self._player_queue.clear()
         self.__logger.info("Cleared queues")
         if self.__player_thread:
             self.__player_thread.cancel()
@@ -85,15 +85,15 @@ class Player:
 
     def queue_size(self) -> int:
         """Get music queue size."""
-        return self._music_queue.size()
+        return self._player_queue.size()
 
     def fetch_queue_size(self) -> int:
         """Get yet to process music queue size."""
-        return self._music_queue.fetch_queue_size()
+        return self._player_queue.fetch_queue_size()
 
     def audio_queue_size(self) -> int:
         """Get processed music queue size."""
-        return self._music_queue.audio_queue_size()
+        return self._player_queue.audio_queue_size()
 
     def player_status(self) -> str:
         """Player status description."""
@@ -147,7 +147,7 @@ class Player:
             Randomize order by which queries are added to play queue.
         """
         self.__logger.info("Processing music query %s", queries)
-        self._music_queue.add(
+        self._player_queue.add(
             queries,
             shuffle,
         )
@@ -176,7 +176,7 @@ class Player:
         while await self.can_play.wait():
             self.can_play.clear()
             self.__logger.debug("Music queue size: %s", self.queue_size())
-            url = self._music_queue.get()
+            url = self._player_queue.get()
             if url:
                 try:
                     self.__logger.info(

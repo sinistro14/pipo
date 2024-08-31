@@ -1,10 +1,10 @@
 from pipo.config import settings
-from pipo.player.music_queue.local_music_queue import LocalMusicQueue
-from pipo.player.music_queue.music_queue import MusicQueue
-from pipo.player.music_queue.queue_type import QueueType
+from pipo.player.music_queue.local.local_music_queue import LocalMusicQueue
+from pipo.player.player_queue import PlayerQueue
+from pipo.player.player_queue_type import QueueType
 
 
-class MusicQueueFactory:
+class PlayerQueueFactory:
     """Factory to generate music queue types.
 
     Factory able to generate different types of music queue.
@@ -12,7 +12,7 @@ class MusicQueueFactory:
     """
 
     @staticmethod
-    def get(queue_type: QueueType = QueueType.NONE) -> MusicQueue:
+    def get(queue_type: QueueType = QueueType.NONE) -> PlayerQueue:
         """Obtain requested music queue type.
 
         Parameters

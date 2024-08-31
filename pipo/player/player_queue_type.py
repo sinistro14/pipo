@@ -17,3 +17,4 @@ class QueueType(StrEnum):
 
     NONE = ""
     LOCAL = "local"
+    REMOTE = "remote"

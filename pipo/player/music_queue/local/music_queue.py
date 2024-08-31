@@ -1,16 +1,17 @@
 import logging
 import multiprocessing
 import random
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any, Iterable, Optional, Union
 
 from pipo.config import settings
 from pipo.player.audio_source.source_factory import SourceFactory
 from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
+from pipo.player.player_queue import PlayerQueue
 
 
-class MusicQueue(ABC):
+class MusicQueue(PlayerQueue):
     """Music queue.
 
     Handles added music prefetch and storage.
