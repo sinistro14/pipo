@@ -1,7 +1,6 @@
 import random
-from typing import Iterable, List, Union
+from typing import Iterable
 
-import uuid6
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
 from pipo.config import settings
@@ -10,14 +9,15 @@ from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.music_queue.models import Fetch, Music, MusicRequest, Prefetch
 
-
-def _get_uuid():
-    return str(uuid6.uuid7())
-
 def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
     return "0"
 
 broker = RabbitBroker(url=settings.player.queue.remote.url) # TODO add other config options
+
+parser_queue = RabbitQueue(
+    "parser",
+    durable=True,
+)
 
 music_processing_exch = RabbitExchange(
     "music_processing",
@@ -33,39 +33,28 @@ processed_music_exch = RabbitExchange(
 
 youtube_queue = RabbitQueue(
     "youtube",
-    routing_key="provider.youtube.*",
+    routing_key="provider." + "youtube.*",
     durable=True,
 )
 
 spotify_queue = RabbitQueue(
     "spotify",
-    routing_key="provider.spotify.*",
+    routing_key="provider." + "spotify.*",
     durable=True,
 )
 
 server_queue = RabbitQueue(
     "server_queue",
-    routing_key=f"server_{_get_server_id()}",
+    routing_key=f"server.{_get_server_id()}",
     durable=True,
+    exclusive=True,
 )
 
-parser_publisher = broker.publisher("parser", description="TODO")
-@parser_publisher
-async def add(
-    query: Union[str, List[str]],
-    shuffle: bool = False,
-) -> MusicRequest:
-    query = list(query) if not isinstance(query, list) else query
-    return MusicRequest(
-        uuid=_get_uuid(),
-        server_id=_get_server_id(),
-        shuffle=shuffle,
-        query=query,
-    )
+server_publisher = broker.publisher(parser_queue, description="TODO") # TODO add description
 
 prefetch_publisher = broker.publisher("pre_fetch", description="TODO")
 @prefetch_publisher
-@broker.subscriber("parser", description="TODO")
+@broker.subscriber(parser_queue, description="TODO")
 async def on_parse( # FIXME get better name
     request: MusicRequest,
 ) -> Prefetch:
@@ -126,7 +115,20 @@ def _pre_fetch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
 async def fetch_youtube(
     request: Fetch,
 ) -> None:
-    pass
+    source = "" # get_source() TODO implement
+    if source:
+        music = Music(
+            uuid=request.uuid,
+            server_id=request.server_id,
+            provider=request.provider,
+            operation=request.operation,
+            source=source,
+        )
+        await broker.publish(
+            music,
+            routing_key="server." + music.server_id,
+            exchange=processed_music_exch,
+        )
 
 @broker.subscriber(spotify_queue, music_processing_exch, description="TODO")
 async def fetch_spotify(
@@ -143,6 +145,6 @@ async def fetch_spotify(
         )
         await broker.publish(
             music,
-            routing_key=music.server_id,
+            routing_key="server." + music.server_id,
             exchange=processed_music_exch,
         )

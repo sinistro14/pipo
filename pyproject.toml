@@ -38,6 +38,7 @@ python = "^3.10"
 uuid6 = "^2024.1"
 requests = "^2.31"
 pydantic = "~2.7.0"
+expiringdict = "^1.2"
 faststream = { version = "0.5.20", extras = ["rabbit"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }
 discord-py = { version = "~2.4.0", extras = ["voice"] }
@@ -87,6 +88,9 @@ log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+markers = [
+    "remote_queue: remote queue unit and integration suite",
+]
 
 [tool.coverage.run]
 source = ["pipo"]

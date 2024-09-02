@@ -41,7 +41,6 @@ class PlayerQueue(ABC):
         self._logger.debug("Item obtained from music queue: %s", music)
         return music
 
-    @abstractmethod
     def get_all(self) -> Any:
         """Get all musics from queue."""
         pass
@@ -61,7 +60,6 @@ class PlayerQueue(ABC):
         """
         return self.fetch_queue_size() + self.audio_queue_size()
 
-    @abstractmethod
     def fetch_queue_size(self) -> int:
         """Queue of yet to process music size.
 
@@ -72,7 +70,6 @@ class PlayerQueue(ABC):
         """
         return -1
 
-    @abstractmethod
     def audio_queue_size(self) -> int:
         """Queue of processed music size.
 

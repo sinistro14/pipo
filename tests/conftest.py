@@ -2,13 +2,19 @@ import random as rand
 import logging
 import functools
 import uuid6
-from typing import Iterable
+from typing import Iterable, List
+from pydantic import BaseModel
 
 import pytest
 from pipo.config import settings
 
 
 class Helpers:
+    def equal_models(m1: BaseModel, m2: BaseModel, attr_exclude: List[str]) -> bool:
+        m1 = m1.model_dump(exclude=attr_exclude)
+        m2 = m2.model_dump(exclude=attr_exclude)
+        return m1 == m2
+
     @staticmethod
     def equal_iterables(iter_1: Iterable, iter_2: Iterable):
         return functools.reduce(

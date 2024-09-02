@@ -43,6 +43,22 @@ default:
         size_check_iterations: 3
       remote:
         url:
+        requests:
+          max: 100
+          timeout: 43200  # seconds
+        queues:
+          dispatcher:
+            name: dispatcher
+            description: TODO
+          transmuter:
+            description: TODO
+            routing_key: "provider."
+            youtube:
+              name: youtube
+              routing_key: "youtube.*"
+            spotify:
+              name: spotify
+              routing_key: "spotify.*"
     url_fetch:
       lock_timeout: 3 # seconds
       timeout: 600    # seconds
