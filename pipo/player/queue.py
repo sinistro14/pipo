@@ -1,6 +1,15 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Iterable, Optional, Union
+from enum import StrEnum
+from typing import Iterable, Optional, Union
+
+
+class QueueType(StrEnum):
+    """MusicQueue types."""
+
+    NONE = ""
+    LOCAL = "local"
+    REMOTE = "remote"
 
 
 class PlayerQueue(ABC):
@@ -36,42 +45,13 @@ class PlayerQueue(ABC):
     @abstractmethod
     def get(self) -> Optional[str]:
         """Get one music from queue."""
-        # FIXME obtain music
-        music = None
-        self._logger.debug("Item obtained from music queue: %s", music)
-        return music
-
-    def get_all(self) -> Any:
-        """Get all musics from queue."""
-        pass
+        return None
 
     @abstractmethod
     def size(self) -> int:
         """Music to be played.
 
-        Sum of enqueued and yet to process music.
-        Estimates queue size calculating the average of several samples, solving method
-        correctness issues without locks.
-
-        Returns
-        -------
-        int
-            Queue size.
-        """
-        return self.fetch_queue_size() + self.audio_queue_size()
-
-    def fetch_queue_size(self) -> int:
-        """Queue of yet to process music size.
-
-        Returns
-        -------
-        int
-            Queue size.
-        """
-        return -1
-
-    def audio_queue_size(self) -> int:
-        """Queue of processed music size.
+        Sum of enqueued music.
 
         Returns
         -------
@@ -83,5 +63,4 @@ class PlayerQueue(ABC):
     @abstractmethod
     def clear(self) -> None:
         """Clear queue."""
-        # FIXME reset counters and try to delete queues if possible
         pass

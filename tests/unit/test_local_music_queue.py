@@ -3,7 +3,7 @@ import time
 import pytest
 from flaky import flaky
 
-from pipo.player.music_queue.local.local_music_queue import LocalMusicQueue
+from pipo.player.music_queue.local import LocalMusicQueue
 import tests.constants
 
 

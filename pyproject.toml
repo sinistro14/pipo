@@ -24,7 +24,6 @@ repository = "https://github.com/sinistro14/pipo"
 keywords = ["python", "discord", "spotify", "music", "bot"]
 
 classifiers = [
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
@@ -34,10 +33,10 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-uuid6 = "^2024.1"
-requests = "^2.31"
-pydantic = "~2.7.0"
+python = "^3.11"
+uuid6 = "^2024.7"
+requests = "^2.32"
+pydantic = "~2.8.0"
 expiringdict = "^1.2"
 faststream = { version = "0.5.20", extras = ["rabbit"] }
 dynaconf = { version = "~3.2.0", extras = ["yaml"] }

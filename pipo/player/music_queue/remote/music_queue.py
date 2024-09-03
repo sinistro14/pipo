@@ -1,15 +1,20 @@
 import asyncio
 from typing import Dict, Iterable
 
-import uuid6
 import faststream.rabbit
+import uuid6
 from expiringdict import ExpiringDict
 
 from pipo.config import settings
 from pipo.player.music_queue.models.music import Music
 from pipo.player.music_queue.models.music_request import MusicRequest
-from pipo.player.music_queue.remote._remote_music_queue import broker, server_queue, server_publisher, processed_music_exch
-from pipo.player.player_queue import PlayerQueue
+from pipo.player.music_queue.remote._remote_music_queue import (
+    broker,
+    processed_music_exch,
+    server_publisher,
+    server_queue,
+)
+from pipo.player.queue import PlayerQueue
 
 
 class RemoteMusicQueue(PlayerQueue):
@@ -28,6 +33,7 @@ class RemoteMusicQueue(PlayerQueue):
     __requests : Dict[str, MusicRequest]
 
     def __init__(self, server_id: str) -> None:
+        super().__init__()
         self.__requests = ExpiringDict(
             max_len=settings.player.queue.remote.requests.max,
             max_age_seconds=settings.player.queue.remote.requests.timeout,
@@ -59,7 +65,11 @@ class RemoteMusicQueue(PlayerQueue):
         RemoteMusicQueue._logger.debug("Item obtained from music queue: %s", music)
         return music
 
-    @broker.subscriber(queue=server_queue, exchange=processed_music_exch, description="Consumes processed music.")
+    @broker.subscriber(
+        queue=server_queue,
+        exchange=processed_music_exch,
+        description="Consumes processed music."
+    )
     async def _consume_music(self, request: Music) -> None:
         await RemoteMusicQueue.__get_music.acquire()
         if request.uuid in self.__requests:
@@ -71,10 +81,9 @@ class RemoteMusicQueue(PlayerQueue):
             RemoteMusicQueue._logger.warning("Item obtained was discarded: %s", music)
 
     def size(self) -> int:
-        return len(self.__requests) + self.__playable_music.qsize()
+        return self.__playable_music.qsize() + len(self.__requests)
 
     def clear(self) -> None:
-        self.__playable_music.maxsize
         self.__requests.clear()
         try:
             while not self.__playable_music.empty():

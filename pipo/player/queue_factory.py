@@ -1,7 +1,7 @@
 from pipo.config import settings
-from pipo.player.music_queue.local.local_music_queue import LocalMusicQueue
-from pipo.player.player_queue import PlayerQueue
-from pipo.player.player_queue_type import QueueType
+from pipo.player.music_queue.local import LocalMusicQueue
+from pipo.player.music_queue.remote.music_queue import RemoteMusicQueue
+from pipo.player.queue import PlayerQueue, QueueType
 
 
 class PlayerQueueFactory:
@@ -27,5 +27,6 @@ class PlayerQueueFactory:
         """
         queues = {
             QueueType.LOCAL: LocalMusicQueue,
+            QueueType.REMOTE: RemoteMusicQueue,
         }
         return queues.get(queue_type, queues.get(settings.player.queue.default))()

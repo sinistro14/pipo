@@ -11,6 +11,7 @@ from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.music_queue.models import Fetch, Music, MusicRequest, Prefetch
 
+
 def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
     return "0"
 
@@ -55,7 +56,8 @@ server_queue = RabbitQueue(
     exclusive=True,
 )
 
-server_publisher = broker.publisher(parser_queue, description="TODO") # TODO add description
+# TODO add description
+server_publisher = broker.publisher(parser_queue, description="TODO")
 
 prefetch_publisher = broker.publisher("pre_fetch", description="TODO")
 @prefetch_publisher

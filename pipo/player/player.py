@@ -7,8 +7,8 @@ import logging
 from typing import List, Union
 
 from pipo.config import settings
-from pipo.player.player_queue import PlayerQueue
-from pipo.player.player_queue_factory import PlayerQueueFactory
+from pipo.player.queue import PlayerQueue
+from pipo.player.queue_factory import PlayerQueueFactory
 
 
 class Player:
@@ -87,22 +87,12 @@ class Player:
         """Get music queue size."""
         return self._player_queue.size()
 
-    def fetch_queue_size(self) -> int:
-        """Get yet to process music queue size."""
-        return self._player_queue.fetch_queue_size()
-
-    def audio_queue_size(self) -> int:
-        """Get processed music queue size."""
-        return self._player_queue.audio_queue_size()
-
     def player_status(self) -> str:
         """Player status description."""
-        audio_queue_size = self.audio_queue_size()
-        fetch_queue_size = self.fetch_queue_size()
-        if audio_queue_size >= 0 and fetch_queue_size >= 0:
+        queue_size = self.queue_size()
+        if queue_size >= 0:
             return (
-                f"{25 * '='}\n🎵\tReady to play: {audio_queue_size}\n"
-                f"🎵\tPending processing: {fetch_queue_size}\n{25 * '='}\n"
+                f"{25 * '='}\n🎵\tQueue size: {queue_size}\n🎵\n{25 * '='}\n"
             )
         else:
             return settings.player.messages.unavailable_status
