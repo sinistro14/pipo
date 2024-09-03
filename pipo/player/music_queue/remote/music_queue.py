@@ -42,7 +42,7 @@ class RemoteMusicQueue(PlayerQueue):
         return str(uuid6.uuid7())
 
     async def add(self, query: str | Iterable[str], shuffle: bool = False) -> None:
-        query = list(query) if not isinstance(query, list) else query
+        query = [query] if isinstance(query, str) else query
         uuid = self.__generate_uuid()
         request = MusicRequest(
                 uuid=uuid,

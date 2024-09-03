@@ -99,7 +99,7 @@ class MusicQueue(PlayerQueue):
         shuffle : bool, optional
             Whether to shuffle music order, by default False.
         """
-        query = list(query) if not isinstance(query, list) else query
+        query = [query] if isinstance(query, str) else query
         sources = SourceOracle.process_queries(query)
         sources = self._parse(sources)
         if shuffle:

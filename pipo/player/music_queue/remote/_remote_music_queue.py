@@ -1,6 +1,8 @@
+import logging
 import random
 from typing import Iterable
 
+from faststream import Logger
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
 from pipo.config import settings
@@ -12,7 +14,10 @@ from pipo.player.music_queue.models import Fetch, Music, MusicRequest, Prefetch
 def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
     return "0"
 
-broker = RabbitBroker(url=settings.player.queue.remote.url) # TODO add other config options
+broker = RabbitBroker(
+    url=settings.player.queue.remote.url,
+    log_level=logging.getLevelName(settings.log.level)
+) # TODO add other config options
 
 parser_queue = RabbitQueue(
     "parser",
@@ -56,9 +61,11 @@ prefetch_publisher = broker.publisher("pre_fetch", description="TODO")
 @prefetch_publisher
 @broker.subscriber(parser_queue, description="TODO")
 async def on_parse( # FIXME get better name
+    logger: Logger,
     request: MusicRequest,
 ) -> Prefetch:
     sources = SourceOracle.process_queries(request.query)
+    logger.debug("Processed sources: %s", sources)
     return Prefetch(
         uuid=request.uuid,
         shuffle=request.shuffle,
@@ -68,12 +75,14 @@ async def on_parse( # FIXME get better name
 
 @broker.subscriber("pre_fetch", description="TODO")
 async def pre_fetch(
+    logger: Logger,
     request: Prefetch,
 ) -> None:
     sources = _pre_fetch(request.source_pairs)
     if request.shuffle:
         random.shuffle(sources)
     for source in sources:
+        logger.debug("Processing source: %s", source)
         provider = f"provider.{source.handler_type}.{source.operation}"
         fetch = Fetch(
                 uuid=request.uuid,
