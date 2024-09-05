@@ -117,7 +117,7 @@ class Pipo(pipo.states.Context):
                     url, method="fallback", **settings.pipo.ffmpeg_config
                 )
             )
-            while self.voice_client.is_playing() or self.voice_client.is_paused(): # noqa
+            while self.voice_client.is_playing() or self.voice_client.is_paused():  # noqa
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except asyncio.CancelledError:
             self._logger.debug("Cancelling asyncio sleep")

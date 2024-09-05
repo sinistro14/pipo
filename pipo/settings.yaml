@@ -48,17 +48,18 @@ default:
           timeout: 43200  # seconds
         queues:
           dispatcher:
-            name: dispatcher
-            description: TODO
+            queue: dispatcher
           transmuter:
-            description: TODO
+            exchange: TODO
             routing_key: "provider."
             youtube:
-              name: youtube
+              queue: youtube
               routing_key: "youtube.*"
             spotify:
-              name: spotify
+              queue: spotify
               routing_key: "spotify.*"
+          hub:
+            exchange: processed_music
     url_fetch:
       lock_timeout: 3 # seconds
       timeout: 600    # seconds

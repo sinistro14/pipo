@@ -91,9 +91,7 @@ class Player:
         """Player status description."""
         queue_size = self.queue_size()
         if queue_size >= 0:
-            return (
-                f"{25 * '='}\n🎵\tQueue size: {queue_size}\n🎵\n{25 * '='}\n"
-            )
+            return f"{25 * '='}\n🎵\tQueue size: {queue_size}\n🎵\n{25 * '='}\n"
         else:
             return settings.player.messages.unavailable_status
 

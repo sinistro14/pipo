@@ -1,4 +1,5 @@
 """Music Queue Types."""
+
 from enum import StrEnum
 
 

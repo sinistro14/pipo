@@ -41,7 +41,7 @@ class SpotifyHandler(BaseHandler):
         entry = f"{song} - {artist}" if artist else song
         return SourcePair(entry, YoutubeQueryHandler.name)
 
-    @staticmethod
+    @staticmethod  # TODO this method will be moved to fetch method
     def parse(pair: SourcePair) -> Iterable[SourcePair]:
         tracks = []
         query = pair.query

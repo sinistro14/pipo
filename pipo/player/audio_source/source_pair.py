@@ -7,4 +7,4 @@ class SourcePair:
 
     query: str
     handler_type: str
-    operation: str = "default" # TODO define operation types
+    operation: str = "default"  # TODO define operation types

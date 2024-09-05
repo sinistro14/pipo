@@ -2,105 +2,108 @@ import logging
 import random
 from typing import Iterable
 
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
 from faststream import Logger
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
+from faststream.rabbit.opentelemetry import RabbitTelemetryMiddleware
 
 from pipo.config import settings
 from pipo.player.audio_source.source_factory import SourceFactory
 from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
-from pipo.player.music_queue.models import Fetch, Music, MusicRequest, Prefetch
+from pipo.player.audio_source.spotify_handler import SpotifyHandler
+from pipo.player.audio_source.youtube_handler import YoutubeHandler
+from pipo.player.music_queue.models import ProviderOperation, Music, MusicRequest
 
-
-def _get_server_id(): # TODO generate and store UUIDs, may be useful for request order
-    return "0"
+resource = Resource.create(attributes={"service.name": "faststream"})
+tracer_provider = TracerProvider(resource=resource)
+trace.set_tracer_provider(tracer_provider)
 
 broker = RabbitBroker(
     url=settings.player.queue.remote.url,
-    log_level=logging.getLevelName(settings.log.level)
-) # TODO add other config options
+    log_level=logging.getLevelName(settings.log.level),
+    middlewares=(RabbitTelemetryMiddleware(tracer_provider=tracer_provider),),
+)  # TODO add other config options
 
-parser_queue = RabbitQueue(
-    "parser",
+dispatch_queue = RabbitQueue(
+    settings.player.queue.remote.queues.dispatcher.queue,
     durable=True,
 )
 
-music_processing_exch = RabbitExchange(
-    "music_processing",
-    type=ExchangeType.TOPIC,
-    durable=True,
+server_publisher = broker.publisher(
+    dispatch_queue,
+    description="Produces to dispatch queue",
 )
 
-processed_music_exch = RabbitExchange(
-    "processed_music",
+provider_exch = RabbitExchange(
+    settings.player.queue.remote.queues.hub.exchange,
     type=ExchangeType.TOPIC,
     durable=True,
 )
 
 youtube_queue = RabbitQueue(
-    "youtube",
-    routing_key="provider." + "youtube.*",
+    settings.player.queue.remote.queues.transmuter.youtube.queue,
+    routing_key=settings.player.queue.remote.queues.transmuter.routing_key
+    + settings.player.queue.remote.queues.transmuter.youtube.routing_key,
     durable=True,
 )
 
 spotify_queue = RabbitQueue(
-    "spotify",
-    routing_key="provider." + "spotify.*",
+    settings.player.queue.remote.queues.transmuter.spotify.queue,
+    routing_key=settings.player.queue.remote.queues.transmuter.routing_key
+    + settings.player.queue.remote.queues.transmuter.spotify.routing_key,
     durable=True,
 )
 
-server_queue = RabbitQueue(
-    "server_queue",
-    routing_key=f"server.{_get_server_id()}",
+hub_exch = RabbitExchange(
+    settings.player.queue.remote.queues.hub.exchange,
+    type=ExchangeType.TOPIC,
     durable=True,
-    exclusive=True,
 )
 
-# TODO add description
-server_publisher = broker.publisher(parser_queue, description="TODO")
 
-prefetch_publisher = broker.publisher("pre_fetch", description="TODO")
-@prefetch_publisher
-@broker.subscriber(parser_queue, description="TODO")
-async def on_parse( # FIXME get better name
-    logger: Logger,
-    request: MusicRequest,
-) -> Prefetch:
-    sources = SourceOracle.process_queries(request.query)
-    logger.debug("Processed sources: %s", sources)
-    return Prefetch(
-        uuid=request.uuid,
-        shuffle=request.shuffle,
-        server_id=request.server_id,
-        source_pairs=sources,
+def _declare_hub_queue(server_id: str) -> RabbitQueue:
+    return RabbitQueue(
+        f"server-queue-{server_id}",
+        routing_key=f"server_queue.{server_id}",
+        durable=True,
+        exclusive=True,
     )
 
-@broker.subscriber("pre_fetch", description="TODO")
-async def pre_fetch(
+
+@broker.subscriber(
+    dispatch_queue,
+    description="Consumes from dispatch topic and produces to provider exchange",
+)
+async def dispatch(
     logger: Logger,
-    request: Prefetch,
+    request: MusicRequest,
 ) -> None:
-    sources = _pre_fetch(request.source_pairs)
+    sources = SourceOracle.process_queries(request.query)
+    logger.debug("Processed sources: %s", sources)
+    sources = __dispatch(sources)
     if request.shuffle:
         random.shuffle(sources)
     for source in sources:
         logger.debug("Processing source: %s", source)
         provider = f"provider.{source.handler_type}.{source.operation}"
-        fetch = Fetch(
-                uuid=request.uuid,
-                server_id=request.server_id,
-                provider=provider,
-                operation=source.operation,
-                query=source.query,
-            )
+        request = ProviderOperation(
+            uuid=request.uuid,
+            server_id=request.server_id,
+            provider=provider,
+            operation=source.operation,
+            query=source.query,
+        )
         await broker.publish(
-            fetch,
+            request,
             routing_key=provider,
-            exchange=music_processing_exch,
+            exchange=provider_exch,
         )
 
 
-def _pre_fetch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
+def __dispatch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
     """Parse source pairs.
 
     Prepare request to be submitted, depending on queue type. Override if needed.
@@ -122,11 +125,16 @@ def _pre_fetch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
         )
     return parsed_sources
 
-@broker.subscriber(youtube_queue, music_processing_exch, description="TODO")
-async def fetch_youtube(
-    request: Fetch,
+
+@broker.subscriber(
+    youtube_queue,
+    provider_exch,
+    description="Consumes from providers topic with youtube.* key and produces to hub exchange",
+)
+async def transmute_youtube(
+    request: ProviderOperation,
 ) -> None:
-    source = "" # get_source() TODO implement
+    source = YoutubeHandler.get_audio(request.query)  # get_source() TODO implement
     if source:
         music = Music(
             uuid=request.uuid,
@@ -138,14 +146,19 @@ async def fetch_youtube(
         await broker.publish(
             music,
             routing_key="server." + music.server_id,
-            exchange=processed_music_exch,
+            exchange=hub_exch,
         )
 
-@broker.subscriber(spotify_queue, music_processing_exch, description="TODO")
-async def fetch_spotify(
-    request: Fetch,
+
+@broker.subscriber(
+    spotify_queue,
+    provider_exch,
+    description="Consumes from providers topic with spotify.* key and produces to hub exchange",
+)
+async def transmute_spotify(
+    request: ProviderOperation,
 ) -> None:
-    source = "" # get_source() TODO implement
+    source = SpotifyHandler.get_audio(request.query)
     if source:
         music = Music(
             uuid=request.uuid,
@@ -157,5 +170,5 @@ async def fetch_spotify(
         await broker.publish(
             music,
             routing_key="server." + music.server_id,
-            exchange=processed_music_exch,
+            exchange=hub_exch,
         )
