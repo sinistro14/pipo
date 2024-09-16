@@ -26,11 +26,10 @@ class RemoteMusicQueue(PlayerQueue):
         Controls connection to remote queues.
     """
 
-    __server_id: str
-    __get_music: asyncio.Lock
+    server_id: str
     __playable_music: asyncio.Queue[str]
     __publisher: faststream.rabbit.RabbitPublisher
-    __requests: Dict[str, MusicRequest]
+    __requests: Dict[str, int]
 
     def __init__(self, server_id: str) -> None:
         super().__init__()
@@ -38,11 +37,9 @@ class RemoteMusicQueue(PlayerQueue):
             max_len=settings.player.queue.remote.requests.max,
             max_age_seconds=settings.player.queue.remote.requests.timeout,
         )
-        self.__server_id = server_id
+        self.server_id = server_id
         self.__publisher = server_publisher
-        self.__get_music = asyncio.Lock()
-        # TODO consider relying only on queue max size instead of lock
-        self.__playable_music = asyncio.Queue(1)  # pass to configs
+        self.__playable_music = asyncio.Queue(10)  # pass to configs
         self.__start()
 
     def __start(self) -> None:
@@ -50,46 +47,61 @@ class RemoteMusicQueue(PlayerQueue):
             handlers=(
                 RabbitRoute(
                     self._consume_music,
-                    queue=_declare_hub_queue(self.__server_id),
+                    queue=_declare_hub_queue(self.server_id),
                     exchange=hub_exch,
-                    description="Consumes from hub exchange bound exclusive hub client queue",
+                    description="Consumes from hub exchange bound hub client exclusive queue",
                 ),
             )
         )
 
-    def __generate_uuid(self) -> str:
+    @staticmethod
+    def __generate_uuid() -> str:
         return str(uuid6.uuid7())
 
     async def add(self, query: str | Iterable[str], shuffle: bool = False) -> None:
         query = [query] if isinstance(query, str) else query
-        uuid = self.__generate_uuid()
+        uuid = RemoteMusicQueue.__generate_uuid()
         request = MusicRequest(
             uuid=uuid,
-            server_id=self.__server_id,
+            server_id=self.server_id,
             shuffle=shuffle,
             query=query,
         )
-        self.__requests[uuid] = request
+        self.__requests[request.uuid] = 0
         await self.__publisher.publish(request)
 
     async def get(self) -> Optional[str]:
-        self.__get_music.release()
-        music = await self.__playable_music.get()  # TODO handle timeout
-        self._logger.debug("Item obtained from music queue: %s", music)
-        return music
+        try:
+            music = await asyncio.wait_for(
+                self.__playable_music.get(),
+                timeout=settings.player.queue.remote.timeout.get_op
+            )
+            self._logger.debug("Item obtained from music queue: %s", music)
+            return music
+        except asyncio.TimeoutError:
+            self._logger.warning("Get operation timed out.")
+            return None
 
     # queue consumer, see __start
+    # handle Ack/Nack manually
     async def _consume_music(self, request: Music) -> None:
-        await self.__get_music.acquire()
+        music = request.source
         if request.uuid in self.__requests:
-            music = request.source
-            self._logger.debug("Item obtained from music queue: %s", music)
-            self.__playable_music.put(music)
+            self._logger.debug("Item obtained from remote music queue: %s", music)
+            try:
+                self.__requests[request.uuid] =+ 1
+                await asyncio.wait_for(
+                    self.__playable_music.put(music),
+                    timeout=settings.player.queue.remote.timeout.consume
+                )
+                self._logger.debug("Item stored in local music queue: %s", music)
+            except asyncio.TimeoutError:
+                self._logger.warning("Item consumption from remote queue timed out: %s", music)
         else:
             self._logger.warning("Item obtained was discarded: %s", music)
 
     def size(self) -> int:
-        return self.__playable_music.qsize() + len(self.__requests)
+        return self.__playable_music.qsize()
 
     def clear(self) -> None:
         self.__requests.clear()

@@ -9,7 +9,7 @@ import tests.constants
 
 class TestLocalMusicQueue:
     @pytest.fixture(scope="function", autouse=True)
-    def queue(self):
+    def queue(self) -> LocalMusicQueue:
         return LocalMusicQueue()
 
     @flaky(max_runs=5, min_passes=1)

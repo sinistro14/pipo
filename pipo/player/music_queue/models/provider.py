@@ -17,4 +17,4 @@ class ProviderOperation(BaseModel):
     provider: str = Field(pattern=r"^[\d\w]*.[\d\w]*.[\d\w]*$")
     server_id: str
     operation: str
-    query: HttpUrl
+    query: str

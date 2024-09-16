@@ -30,7 +30,7 @@ class YoutubeQueryHandler(BaseHandler):
             logging.getLogger(__name__).info(
                 "Processing youtube query audio source '%s'", source
             )
-            return SourcePair(query=source, handler_type=YoutubeQueryHandler.name)
+            return SourcePair(query=source, handler_type=SourceType.YOUTUBE_QUERY, operation="query")
         else:
             return super().handle(source)
 

@@ -45,20 +45,28 @@ default:
         url:
         requests:
           max: 100
-          timeout: 43200  # seconds
+          timeout: 43200      # seconds
+        timeout:
+          get_op: 30          # seconds
+          consume: 30         # seconds
         queues:
           dispatcher:
             queue: dispatcher
           transmuter:
-            exchange: TODO
+            exchange: provider
             routing_key: "provider."
             youtube:
               queue: youtube
               routing_key: "youtube.*"
+            youtube_query:
+              queue: youtube_query
+              routing_key: "youtube_query.*"
             spotify:
               queue: spotify
               routing_key: "spotify.*"
           hub:
+            queue: "server-queue-"
+            routing_key: "server."
             exchange: processed_music
     url_fetch:
       lock_timeout: 3 # seconds
