@@ -5,7 +5,7 @@ from typing import Iterable
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from faststream import Logger
+from faststream import Context, Logger
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 from faststream.rabbit.opentelemetry import RabbitTelemetryMiddleware
 
@@ -46,23 +46,27 @@ provider_exch = RabbitExchange(
 
 youtube_query_queue = RabbitQueue(
     settings.player.queue.remote.queues.transmuter.youtube_query.queue,
-    routing_key=settings.player.queue.remote.queues.transmuter.routing_key
-    + settings.player.queue.remote.queues.transmuter.youtube_query.routing_key,
+    routing_key=settings.player.queue.remote.queues.transmuter.youtube_query.routing_key,
     durable=True,
 )
 
 youtube_queue = RabbitQueue(
     settings.player.queue.remote.queues.transmuter.youtube.queue,
-    routing_key=settings.player.queue.remote.queues.transmuter.routing_key
-    + settings.player.queue.remote.queues.transmuter.youtube.routing_key,
+    routing_key=settings.player.queue.remote.queues.transmuter.youtube.routing_key,
     durable=True,
 )
 
 spotify_queue = RabbitQueue(
     settings.player.queue.remote.queues.transmuter.spotify.queue,
-    routing_key=settings.player.queue.remote.queues.transmuter.routing_key
-    + settings.player.queue.remote.queues.transmuter.spotify.routing_key,
+    routing_key=settings.player.queue.remote.queues.transmuter.spotify.routing_key,
     durable=True,
+)
+
+hub_queue = RabbitQueue(
+    settings.player.queue.remote.queues.hub.queue,
+    routing_key=settings.player.queue.remote.queues.hub.routing_key,
+    durable=True,
+    exclusive=True,
 )
 
 hub_exch = RabbitExchange(
@@ -72,17 +76,8 @@ hub_exch = RabbitExchange(
 )
 
 
-def _declare_hub_queue(server_id: str) -> RabbitQueue:
-    return RabbitQueue(
-        settings.player.queue.remote.queues.hub.queue + server_id,
-        routing_key=settings.player.queue.remote.queues.hub.routing_key + server_id,
-        durable=True,
-        exclusive=True,
-    )
-
-
 @broker.subscriber(
-    dispatch_queue,
+    queue=dispatch_queue,
     description="Consumes from dispatch topic and produces to provider exchange",
 )
 async def dispatch(
@@ -96,7 +91,12 @@ async def dispatch(
         random.shuffle(sources)
     for source in sources:
         logger.info("Processing source: %s", source)
-        provider = settings.player.queue.remote.queues.transmuter.routing_key + source.handler_type + '.' + source.operation
+        provider = (
+            settings.player.queue.remote.queues.transmuter.routing_key
+            + source.handler_type
+            + "."
+            + source.operation
+        )
         request = ProviderOperation(
             uuid=request.uuid,
             server_id=request.server_id,
@@ -109,7 +109,7 @@ async def dispatch(
             routing_key=provider,
             exchange=provider_exch,
         )
-        logger.info("Published request: %s", request)
+        logger.info("Published to provider %s request: %s", provider, request)
 
 
 def __dispatch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
@@ -134,43 +134,48 @@ def __dispatch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
         )
     return parsed_sources
 
+
 @broker.subscriber(
-    youtube_query_queue,
-    provider_exch,
+    queue=youtube_query_queue,
+    exchange=provider_exch,
     description="Consumes from providers topic with provider.youtube_query.query key and produces to hub exchange",
 )
+@broker.publisher(
+    exchange=provider_exch,
+    routing_key=settings.player.queue.remote.queues.transmuter.routing_key
+    + "youtube.query",  # FIXME decouple handler class names from queue processing
+    description="TODO",
+    priority=1,
+)
 async def transmute_youtube_query(
-    logger: Logger,
     request: ProviderOperation,
+    logger: Logger,
 ) -> None:
     source = YoutubeQueryHandler._music_from_query(request.query)
     if source:
-        provider = settings.player.queue.remote.queues.transmuter.routing_key + 'youtube.query'
         request = ProviderOperation(
             uuid=request.uuid,
             server_id=request.server_id,
-            provider='youtube',
-            operation='query',
+            provider="youtube",
+            operation="query",
             query=source,
         )
-        await broker.publish(
-            request,
-            routing_key=provider,
-            exchange=provider_exch,
-            priority=1,
-        )
+        return request
+
 
 @broker.subscriber(
-    youtube_queue,
-    provider_exch,
+    queue=youtube_queue,
+    exchange=provider_exch,
     description="Consumes from providers topic with provider.youtube.default key and produces to hub exchange",
 )
 async def transmute_youtube(
-    logger: Logger,
     request: ProviderOperation,
+    logger: Logger,
+    correlation_id: str = Context("message.correlation_id"),
 ) -> None:
     logger.info("Received request: %s", request.query)
     source = YoutubeHandler.get_audio(request.query)  # get_source() TODO implement
+    logger.info("Obtained youtube audio url: %s", source)
     if source:
         music = Music(
             uuid=request.uuid,
@@ -179,22 +184,27 @@ async def transmute_youtube(
             operation=request.operation,
             source=source,
         )
+        routing_key = (
+            settings.player.queue.remote.queues.hub.base_routing_key + music.server_id
+        )
         await broker.publish(
             music,
-            routing_key=settings.player.queue.remote.queues.hub.routing_key + music.server_id,
+            routing_key=routing_key,
             exchange=hub_exch,
+            correlation_id=correlation_id,
         )
-        logger.debug("Published music: %s", music)
+        logger.info("Published to routing key %s music: %s", routing_key, music)
 
 
 @broker.subscriber(
-    spotify_queue,
-    provider_exch,
+    queue=spotify_queue,
+    exchange=provider_exch,
     description="Consumes from providers topic with provider.spotify.* key and produces to hub exchange",
 )
 async def transmute_spotify(
-    logger: Logger,
     request: ProviderOperation,
+    logger: Logger,
+    correlation_id: str = Context("message.correlation_id"),
 ) -> None:
     source = SpotifyHandler.get_audio(request.query)
     if source:
@@ -207,7 +217,9 @@ async def transmute_spotify(
         )
         await broker.publish(
             music,
-            routing_key=settings.player.queue.remote.queues.hub.routing_key + music.server_id,
+            routing_key=settings.player.queue.remote.queues.hub.base_routing_key
+            + music.server_id,
             exchange=hub_exch,
+            correlation_id=correlation_id,
         )
         logger.debug("Published music: %s", music)

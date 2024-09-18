@@ -5,7 +5,7 @@ from faststream.rabbit import TestRabbitBroker
 import tests.constants
 from tests.conftest import Helpers
 
-from pipo.player.music_queue.remote.music_queue import RemoteMusicQueue
+from pipo.player.music_queue.remote.music_queue import music_queue
 from pipo.player.music_queue.models.music_request import MusicRequest
 from pipo.player.music_queue.remote._remote_music_queue import broker, server_publisher
 
@@ -30,7 +30,8 @@ class TestRemoteMusicQueue:
     @pytest.fixture(scope="function", autouse=True)
     async def queue(self):
         async with TestRabbitBroker(broker):
-            yield RemoteMusicQueue("0")
+            yield music_queue # FIXME use config value
+            music_queue.clear()
 
     @pytest.mark.parametrize(
         "query, shuffle",

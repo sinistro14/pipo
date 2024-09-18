@@ -9,6 +9,7 @@ default:
   channel:
   # Discord default voice channel
   voice_channel:
+  server_id: "@format {this.CHANNEL}"
   bot_description: Discord Music Bot
   commands:
     prefix: "-"
@@ -40,7 +41,6 @@ default:
           block: true
           timeout: 8
         prefetch_limit: 10
-        size_check_iterations: 3
       remote:
         url:
         requests:
@@ -49,24 +49,27 @@ default:
         timeout:
           get_op: 30          # seconds
           consume: 30         # seconds
+        size_check_iterations: 3
         queues:
           dispatcher:
             queue: dispatcher
           transmuter:
-            exchange: provider
+            exchange: providers
             routing_key: "provider."
             youtube:
               queue: youtube
-              routing_key: "youtube.*"
+              routing_key: "@format {this.PLAYER__QUEUE__REMOTE__QUEUES__TRANSMUTER__ROUTING_KEY}youtube.*"
             youtube_query:
               queue: youtube_query
-              routing_key: "youtube_query.*"
+              routing_key: "@format {this.PLAYER__QUEUE__REMOTE__QUEUES__TRANSMUTER__ROUTING_KEY}youtube_query.*"
             spotify:
               queue: spotify
-              routing_key: "spotify.*"
+              routing_key: "@format {this.PLAYER__QUEUE__REMOTE__QUEUES__TRANSMUTER__ROUTING_KEY}spotify.*"
           hub:
-            queue: "server-queue-"
-            routing_key: "server."
+            base_queue: "hub-queue-"
+            queue: "@format hub-queue-{this.SERVER_ID}"
+            base_routing_key: "hub."
+            routing_key: "@format hub.{this.SERVER_ID}"
             exchange: processed_music
     url_fetch:
       lock_timeout: 3 # seconds
@@ -88,3 +91,4 @@ test:
   dynaconf_merge: true
   log:
     level: DEBUG
+  server_id: "TEST"

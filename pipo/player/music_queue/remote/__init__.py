@@ -1,1 +1,1 @@
-from .music_queue import RemoteMusicQueue
+from .music_queue import __RemoteMusicQueue
