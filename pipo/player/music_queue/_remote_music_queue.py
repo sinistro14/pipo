@@ -21,27 +21,29 @@ from pipo.player.audio_source.youtube_handler import YoutubeHandler
 from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
 from pipo.player.music_queue.models import ProviderOperation, Music, MusicRequest
 
-tracer_provider = TracerProvider(resource=Resource.create(attributes={"service.name": "faststream"}))
+tracer_provider = TracerProvider(
+    resource=Resource.create(attributes={"service.name": "faststream"})
+)
 trace.set_tracer_provider(tracer_provider)
 
 broker = RabbitBroker(
     app_id=settings.app,
-    url=settings.player.queue.remote.url,
-    host=settings.player.queue.remote.host,
-    virtualhost=settings.player.queue.remote.vhost,
-    port=settings.player.queue.remote.port,
-    timeout=settings.player.queue.remote.timeout.broker,
-    max_consumers=settings.player.queue.remote.max_consumers,
-    graceful_timeout=settings.player.queue.remote.timeout.broker_graceful,
+    url=settings.player.queue.broker.url,
+    host=settings.player.queue.broker.host,
+    virtualhost=settings.player.queue.broker.vhost,
+    port=settings.player.queue.broker.port,
+    timeout=settings.player.queue.broker.timeout,
+    max_consumers=settings.player.queue.broker.max_consumers,
+    graceful_timeout=settings.player.queue.broker.graceful_timeout,
     logger=logging.getLogger(__name__),
     security=BaseSecurity(ssl_context=ssl.create_default_context()),
     middlewares=(RabbitTelemetryMiddleware(tracer_provider=tracer_provider),),
 )  # TODO add other config options
 
 dispatcher_queue = RabbitQueue(
-    settings.player.queue.remote.queues.dispatcher.queue,
+    settings.player.queue.service.dispatcher.queue,
     durable=True,
-    arguments=settings.player.queue.remote.queues.dispatcher.args,
+    arguments=settings.player.queue.service.dispatcher.args,
 )
 
 server_publisher = broker.publisher(
@@ -50,44 +52,44 @@ server_publisher = broker.publisher(
 )
 
 provider_exch = RabbitExchange(
-    settings.player.queue.remote.queues.transmuter.exchange,
+    settings.player.queue.service.transmuter.exchange,
     type=ExchangeType.TOPIC,
     durable=True,
 )
 
 youtube_query_queue = RabbitQueue(
-    settings.player.queue.remote.queues.transmuter.youtube_query.queue,
-    routing_key=settings.player.queue.remote.queues.transmuter.youtube_query.routing_key,
+    settings.player.queue.service.transmuter.youtube_query.queue,
+    routing_key=settings.player.queue.service.transmuter.youtube_query.routing_key,
     durable=True,
-    arguments=settings.player.queue.remote.queues.transmuter.youtube_query.args,
+    arguments=settings.player.queue.service.transmuter.youtube_query.args,
 )
 
 youtube_queue = RabbitQueue(
-    settings.player.queue.remote.queues.transmuter.youtube.queue,
-    routing_key=settings.player.queue.remote.queues.transmuter.youtube.routing_key,
+    settings.player.queue.service.transmuter.youtube.queue,
+    routing_key=settings.player.queue.service.transmuter.youtube.routing_key,
     durable=True,
-    arguments=settings.player.queue.remote.queues.transmuter.youtube.args,
+    arguments=settings.player.queue.service.transmuter.youtube.args,
 )
 
 spotify_queue = RabbitQueue(
-    settings.player.queue.remote.queues.transmuter.spotify.queue,
-    routing_key=settings.player.queue.remote.queues.transmuter.spotify.routing_key,
+    settings.player.queue.service.transmuter.spotify.queue,
+    routing_key=settings.player.queue.service.transmuter.spotify.routing_key,
     durable=True,
-    arguments=settings.player.queue.remote.queues.transmuter.spotify.args,
-)
-
-hub_queue = RabbitQueue(
-    settings.player.queue.remote.queues.hub.queue,
-    routing_key=settings.player.queue.remote.queues.hub.routing_key,
-    durable=True,
-    exclusive=True,
-    arguments=settings.player.queue.remote.queues.hub.args,
+    arguments=settings.player.queue.service.transmuter.spotify.args,
 )
 
 hub_exch = RabbitExchange(
-    settings.player.queue.remote.queues.hub.exchange,
+    settings.player.queue.service.hub.exchange,
     type=ExchangeType.TOPIC,
     durable=True,
+)
+
+hub_queue = RabbitQueue(
+    settings.player.queue.service.hub.queue,
+    routing_key=settings.player.queue.service.hub.routing_key,
+    durable=True,
+    exclusive=True,
+    arguments=settings.player.queue.service.hub.args,
 )
 
 
@@ -106,12 +108,7 @@ async def dispatch(
         random.shuffle(sources)
     for source in sources:
         logger.debug("Processing source: %s", source)
-        provider = (
-            settings.player.queue.remote.queues.transmuter.routing_key
-            + source.handler_type
-            + "."
-            + source.operation
-        )
+        provider = f"{settings.player.queue.service.transmuter.routing_key}.{source.handler_type}.{source.operation}"
         request = ProviderOperation(
             uuid=request.uuid,
             server_id=request.server_id,
@@ -158,7 +155,7 @@ def __dispatch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
 )
 @broker.publisher(
     exchange=provider_exch,
-    routing_key=settings.player.queue.remote.queues.transmuter.youtube.routing_key,
+    routing_key=settings.player.queue.service.transmuter.youtube.routing_key,
     description="Produces to provider topic with provider.youtube.default key with increased priority",
     priority=1,
 )
@@ -175,7 +172,7 @@ async def transmute_youtube_query(
             operation="default",
             query=source,
         )
-        logger.debug("Resolved youtube query operation: %s", request)
+        logger.info("Resolved youtube query operation: %s", request)
         return request
 
 
@@ -201,7 +198,7 @@ async def transmute_youtube(
             source=source,
         )
         routing_key = (
-            settings.player.queue.remote.queues.hub.base_routing_key + music.server_id
+            f"{settings.player.queue.service.hub.base_routing_key}.{music.server_id}"
         )
         await broker.publish(
             music,
@@ -209,7 +206,7 @@ async def transmute_youtube(
             exchange=hub_exch,
             correlation_id=correlation_id,
         )
-        logger.debug("Published music: %s", music)
+        logger.info("Published music: %s", music)
 
 
 @broker.subscriber(
@@ -222,7 +219,9 @@ async def transmute_spotify(
     logger: Logger,
     correlation_id: str = Context("message.correlation_id"),
 ) -> None:
+    logger.debug("Received request: %s", request.query)
     tracks = SpotifyHandler.parse(request.query)
+    logger.debug("Obtained spotify tracks: %s", tracks)
     for track in tracks:
         music = Music(
             uuid=request.uuid,
@@ -233,8 +232,8 @@ async def transmute_spotify(
         )
         await broker.publish(
             music,
-            routing_key=settings.player.queue.remote.queues.transmuter.youtube_query.routing_key,
+            routing_key=settings.player.queue.service.transmuter.youtube_query.routing_key,
             exchange=provider_exch,
             correlation_id=correlation_id,
         )
-        logger.debug("Published music: %s", music)
+        logger.info("Published music: %s", music)

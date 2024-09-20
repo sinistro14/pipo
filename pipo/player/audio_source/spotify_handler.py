@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable, Optional
+from typing import Iterable
 
 import spotipy
 

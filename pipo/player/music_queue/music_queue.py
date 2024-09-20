@@ -11,7 +11,7 @@ from pipo.config import settings
 from pipo.player.queue import PlayerQueue
 from pipo.player.music_queue.models.music import Music
 from pipo.player.music_queue.models.music_request import MusicRequest
-from pipo.player.music_queue.remote._remote_music_queue import (
+from pipo.player.music_queue._remote_music_queue import (
     broker,
     hub_queue,
     hub_exch,
@@ -36,8 +36,8 @@ class __RemoteMusicQueue(PlayerQueue):
     def __init__(self, server_id: str) -> None:
         super().__init__()
         self.__requests = ExpiringDict(
-            max_len=settings.player.queue.remote.requests.max,
-            max_age_seconds=settings.player.queue.remote.requests.timeout,
+            max_len=settings.player.queue.requests.max,
+            max_age_seconds=settings.player.queue.requests.timeout,
         )
         self.server_id = server_id
         self.__publisher = server_publisher
@@ -68,7 +68,7 @@ class __RemoteMusicQueue(PlayerQueue):
                 self.__requests[request.uuid] = +1
                 await asyncio.wait_for(
                     self.__playable_music.put(music),
-                    timeout=settings.player.queue.remote.timeout.consume,
+                    timeout=settings.player.queue.timeout.consume,
                 )
                 self._logger.debug("Item stored in local music queue: %s", music)
             except asyncio.TimeoutError:
@@ -79,23 +79,21 @@ class __RemoteMusicQueue(PlayerQueue):
             self._logger.warning("Item obtained was discarded: %s", music)
 
     async def get(self, timeout: int = 0) -> Optional[str]:
-        timeout = (
-            timeout if timeout > 0 else settings.player.queue.remote.timeout.get_op
-        )
+        timeout = timeout if timeout > 0 else settings.player.queue.timeout.get_op
         try:
             music = await asyncio.wait_for(self.__playable_music.get(), timeout=timeout)
             self._logger.debug("Item obtained from music queue: %s", music)
             return music
         except asyncio.TimeoutError:
             self._logger.warning("Get operation timed out.")
-            return None
+        return None
 
     def size(self) -> int:
         return round(
             mean(
                 [
                     self.__playable_music.qsize()
-                    for _ in range(settings.player.queue.remote.size_check_iterations)
+                    for _ in range(settings.player.queue.size_check_iterations)
                 ]
             ),
             0,

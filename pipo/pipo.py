@@ -184,7 +184,7 @@ class Pipo(pipo.states.Context):
 
     async def reboot(self, ctx: Dctx):
         """Reboot bot."""
-        await self._state.leave()  # transitions to Disconnected state
+        await self._state.leave()  # transition to Disconnected state
         self._logger.info("Rebooting")
         signal.raise_signal(signal.SIGUSR1)
 

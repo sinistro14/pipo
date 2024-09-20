@@ -7,8 +7,8 @@ import logging
 from typing import List, Union
 
 from pipo.config import settings
+from pipo.player.music_queue.music_queue import music_queue
 from pipo.player.queue import PlayerQueue
-from pipo.player.queue_factory import PlayerQueueFactory
 
 
 class Player:
@@ -52,7 +52,7 @@ class Player:
         self.__logger = logging.getLogger(__name__)
         self.__player_thread = None
         self.can_play = asyncio.Event()
-        self._player_queue = PlayerQueueFactory.get(settings.player.queue.type)
+        self._player_queue = music_queue
 
     def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""

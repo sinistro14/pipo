@@ -1,15 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from enum import StrEnum
 from typing import Iterable, Optional, Union
-
-
-class QueueType(StrEnum):
-    """MusicQueue types."""
-
-    NONE = ""
-    LOCAL = "local"
-    REMOTE = "remote"
 
 
 class PlayerQueue(ABC):

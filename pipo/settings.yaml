@@ -33,61 +33,52 @@ default:
       task_name: idle_tracker
       timeout: 1800  # 30 minutes
     queue:
-      type: local
-      default: local
-      local:
-        get_music:
-          retries: 3
-          block: true
-          timeout: 8
-        prefetch_limit: 10
-      remote:
+      broker:
         url:
         host:
         port:
         vhost:
+        timeout: 60             # TODO check if (mili)seconds
+        graceful_timeout: 120   # TODO check if (mili)seconds
         max_consumers: 10
-        requests:
-          max: 100
-          timeout: 43200      # seconds
-        timeout:
-          broker: 60 # seconds
-          broker_graceful: 120 # seconds
-          get_op: 30          # seconds
-          consume: 30         # seconds
-        size_check_iterations: 3
-        queues:
-          dispatcher:
-            queue: dispatcher
-            args:
-              message-ttl: 3600000 # 1 hour
-          transmuter:
-            exchange: providers
-            routing_key: "provider."
-            youtube:
-              queue: youtube
-              routing_key: "@format {this.PLAYER__QUEUE__REMOTE__QUEUES__TRANSMUTER__ROUTING_KEY}youtube.default"
-              args:
-                message-ttl: 43200000 # 12 hours
-            youtube_query:
-              queue: youtube_query
-              routing_key: "@format {this.PLAYER__QUEUE__REMOTE__QUEUES__TRANSMUTER__ROUTING_KEY}youtube.query"
-              args:
-                message-ttl: 3600000 # 1 hour
-            spotify:
-              queue: spotify
-              routing_key: "@format {this.PLAYER__QUEUE__REMOTE__QUEUES__TRANSMUTER__ROUTING_KEY}spotify.*"
-              args:
-                message-ttl: 3600000 # 1 hour
-          hub:
-            base_queue: "hub-queue-"
-            queue: "@format hub-queue-{this.SERVER_ID}"
-            base_routing_key: "hub."
-            routing_key: "@format hub.{this.SERVER_ID}"
-            exchange: processed_music
+      requests:
+        max: 100
+        timeout: 43200      # seconds
+      timeout:
+        get_op: 30          # seconds
+        consume: 30         # seconds
+      size_check_iterations: 3
+      service:
+        dispatcher:
+          queue: dispatcher
+          args:
+            message-ttl: 3600000 # 1 hour
+        transmuter:
+          exchange: providers
+          routing_key: provider
+          youtube:
+            queue: youtube
+            routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.default"
             args:
               message-ttl: 43200000 # 12 hours
-              x-expires: 86400000   # 24 hours
+          youtube_query:
+            queue: youtube_query
+            routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.query"
+            args:
+              message-ttl: 3600000 # 1 hour
+          spotify:
+            queue: spotify
+            routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.spotify.*"
+            args:
+              message-ttl: 3600000 # 1 hour
+        hub:
+          queue: "@format hub-queue-{this.SERVER_ID}"
+          base_routing_key: "hub"
+          routing_key: "@format hub.{this.SERVER_ID}"
+          exchange: processed_music
+          args:
+            message-ttl: 43200000 # 12 hours
+            x-expires: 86400000   # 24 hours
     url_fetch:
       lock_timeout: 3 # seconds
       timeout: 600    # seconds

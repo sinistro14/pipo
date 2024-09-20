@@ -5,9 +5,9 @@ from faststream.rabbit import TestRabbitBroker
 import tests.constants
 from tests.conftest import Helpers
 
-from pipo.player.music_queue.remote.music_queue import music_queue
+from pipo.player.music_queue.music_queue import music_queue
 from pipo.player.music_queue.models.music_request import MusicRequest
-from pipo.player.music_queue.remote._remote_music_queue import broker, server_publisher
+from pipo.player.music_queue._remote_music_queue import broker, server_publisher
 
 @pytest.mark.asyncio
 class TestFaststream:
@@ -30,26 +30,25 @@ class TestRemoteMusicQueue:
     @pytest.fixture(scope="function", autouse=True)
     async def queue(self):
         async with TestRabbitBroker(broker):
-            yield music_queue # FIXME use config value
+            yield music_queue
             music_queue.clear()
 
     @pytest.mark.parametrize(
-        "query, shuffle",
+        "query",
         [
-            (tests.constants.YOUTUBE_URL_1, False),
-            (tests.constants.YOUTUBE_URL_SINGLE_ELEMENT_LIST, False),
-            (tests.constants.YOUTUBE_URL_SIMPLE_LIST, True),
+            (tests.constants.YOUTUBE_URL_1),
+            (tests.constants.YOUTUBE_URL_SINGLE_ELEMENT_LIST),
+            (tests.constants.YOUTUBE_URL_SIMPLE_LIST),
         ],
     )
-    async def test_queue_add(self, queue, query, shuffle):
+    async def test_queue_add(self, queue, query):
         expected = MusicRequest(
             uuid=Helpers.generate_uuid(),
             server_id=queue.server_id,
-            shuffle=shuffle,
             query=[query] if isinstance(query, str) else query,
         )
 
-        await queue.add(query=query, shuffle=shuffle)
+        await queue.add(query=query)
         server_publisher.mock.assert_called_once
         actual = MusicRequest(**server_publisher.mock.call_args.args[0])
         assert actual

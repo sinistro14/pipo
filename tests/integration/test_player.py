@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from flaky import flaky
 
@@ -26,6 +27,7 @@ class TestPlayer:
     )
     async def test_play_single_url(self, player, url, queue_size):
         player.play(url)
+        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
         assert player.queue_size() == queue_size
 
     @flaky(max_runs=3, min_passes=1)
@@ -39,6 +41,7 @@ class TestPlayer:
     )
     async def test_play_multiple_url(self, player, url_list):
         player.play(url_list)
+        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
         assert player.queue_size() == len(url_list)
 
     @flaky(max_runs=3, min_passes=1)
@@ -53,4 +56,5 @@ class TestPlayer:
     )
     async def test_playlist(self, player, playlist, playlist_size):
         player.play(playlist)
+        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC
         assert player.queue_size() == playlist_size
