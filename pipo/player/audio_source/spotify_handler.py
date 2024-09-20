@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable
+from typing import Iterable, Optional
 
 import spotipy
 
@@ -41,10 +41,9 @@ class SpotifyHandler(BaseHandler):
         entry = f"{song} - {artist}" if artist else song
         return SourcePair(entry, YoutubeQueryHandler.name)
 
-    @staticmethod  # TODO this method will be moved to fetch method
-    def parse(pair: SourcePair) -> Iterable[SourcePair]:
+    @staticmethod
+    def _tracks_from_query(query: str) -> Iterable[str]:
         tracks = []
-        query = pair.query
         try:
             spotify = spotipy.Spotify(
                 client_credentials_manager=spotipy.SpotifyClientCredentials(
@@ -82,5 +81,9 @@ class SpotifyHandler(BaseHandler):
             logging.getLogger(__name__).exception(
                 "Unable to process spotify query '%s'", query
             )
-        tracks = tracks or []
+        return tracks or []
+
+    @staticmethod
+    def parse(pair: SourcePair) -> Iterable[SourcePair]:
+        tracks = SpotifyHandler._tracks_from_query(pair.query)
         return [SpotifyHandler.__parse(track) for track in tracks]

@@ -31,7 +31,7 @@ class YoutubeQueryHandler(BaseHandler):
                 "Processing youtube query audio source '%s'", source
             )
             return SourcePair(
-                query=source, handler_type=SourceType.YOUTUBE_QUERY, operation="query"
+                query=source, handler_type=SourceType.YOUTUBE, operation="query"
             )
         else:
             return super().handle(source)
@@ -71,7 +71,7 @@ class YoutubeQueryHandler(BaseHandler):
     def _music_from_query(query: str) -> Optional[str]:
         """Get youtube audio url based on search query.
 
-        Perform a youtube query to obtain the related with the most views.
+        Perform a youtube query to obtain the related video with the most views.
 
         Parameters
         ----------

@@ -7,6 +7,7 @@ from pipo.config import settings
 from pipo.player.audio_source.source_factory import SourceFactory
 from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
+from pipo.player.audio_source.source_type import SourceType
 from pipo.player.queue import PlayerQueue
 
 
@@ -126,9 +127,10 @@ class LocalMusicQueue(PlayerQueue):
         """
         parsed_sources = []
         for source in sources:
-            parsed_sources.extend(
-                SourceFactory.get_source(source.handler_type).parse(source)
-            )
+            handler = source.handler_type
+            if source.operation == "query":
+                handler = SourceType.YOUTUBE_QUERY
+            parsed_sources.extend(SourceFactory.get_source(handler).parse(source))
         return parsed_sources
 
     def _add(self, music: str) -> None:

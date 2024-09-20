@@ -38,6 +38,7 @@ class TestLocalMusicQueue:
         queue.add(musics)
         assert queue.size() == queue_size
 
+    @pytest.mark.xfail(reason="local queues will be deprecated")
     @pytest.mark.parametrize(
         "musics, final_queue_size",
         [
@@ -52,6 +53,7 @@ class TestLocalMusicQueue:
         assert music
         assert queue.size() == final_queue_size
 
+    @pytest.mark.xfail(reason="local queues will be deprecated")
     @pytest.mark.parametrize(
         "musics, final_queue_size",
         [

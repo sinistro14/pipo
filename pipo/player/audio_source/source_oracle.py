@@ -14,7 +14,7 @@ class SourceOracle:
     def __handlers() -> BaseHandler:
         """Provide handler chain."""
         handlers = YoutubeHandler()
-        handlers.set_next(YoutubeQueryHandler()).set_next(SpotifyHandler())
+        handlers.set_next(SpotifyHandler()).set_next(YoutubeQueryHandler())
         return handlers
 
     @staticmethod
