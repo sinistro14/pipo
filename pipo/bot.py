@@ -4,6 +4,8 @@ import logging
 import discord
 from discord.ext import commands
 
+from pipo.config import settings
+
 
 class PipoBot(commands.Bot):
     """Top level Discord bot.
@@ -21,6 +23,9 @@ class PipoBot(commands.Bot):
             case_insensitive=True,
             description=description,
             intents=self.get_intents(),
+            help_command=commands.DefaultHelpCommand(
+                no_category=settings.commands.help.category
+            ),
         )
 
     @staticmethod

@@ -91,11 +91,11 @@ class Player:
         """Player status description."""
         queue_size = self.queue_size()
         if queue_size >= 0:
-            return f"{25 * '='}\n🎵\tQueue size: {queue_size}\n🎵\n{25 * '='}\n"
+            return f"{25 * '='}\n🎵\tQueue size: {queue_size}\t🎵\n{25 * '='}\n"
         else:
             return settings.player.messages.unavailable_status
 
-    def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
+    async def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
         """Add music to play.
 
         Enqueues music to be played when player thread is free and broadcasts such
@@ -118,9 +118,9 @@ class Player:
             queries = [
                 queries,
             ]
-        self.__add_music(queries, shuffle)
+        await self.__add_music(queries, shuffle)
 
-    def __add_music(self, queries: List[str], shuffle: bool) -> None:
+    async def __add_music(self, queries: List[str], shuffle: bool) -> None:
         """Add music to play queue.
 
         Enqueues music to be played when player thread is free and broadcasts such
@@ -135,10 +135,7 @@ class Player:
             Randomize order by which queries are added to play queue.
         """
         self.__logger.info("Processing music query: %s", queries)
-        self._player_queue.add(
-            queries,
-            shuffle,
-        )
+        await self._player_queue.add(queries, shuffle)
 
     def _start_music_queue(self) -> None:
         """Initialize music thread.
@@ -164,7 +161,7 @@ class Player:
         while await self.can_play.wait():
             self.can_play.clear()
             self.__logger.debug("Music queue size: %s", self.queue_size())
-            url = self._player_queue.get()
+            url = await self._player_queue.get(settings.player.get_music_timeout)
             if url:
                 try:
                     self.__logger.info(

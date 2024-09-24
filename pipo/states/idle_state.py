@@ -99,7 +99,7 @@ class IdleState(pipo.states.state.State):
         shuffle : bool, optional
             Randomize play order when multiple musics are provided.
         """
-        self.context.player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())
 
     async def leave(self) -> None:

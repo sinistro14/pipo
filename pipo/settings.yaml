@@ -16,6 +16,8 @@ default:
     # ensure same values are used in help messages
     search: -q
     shuffle: -s
+    help:
+      category: Other
   pipo:
     move_message_delay: 0.2       # seconds
     check_if_playing_frequency: 3 # seconds
@@ -24,6 +26,7 @@ default:
       options: "-vn"
       before_options: "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
   player:
+    get_music_timeout: 300        # 5 minutes
     task_name: play_music_queue
     messages:
       disconnect: Bye bye !!!
@@ -38,21 +41,21 @@ default:
         host:
         port:
         vhost:
-        timeout: 60             # TODO check if (mili)seconds
-        graceful_timeout: 120   # TODO check if (mili)seconds
+        timeout: 60
+        graceful_timeout: 120     # TODO check if (mili)seconds
         max_consumers: 10
       requests:
         max: 100
-        timeout: 43200      # seconds
+        timeout: 43200            # seconds
       timeout:
-        get_op: 30          # seconds
-        consume: 30         # seconds
+        get_op: 30                # seconds
+        consume: 900              # 15 minutes
       size_check_iterations: 3
       service:
         dispatcher:
           queue: dispatcher
           args:
-            message-ttl: 3600000 # 1 hour
+            message-ttl: 3600000  # 1 hour
         transmuter:
           exchange: providers
           routing_key: provider
@@ -72,7 +75,7 @@ default:
             args:
               message-ttl: 3600000 # 1 hour
         hub:
-          queue: "@format hub-queue-{this.SERVER_ID}"
+          queue: "@format hub_{this.SERVER_ID}"
           base_routing_key: "hub"
           routing_key: "@format hub.{this.SERVER_ID}"
           exchange: processed_music

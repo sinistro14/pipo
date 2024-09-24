@@ -9,6 +9,7 @@ from pipo.signal_manager import SignalManager
 from pipo.bot import PipoBot
 from pipo.cogs import MusicBot
 from pipo.config import settings
+from pipo.player.music_queue._remote_music_queue import broker
 
 
 async def run_bot():
@@ -25,6 +26,8 @@ async def run_bot():
     bot = PipoBot(
         command_prefix=settings.commands.prefix, description=settings.bot_description
     )
+    await broker.connect()
+    await broker.start()
 
     async with bot:
         await bot.add_cog(MusicBot(bot, channel, voice_channel))

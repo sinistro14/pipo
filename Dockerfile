@@ -1,8 +1,8 @@
-FROM python:3.11.9-slim-bookworm AS base
+FROM python:3.11.10-slim-bookworm AS base
 
     # python
 ENV APP_NAME="pipo" \
-    PYTHON_VERSION=3.11.9 \
+    PYTHON_VERSION=3.11.10 \
     PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -89,4 +89,4 @@ USER $USERNAME
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 COPY ./${APP_NAME} /${APP_NAME}/
 
-ENTRYPOINT ["${VENV_PATH}/bin/python", "-m", "start"]
+ENTRYPOINT "${VENV_PATH}/bin/python" "-m" "pipo"

@@ -42,7 +42,7 @@ class DisconnectedState(pipo.states.state.State):
             Randomize play order when multiple musics are provided.
         """
         await self.context.ensure_connection(ctx)
-        self.context.player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
         self.context.transition_to(pipo.states.playing_state.PlayingState())
 
     async def skip(self) -> None:  # noqa: D102

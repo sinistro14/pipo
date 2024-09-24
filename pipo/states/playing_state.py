@@ -63,7 +63,7 @@ class PlayingState(pipo.states.state.State):
         shuffle : bool, optional
             Randomize play order when multiple musics are provided.
         """
-        self.context.player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
 
     async def skip(self) -> None:
         """Skip currently playing music.

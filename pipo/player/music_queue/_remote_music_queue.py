@@ -38,7 +38,7 @@ broker = RabbitBroker(
     logger=logging.getLogger(__name__),
     security=BaseSecurity(ssl_context=ssl.create_default_context()),
     middlewares=(RabbitTelemetryMiddleware(tracer_provider=tracer_provider),),
-)  # TODO add other config options
+)
 
 dispatcher_queue = RabbitQueue(
     settings.player.queue.service.dispatcher.queue,
@@ -172,7 +172,7 @@ async def transmute_youtube_query(
             operation="default",
             query=source,
         )
-        logger.info("Resolved youtube query operation: %s", request)
+        logger.info("Resolved youtube query operation: %s", request.uuid)
         return request
 
 
@@ -206,7 +206,7 @@ async def transmute_youtube(
             exchange=hub_exch,
             correlation_id=correlation_id,
         )
-        logger.info("Published music: %s", music)
+        logger.info("Published music: %s", music.uuid)
 
 
 @broker.subscriber(
@@ -236,4 +236,4 @@ async def transmute_spotify(
             exchange=provider_exch,
             correlation_id=correlation_id,
         )
-        logger.info("Published music: %s", music)
+        logger.info("Published music: %s", music.uuid)

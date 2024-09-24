@@ -21,7 +21,7 @@ class InputParser:
     __parser: argparse.ArgumentParser
 
     def __init__(self) -> None:
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(exit_on_error=False)
         parser.add_argument(
             settings.commands.search,
             dest="search",
@@ -52,6 +52,6 @@ class InputParser:
         """
         try:
             args = self.__parser.parse_args(args)
-        except argparse.ArgumentError:
+        except (argparse.ArgumentError, SystemExit):
             return None
         return PlayArguments(shuffle=args.shuffle, search=args.search, query=args.query)

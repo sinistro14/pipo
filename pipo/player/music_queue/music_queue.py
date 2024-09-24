@@ -61,7 +61,7 @@ class __RemoteMusicQueue(PlayerQueue):
         await self.__publisher.publish(request)
 
     async def _add_music(self, request: Music):
-        music = request.source
+        music = str(request.source)
         if request.uuid in self.__requests:
             self._logger.debug("Item obtained from remote music queue: %s", music)
             try:
@@ -73,7 +73,7 @@ class __RemoteMusicQueue(PlayerQueue):
                 self._logger.debug("Item stored in local music queue: %s", music)
             except asyncio.TimeoutError:
                 self._logger.warning(
-                    "Item consumption from remote queue timed out: %s", music
+                    "Item consumption from remote queue timed out: %s", request.uuid
                 )
         else:
             self._logger.warning("Item obtained was discarded: %s", music)
