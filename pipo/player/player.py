@@ -134,7 +134,7 @@ class Player:
         shuffle : bool
             Randomize order by which queries are added to play queue.
         """
-        self.__logger.info("Processing music query %s", queries)
+        self.__logger.info("Processing music query: %s", queries)
         self._player_queue.add(
             queries,
             shuffle,
