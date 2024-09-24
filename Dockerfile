@@ -1,6 +1,6 @@
-FROM python:3.11.10-slim-bookworm AS base
+FROM python:3.11.10-alpine AS base
 
-    # python
+# python
 ENV APP_NAME="pipo" \
     PYTHON_VERSION=3.11.10 \
     PYTHONUNBUFFERED=1 \
@@ -30,36 +30,24 @@ ENV APP_NAME="pipo" \
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv"
 
-    # prepend poetry and venv to path
+# prepend poetry and venv to path
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# install required system dependencies
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get --no-install-recommends install -y \
-        ffmpeg \
-    && pip3 install --upgrade pip setuptools wheel \
-    && apt-get clean
-
-
 # `builder-base` stage is used to build deps + create virtual environment
-#FROM base as builder-base
 FROM base AS builder-base
 
-# gcc and python3-dev will be used for proj dependencies install, not being removed here
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install --no-install-recommends -y \
-        make \
-        build-essential \
-        libc-dev \
-        libssl-dev \
-        # discord.py[voice] dependencies
-        python3-dev \
+# install required system dependencies
+RUN apk add --no-cache \
+        ffmpeg \
+        git \
+    && pip install --upgrade pip setuptools wheel \
+    && apk add --no-cache --virtual .build-deps \
+        build-base \
+        musl-dev \
         libffi-dev \
-        libnacl-dev \
-    && apt-get clean \
-    && pip3 install --ignore-installed distlib --disable-pip-version-check \
+        openssl-dev \
+        python3-dev \
+        && pip install --ignore-installed distlib --disable-pip-version-check \
         cryptography==3.4.6 \
         poetry==$POETRY_VERSION
 
@@ -70,20 +58,22 @@ ARG PROGRAM_VERSION=0.0.0
 RUN poetry version $PROGRAM_VERSION
 
 # install runtime dependencies, internally uses $POETRY_VIRTUALENVS_IN_PROJECT
-RUN poetry install --all-extras --without dev
-
+RUN poetry install -n --no-cache --all-extras --without dev
 
 # `production` image used for runtime
 FROM base AS production
 
+# install runtime dependencies
+RUN apk add --no-cache --virtual .build-deps ffmpeg
+
 # app configuration
 ENV ENV=production \
     USERNAME=appuser \
-    USER_UID=1000
-ENV USER_GID=$USER_UID
+    USER_UID=1000 \
+    USER_GID=1000
 
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+RUN addgroup -g $USER_GID $USERNAME \
+    && adduser -D -u $USER_UID -G $USERNAME $USERNAME
 USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
