@@ -1,3 +1,4 @@
+import random
 import asyncio
 from typing import List
 
@@ -53,6 +54,10 @@ class IdleState(pipo.states.state.State):
             await self.idle_tracker
             self.idle_tracker = None
 
+    @staticmethod
+    def __disconnect_message():
+        return random.choice(settings.player.messages.disconnect)
+
     async def _idle_tracker_task(self, cancel_event: asyncio.Event):
         try:
             await asyncio.wait_for(cancel_event.wait(), timeout=self._idle_timeout)
@@ -60,7 +65,7 @@ class IdleState(pipo.states.state.State):
             self.context.transition_to(
                 pipo.states.disconnected_state.DisconnectedState()
             )
-            await self.context.music_channel.send(settings.player.messages.disconnect)
+            await self.context.music_channel.send(self.__disconnect_message())
             await self.context.voice_client.disconnect()
         except asyncio.CancelledError:
             self._logger.debug("Cancelling task 'idle_tracker'")

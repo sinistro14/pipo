@@ -48,11 +48,11 @@ class Player:
         bot : :class:`~pipo.bot.PipoBot`
             Client Discord bot.
         """
-        self.__bot = bot
         self.__logger = logging.getLogger(__name__)
+        self.__bot = bot
+        self._player_queue = music_queue
         self.__player_thread = None
         self.can_play = asyncio.Event()
-        self._player_queue = music_queue
 
     def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""

@@ -1,5 +1,4 @@
 import asyncio
-from statistics import mean
 from typing import Dict, Iterable, Optional
 
 from faststream import Logger
@@ -89,15 +88,7 @@ class __RemoteMusicQueue(PlayerQueue):
         return None
 
     def size(self) -> int:
-        return round(
-            mean(
-                [
-                    self.__playable_music.qsize()
-                    for _ in range(settings.player.queue.size_check_iterations)
-                ]
-            ),
-            0,
-        )
+        return self.__playable_music.qsize()
 
     def clear(self) -> None:
         self.__requests.clear()

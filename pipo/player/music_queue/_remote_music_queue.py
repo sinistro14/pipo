@@ -17,8 +17,7 @@ from pipo.player.audio_source.source_oracle import SourceOracle
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
 from pipo.player.audio_source.spotify_handler import SpotifyHandler
-from pipo.player.audio_source.youtube_handler import YoutubeHandler
-from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
+from pipo.player.audio_source.youtube_handler import YoutubeHandler, YoutubeQueryHandler
 from pipo.player.music_queue.models import ProviderOperation, Music, MusicRequest
 
 tracer_provider = TracerProvider(
@@ -121,7 +120,7 @@ async def dispatch(
             routing_key=provider,
             exchange=provider_exch,
         )
-        logger.debug("Published to provider %s request: %s", provider, request)
+        logger.info("Published to provider %s request: %s", provider, request)
 
 
 def __dispatch(sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
@@ -163,6 +162,7 @@ async def transmute_youtube_query(
     request: ProviderOperation,
     logger: Logger,
 ) -> None:
+    logger.debug("Received request: %s", request.query)
     source = YoutubeQueryHandler._music_from_query(request.query)
     if source:
         request = ProviderOperation(
@@ -220,20 +220,19 @@ async def transmute_spotify(
     correlation_id: str = Context("message.correlation_id"),
 ) -> None:
     logger.debug("Received request: %s", request.query)
-    tracks = SpotifyHandler.parse(request.query)
-    logger.debug("Obtained spotify tracks: %s", tracks)
+    tracks = SpotifyHandler.tracks_from_query(request.query)
     for track in tracks:
-        music = Music(
+        query = ProviderOperation(
             uuid=request.uuid,
             server_id=request.server_id,
-            provider=request.provider,
-            operation=request.operation,
-            source=track.query,
+            provider=settings.player.queue.service.transmuter.youtube_query.routing_key,
+            operation=track.operation,
+            query=track.query,
         )
         await broker.publish(
-            music,
+            query,
             routing_key=settings.player.queue.service.transmuter.youtube_query.routing_key,
             exchange=provider_exch,
             correlation_id=correlation_id,
         )
-        logger.info("Published music: %s", music.uuid)
+    logger.info("Resolved spotify operation: %s", query.uuid)

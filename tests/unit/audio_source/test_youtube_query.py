@@ -7,7 +7,7 @@ import tests.constants
 class TestYoutubeQuerySource:
     @pytest.fixture(scope="function", autouse=True)
     def music_handler(self, mocker):
-        return pipo.player.audio_source.youtube_query_handler.YoutubeQueryHandler()
+        return pipo.player.audio_source.youtube_handler.YoutubeQueryHandler()
 
     def test_empty_query(self, music_handler):
         assert not music_handler.fetch("")

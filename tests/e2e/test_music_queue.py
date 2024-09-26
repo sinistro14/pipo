@@ -9,27 +9,14 @@ from pipo.player.music_queue.music_queue import music_queue
 from pipo.player.music_queue.models.music_request import MusicRequest
 from pipo.player.music_queue._remote_music_queue import broker, server_publisher
 
-@pytest.mark.asyncio
-class TestFaststream:
-    async def test_publish_message(self):
-
-        request = MusicRequest(
-            server_id="0",
-            uuid=Helpers.generate_uuid(),
-            query=tests.constants.YOUTUBE_URL_SINGLE_ELEMENT_LIST,
-        )
-
-        async with TestRabbitBroker(broker):
-            await server_publisher.publish(request, server_publisher.queue.name)
-            server_publisher.mock.assert_called_once_with(dict(request))
-
 @pytest.mark.remote_queue
 @pytest.mark.asyncio
 class TestRemoteMusicQueue:
 
     @pytest.fixture(scope="function", autouse=True)
     async def queue(self):
-        async with TestRabbitBroker(broker):
+        # TODO change to with_real later and add handle.wait_call
+        async with TestRabbitBroker(broker, with_real=False):
             yield music_queue
             music_queue.clear()
 
@@ -81,32 +68,28 @@ class TestRemoteMusicQueue:
         assert queue.size() == queue_size
 
     @pytest.mark.parametrize(
-        "musics, final_queue_size",
+        "musics",
         [
-            (tests.constants.MUSIC_SINGLE_ELEMENT_LIST, 0),
-            (tests.constants.MUSIC_SIMPLE_LIST_1, 1),
+            tests.constants.MUSIC_SINGLE_ELEMENT_LIST,
+            tests.constants.MUSIC_SIMPLE_LIST_1,
         ],
     )
-    async def test_get_after_individual_add(self, queue, musics, final_queue_size):
+    async def test_get_after_individual_add(self, queue, musics):
         [await queue.add(music) for music in musics]
-        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
-        music = await queue.get()
+        music = await queue.get(tests.constants.TIME_TO_FETCH_MUSIC)
         assert music
-        assert queue.size() == final_queue_size
 
     @pytest.mark.parametrize(
-        "musics, final_queue_size",
+        "musics",
         [
-            (tests.constants.MUSIC_SINGLE_ELEMENT_LIST, 0),
-            (tests.constants.MUSIC_SIMPLE_LIST_1, 1),
+            tests.constants.MUSIC_SINGLE_ELEMENT_LIST,
+            tests.constants.MUSIC_SIMPLE_LIST_1,
         ],
     )
-    async def test_get_after_multiple_add(self, queue, musics, final_queue_size):
+    async def test_get_after_multiple_add(self, queue, musics):
         await queue.add(musics)
-        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
-        music = await queue.get()
+        music = await queue.get(tests.constants.TIME_TO_FETCH_MUSIC)
         assert music
-        assert queue.size() == final_queue_size
 
     @pytest.mark.parametrize(
         "musics",

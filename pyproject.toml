@@ -88,13 +88,14 @@ log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
+    "wip: test suite currently in development",
     "remote_queue: remote queue unit and integration suite",
 ]
 
 [tool.coverage.run]
 source = ["pipo"]
 [tool.coverage.report]
-fail_under = 65
+fail_under = 70
 omit = [
     "*__init__.py",
     "*__main__.py",

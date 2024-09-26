@@ -12,7 +12,7 @@ from pipo.player.audio_source.schemas.spotify import (
 )
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
-from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
+from pipo.player.audio_source.youtube_handler import YoutubeQueryHandler
 
 
 class SpotifyHandler(BaseHandler):
@@ -35,14 +35,16 @@ class SpotifyHandler(BaseHandler):
             return super().handle(source)
 
     @staticmethod
-    def __parse(track: SpotifyTrack) -> SourcePair:
+    def __format_query(track: SpotifyTrack) -> SourcePair:
         song = track.name
         artist = track.artists[0].name if track.artists else ""
         entry = f"{song} - {artist}" if artist else song
-        return SourcePair(entry, YoutubeQueryHandler.name)
+        return SourcePair(
+            query=entry, handler_type=YoutubeQueryHandler.name, operation="query"
+        )
 
     @staticmethod
-    def _tracks_from_query(query: str) -> Iterable[str]:
+    def tracks_from_query(query: str) -> Iterable[SourcePair]:
         tracks = []
         try:
             spotify = spotipy.Spotify(
@@ -81,9 +83,4 @@ class SpotifyHandler(BaseHandler):
             logging.getLogger(__name__).exception(
                 "Unable to process spotify query '%s'", query
             )
-        return tracks or []
-
-    @staticmethod
-    def parse(pair: SourcePair) -> Iterable[SourcePair]:
-        tracks = SpotifyHandler._tracks_from_query(pair.query)
-        return [SpotifyHandler.__parse(track) for track in tracks]
+        return [SpotifyHandler.__format_query(track) for track in tracks]

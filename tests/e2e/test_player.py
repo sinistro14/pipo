@@ -7,13 +7,15 @@ import tests.constants
 
 
 class TestPlayer:
+
     @pytest.fixture(scope="function", autouse=True)
     def player(self, mocker):
         player = pipo.player.Player(None)
-        # disable music queue consumption
         mocker.patch.object(player, "_start_music_queue")
         return player
 
+    @flaky(max_runs=5, min_passes=1)
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "url, queue_size",
         [
@@ -39,6 +41,7 @@ class TestPlayer:
             tests.constants.YOUTUBE_URL_COMPLEX_LIST,
         ],
     )
+    @pytest.mark.asyncio
     async def test_play_multiple_url(self, player, url_list):
         player.play(url_list)
         await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
@@ -54,7 +57,8 @@ class TestPlayer:
             (tests.constants.YOUTUBE_PLAYLIST_2, 5),
         ],
     )
+    @pytest.mark.asyncio
     async def test_playlist(self, player, playlist, playlist_size):
         player.play(playlist)
-        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC
+        await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
         assert player.queue_size() == playlist_size

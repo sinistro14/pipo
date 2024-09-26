@@ -3,8 +3,7 @@ from typing import Iterable, List
 from pipo.player.audio_source.base_handler import BaseHandler
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.spotify_handler import SpotifyHandler
-from pipo.player.audio_source.youtube_handler import YoutubeHandler
-from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
+from pipo.player.audio_source.youtube_handler import YoutubeHandler, YoutubeQueryHandler
 
 
 class SourceOracle:
