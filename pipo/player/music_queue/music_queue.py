@@ -85,7 +85,7 @@ class __RemoteMusicQueue(PlayerQueue):
             self._logger.debug("Item obtained from music queue: %s", music)
             return music
         except asyncio.TimeoutError:
-            self._logger.warning("Get operation timed out.")
+            self._logger.debug("Get operation timed out.")
         return None
 
     def size(self) -> int:

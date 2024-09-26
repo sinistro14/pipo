@@ -177,9 +177,7 @@ class Player:
                 except Exception:
                     self.__logger.warning("Unable to play music %s", url, exc_info=True)
                     await self.__bot.send_message(settings.player.messages.play_error)
-            # FIXME possible race check condition, None could be returned due to
-            # empty queue and still not enter this condition
-            elif not self.queue_size():
+            elif url == None:
                 self.__logger.info("Exiting music play loop due to empty queue")
                 break
             else:
