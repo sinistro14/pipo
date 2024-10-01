@@ -8,5 +8,4 @@ class SourceType(StrEnum):
 
     NULL = "null"
     YOUTUBE = "youtube"
-    YOUTUBE_QUERY = "youtube_query"
     SPOTIFY = "spotify"

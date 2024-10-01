@@ -9,8 +9,9 @@ class TestYoutubeQuerySource:
     def music_handler(self, mocker):
         return pipo.player.audio_source.youtube_handler.YoutubeQueryHandler()
 
-    def test_empty_query(self, music_handler):
-        assert not music_handler.fetch("")
+    async def test_empty_query(self, music_handler):
+        music = await music_handler.url_from_query("")
+        assert music == None
 
     @pytest.mark.parametrize(
         "query",
@@ -19,5 +20,7 @@ class TestYoutubeQuerySource:
             tests.constants.YOUTUBE_QUERY_2,
         ],
     )
-    def test_query(self, music_handler, query):
-        assert music_handler.fetch(query)
+    @pytest.mark.asyncio
+    async def test_query(self, music_handler, query):
+        music = await music_handler.url_from_query(query)
+        assert music

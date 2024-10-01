@@ -32,7 +32,7 @@ class __RemoteMusicQueue(PlayerQueue):
     __publisher: faststream.rabbit.RabbitPublisher
     __requests: Dict[str, int]
 
-    def __init__(self, server_id: str) -> None:
+    def __init__(self, server_id: str, queue_size: int) -> None:
         super().__init__()
         self.__requests = ExpiringDict(
             max_len=settings.player.queue.requests.max,
@@ -40,7 +40,7 @@ class __RemoteMusicQueue(PlayerQueue):
         )
         self.server_id = server_id
         self.__publisher = server_publisher
-        self.__playable_music = asyncio.Queue(10)  # pass to configs
+        self.__playable_music = asyncio.Queue(queue_size)
 
     @staticmethod
     def __generate_uuid() -> str:
@@ -100,7 +100,9 @@ class __RemoteMusicQueue(PlayerQueue):
         self._logger.info("Locally stored music cleaned.")
 
 
-music_queue = __RemoteMusicQueue(settings.server_id)
+music_queue = __RemoteMusicQueue(
+    settings.server_id, settings.player.queue.max_local_music
+)
 
 
 @broker.subscriber(

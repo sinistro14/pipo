@@ -11,7 +11,14 @@ from pipo.config import settings
 
 class Helpers:
     def equal_models(m1: BaseModel, m2: BaseModel, attr_exclude: List[str]) -> bool:
-        return m1 and m2 and (m1.model_dump(exclude=attr_exclude) == m2.model_dump(exclude=attr_exclude))
+        return (
+            m1
+            and m2
+            and (
+                m1.model_dump(exclude=attr_exclude)
+                == m2.model_dump(exclude=attr_exclude)
+            )
+        )
 
     @staticmethod
     def equal_iterables(iter_1: Iterable, iter_2: Iterable):
@@ -20,7 +27,7 @@ class Helpers:
             map(lambda p, q: p == q, iter_1, iter_2),
             True,
         )
-    
+
     @staticmethod
     def generate_uuid() -> str:
         return str(uuid6.uuid7())

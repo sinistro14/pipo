@@ -32,7 +32,7 @@ default:
       play_error: Unable to play next music. Skipping.
       unavailable_status: Status unavailable for used queue type.
       disconnect:
-        - "Bye bye !!!"
+        - "Bye bye!!!"
     idle:
       task_name: idle_tracker
       timeout: 1800  # 30 minutes
@@ -42,16 +42,16 @@ default:
         host:
         port:
         vhost:
-        timeout: 60
-        graceful_timeout: 120     # TODO check if (mili)seconds
+        timeout: 240
+        graceful_timeout: 480     # TODO check if (mili)seconds
         max_consumers: 10
+      max_local_music: 10 
       requests:
         max: 100
         timeout: 43200            # seconds
       timeout:
         get_op: 30                # seconds
         consume: 900              # 15 minutes
-      size_check_iterations: 3
       service:
         dispatcher:
           queue: dispatcher
@@ -62,12 +62,19 @@ default:
           routing_key: provider
           youtube:
             queue: youtube
-            routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.default"
+            routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.url"
             args:
               message-ttl: 43200000 # 12 hours
           youtube_query:
             queue: youtube_query
             routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.query"
+            message_priority: 1
+            args:
+              message-ttl: 3600000 # 1 hour
+          youtube_playlist:
+            queue: youtube_playlist
+            routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.playlist"
+            message_priority: 1
             args:
               message-ttl: 3600000 # 1 hour
           spotify:
@@ -91,6 +98,8 @@ default:
       wait: 1
     source:
       youtube:
+        playlist_parser_config:
+          extract_flat: true
         downloader_config: # YoutubeDL music download method args
           format: bestaudio/best
       spotify:

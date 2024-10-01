@@ -7,7 +7,6 @@ from pipo.cogs.music_bot.input_parser import InputParser
 
 
 class TestPlayInputParser:
-
     @pytest.fixture(scope="function", autouse=True)
     def parser(self):
         return InputParser()

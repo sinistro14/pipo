@@ -1,5 +1,7 @@
+from enum import StrEnum
 import logging
-from typing import Iterable
+import random
+from typing import Iterable, Iterator
 
 import spotipy
 
@@ -13,6 +15,12 @@ from pipo.player.audio_source.schemas.spotify import (
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
 from pipo.player.audio_source.youtube_handler import YoutubeQueryHandler
+
+
+class SpotifyOperations(StrEnum):
+    """Spotify operation types."""
+
+    URL = "url"
 
 
 class SpotifyHandler(BaseHandler):
@@ -30,7 +38,9 @@ class SpotifyHandler(BaseHandler):
             logging.getLogger(__name__).info(
                 "Processing spotify audio source '%s'", source
             )
-            return SourcePair(query=source, handler_type=SpotifyHandler.name)
+            return SourcePair(
+                query=source, handler_type=SpotifyHandler.name, operation="url"
+            )
         else:
             return super().handle(source)
 
@@ -40,11 +50,12 @@ class SpotifyHandler(BaseHandler):
         artist = track.artists[0].name if track.artists else ""
         entry = f"{song} - {artist}" if artist else song
         return SourcePair(
-            query=entry, handler_type=YoutubeQueryHandler.name, operation="query"
+            query=entry,
+            handler_type=YoutubeQueryHandler.name,
         )
 
     @staticmethod
-    def tracks_from_query(query: str) -> Iterable[SourcePair]:
+    def tracks_from_query(query: str, shuffle: bool = False) -> Iterator[SourcePair]:
         tracks = []
         try:
             spotify = spotipy.Spotify(
@@ -83,4 +94,7 @@ class SpotifyHandler(BaseHandler):
             logging.getLogger(__name__).exception(
                 "Unable to process spotify query '%s'", query
             )
-        return [SpotifyHandler.__format_query(track) for track in tracks]
+        if shuffle:
+            random.shuffle(tracks)
+        for track in tracks:
+            yield SpotifyHandler.__format_query(track)

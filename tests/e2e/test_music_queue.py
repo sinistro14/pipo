@@ -9,10 +9,10 @@ from pipo.player.music_queue.music_queue import music_queue
 from pipo.player.music_queue.models.music_request import MusicRequest
 from pipo.player.music_queue._remote_music_queue import broker, server_publisher
 
+
 @pytest.mark.remote_queue
 @pytest.mark.asyncio
 class TestRemoteMusicQueue:
-
     @pytest.fixture(scope="function", autouse=True)
     async def queue(self):
         # TODO change to with_real later and add handle.wait_call
@@ -103,5 +103,4 @@ class TestRemoteMusicQueue:
         await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
         assert queue.size() == len(musics)
         queue.clear()
-        asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
         assert queue.size() == 0

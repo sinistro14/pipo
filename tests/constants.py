@@ -1,6 +1,9 @@
 #!usr/bin/env python3
 
 ### MusicQueue  ###
+SHORT_TIMEOUT = 3  # seconds
+MEDIUM_TIMEOUT = 5  # seconds
+LONG_TIMEOUT = 10  # seconds
 TIME_TO_FETCH_MUSIC = 8  # seconds
 EMPTY_MUSIC = ""
 MUSIC_1 = "a"
@@ -40,6 +43,7 @@ MUSIC_COMPLEX_LIST_1 = [
 
 # Youtube
 YOUTUBE_URL_NO_HTTPS = "http://www.youtube.com/watch?v=1V_xRb0x9aw"
+YOUTUBE_URL_HTTPS = "https://www.youtube.com/watch?v=1V_xRb0x9aw"
 YOUTUBE_URL_1 = "https://www.youtube.com/watch?v=1V_xRb0x9aw"
 YOUTUBE_URL_2 = "https://www.youtube.com/watch?v=imSefM4GPpE"
 YOUTUBE_URL_3 = "https://www.youtube.com/watch?v=04mfKJWDSzI"
@@ -60,6 +64,7 @@ YOUTUBE_URL_COMPLEX_LIST = [
     YOUTUBE_URL_4,
     YOUTUBE_URL_5,
 ]
+YOUTUBE_PLAYLIST_CONTENT_1 = "https://www.youtube.com/watch?v=BaW_jenozKc"
 YOUTUBE_PLAYLIST_SOURCE_1 = (
     "https://www.youtube.com/playlist?list=PL4lCao7KL_QFVb7Iudeipvc2BCavECqzc"
 )
@@ -81,7 +86,7 @@ SPOTIFY_URL_NO_HTTPS = "http://open.spotify.com/track/7gaA3wERFkFkgivjwbSvkG"
 SPOTIFY_URL_1 = "https://open.spotify.com/track/7gaA3wERFkFkgivjwbSvkG"
 SPOTIFY_URL_2 = "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V"
 SPOTIFY_URL_3 = "https://open.spotify.com/track/6y4GYuZszeXNOXuBFsJlos"
-SPOTIFY_PLAYLIST_1 = "https://open.spotify.com/playlist/5137tjFBaaMh9dcH8i9fHR"
+SPOTIFY_PLAYLIST_1 = "https://open.spotify.com/playlist/6ZztNdcBeGYNswDLLoXosJ"
 SPOTIFY_ALBUM_1 = "https://open.spotify.com/album/1amYhlukNF8WdaQC3gKkgL"
 
 ### States ###

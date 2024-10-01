@@ -1,4 +1,5 @@
-from typing import Iterable, List
+import random
+from typing import Iterable, Iterator, List
 
 from pipo.player.audio_source.base_handler import BaseHandler
 from pipo.player.audio_source.source_pair import SourcePair
@@ -19,7 +20,8 @@ class SourceOracle:
     @staticmethod
     def process_queries(
         queries: Iterable[str],
-    ) -> List[SourcePair]:
+        shuffle: bool = False,
+    ) -> Iterator[SourcePair]:
         """Match queries with most fitting handlers.
 
         Parameters
@@ -33,5 +35,9 @@ class SourceOracle:
             Based on queries provides the most appropriate source handler pairs.
         """
         handlers = SourceOracle.__handlers()
-        sources = [handlers.handle(query) for query in queries]
-        return [item for item in sources if item is not None]
+        if shuffle:
+            random.shuffle(queries)
+        for query in queries:
+            result = handlers.handle(query)
+            if result is not None:
+                yield result

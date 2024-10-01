@@ -24,4 +24,4 @@ class TestSpotifySource:
         ],
     )
     def test_intput(self, music_handler, url):
-        assert music_handler.parse(music_handler.handle(url))
+        assert music_handler.tracks_from_query(url)

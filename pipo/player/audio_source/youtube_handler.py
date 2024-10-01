@@ -1,15 +1,23 @@
 import logging
-import time
-from typing import Iterable, Optional
+from typing import Iterable, Iterator, Optional
+from enum import StrEnum
 
 import re
-import requests
+import httpx
 from yt_dlp import YoutubeDL
 
 from pipo.config import settings
 from pipo.player.audio_source.base_handler import BaseHandler
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
+
+
+class YoutubeOperations(StrEnum):
+    """Youtube operation types."""
+
+    URL = "url"
+    PLAYLIST = "playlist"
+    QUERY = "query"
 
 
 class YoutubeHandler(BaseHandler):
@@ -27,40 +35,30 @@ class YoutubeHandler(BaseHandler):
             logging.getLogger(__name__).info(
                 "Processing youtube audio source '%s'", source
             )
-            return SourcePair(query=source, handler_type=YoutubeHandler.name)
+            if "list=" in source:
+                return SourcePair(
+                    query=source,
+                    handler_type=YoutubeHandler.name,
+                    operation=YoutubeOperations.PLAYLIST,
+                )
+            else:
+                return SourcePair(
+                    query=source,
+                    handler_type=YoutubeHandler.name,
+                    operation=YoutubeOperations.URL,
+                )
         else:
             return super().handle(source)
 
     @staticmethod
-    def parse(pair: SourcePair) -> Iterable[SourcePair]:
-        query = pair.query
-        if "list=" in query:  # check if playlist
-            with YoutubeDL({"extract_flat": True}) as ydl:
-                playlist_id = ydl.extract_info(url=query, download=False).get("id")
-                playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
-                audio = [
-                    url.get("url")
-                    for url in ydl.extract_info(url=playlist_url, download=False).get(
-                        "entries"
-                    )
-                ]
-                parsed_query = [
-                    SourcePair(entry, YoutubeHandler.name) for entry in audio
-                ]
-        else:
-            parsed_query = [
-                SourcePair(query, YoutubeHandler.name),
-            ]
-        return parsed_query
-
-    @staticmethod
-    def fetch(source: str) -> Optional[str]:
-        if YoutubeHandler.__valid_source(source):
-            logging.getLogger(__name__).info(
-                "Processing youtube audio source '%s'", source
-            )
-            return YoutubeHandler.get_audio(source)
-        return None
+    def parse_playlist(url: str) -> Iterator[str]:
+        with YoutubeDL(settings.player.source.youtube.playlist_parser_config) as ydl:
+            playlist_id = ydl.extract_info(url=url, download=False).get("id")
+            playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+            for url in ydl.extract_info(url=playlist_url, download=False).get(
+                "entries"
+            ):
+                yield url.get("url")
 
     @staticmethod
     def get_audio(query: str) -> Optional[str]:
@@ -84,29 +82,23 @@ class YoutubeHandler(BaseHandler):
         )
         url = None
         if query:
-            for attempt in range(settings.player.url_fetch.retries):
-                logging.getLogger(__name__).debug(
-                    "Attempt %s to obtain youtube audio url %s", attempt, query
+            logging.getLogger(__name__).debug(
+                "Attempting to obtain youtube audio url %s", query
+            )
+            try:
+                with YoutubeDL(settings.player.source.youtube.downloader_config) as ydl:
+                    url = ydl.extract_info(url=query, download=False).get("url", None)
+            except Exception:
+                logging.getLogger(__name__).warning(
+                    "Unable to obtain audio url %s",
+                    query,
+                    exc_info=True,
                 )
-                try:
-                    with YoutubeDL(
-                        settings.player.source.youtube.downloader_config
-                    ) as ydl:
-                        url = ydl.extract_info(url=query, download=False).get(
-                            "url", None
-                        )
-                except Exception:
-                    logging.getLogger(__name__).warning(
-                        "Unable to obtain audio url %s",
-                        query,
-                        exc_info=True,
-                    )
-                if url:
-                    logging.getLogger(__name__).info(
-                        "Obtained audio url for query '%s'", query
-                    )
-                    return url
-                time.sleep(settings.player.url_fetch.wait)
+            if url:
+                logging.getLogger(__name__).info(
+                    "Obtained audio url for query '%s'", query
+                )
+                return url
         logging.getLogger(__name__).warning("Unable to obtain audio url %s", query)
         return None
 
@@ -118,7 +110,7 @@ class YoutubeQueryHandler(BaseHandler):
     used as terminal handler.
     """
 
-    name = SourceType.YOUTUBE_QUERY
+    name = SourceType.YOUTUBE
 
     @staticmethod
     def __valid_source(source: str) -> bool:
@@ -131,44 +123,15 @@ class YoutubeQueryHandler(BaseHandler):
                 "Processing youtube query audio source '%s'", source
             )
             return SourcePair(
-                query=source, handler_type=SourceType.YOUTUBE, operation="query"
+                query=source,
+                handler_type=SourceType.YOUTUBE,
+                operation=YoutubeOperations.QUERY,
             )
         else:
             return super().handle(source)
 
     @staticmethod
-    def fetch(source: str) -> Optional[str]:
-        if YoutubeQueryHandler.__valid_source(source):
-            logging.getLogger(__name__).info(
-                "Processing youtube audio query source '%s'", source
-            )
-            return YoutubeQueryHandler.get_audio(source)
-        return None
-
-    @staticmethod
-    def get_audio(query: str) -> Optional[str]:
-        """Obtain a youtube audio url.
-
-        Given a query or a youtube url obtains the best quality audio url.
-        Retries fetching audio url in case of error waiting between attempts.
-
-        Parameters
-        ----------
-        query : str
-            Youtube video url or query.
-
-        Returns
-        -------
-        Optional[str]
-            Youtube audio url or None if no audio url was found.
-        """
-        url = YoutubeQueryHandler._music_from_query(query)
-        if url:
-            return YoutubeHandler.get_audio(url)
-        return None
-
-    @staticmethod
-    def _music_from_query(query: str) -> Optional[str]:
+    async def url_from_query(query: str) -> Optional[str]:
         """Get youtube audio url based on search query.
 
         Perform a youtube query to obtain the related video with the most views.
@@ -186,10 +149,18 @@ class YoutubeQueryHandler(BaseHandler):
         url = None
         if query:
             query = query.replace(" ", "+").encode("ascii", "ignore").decode()
-            with requests.get(
-                f"https://www.youtube.com/results?search_query={query}",
-                timeout=settings.player.url_fetch.timeout,
-            ) as response:
-                video_ids = re.findall(r"watch\?v=(\S{11})", response.text)
-                url = f"https://www.youtube.com/watch?v={video_ids[0]}"
+            async with httpx.AsyncClient() as client:
+                try:
+                    response = await client.get(
+                        f"https://www.youtube.com/results?search_query={query}",
+                        timeout=settings.player.url_fetch.timeout,
+                    )
+                    video_id = re.search(r"watch\?v=(\S{11})", response.text).group()
+                    url = (
+                        f"https://www.youtube.com/watch?v={video_id}"
+                        if video_id
+                        else None
+                    )
+                except httpx.TimeoutException:
+                    logging.getLogger(__name__).exception("Unable to search for query")
         return url
