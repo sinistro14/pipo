@@ -45,7 +45,7 @@ default:
         timeout: 240
         graceful_timeout: 480     # TODO check if (mili)seconds
         max_consumers: 10
-      max_local_music: 10 
+      max_local_music: 10
       requests:
         max: 100
         timeout: 43200            # seconds
@@ -113,3 +113,6 @@ test:
   log:
     level: DEBUG
   server_id: "TEST"
+  player:
+    queue:
+      max_local_music: 100

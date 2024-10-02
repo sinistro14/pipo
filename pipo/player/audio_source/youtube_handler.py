@@ -155,7 +155,7 @@ class YoutubeQueryHandler(BaseHandler):
                         f"https://www.youtube.com/results?search_query={query}",
                         timeout=settings.player.url_fetch.timeout,
                     )
-                    video_id = re.search(r"watch\?v=(\S{11})", response.text).group()
+                    video_id = re.search(r"watch\?v=(\S{11})", response.text).group(1)
                     url = (
                         f"https://www.youtube.com/watch?v={video_id}"
                         if video_id

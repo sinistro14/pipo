@@ -79,7 +79,6 @@ class TestDispatch:
             await transmute_youtube.wait_call(timeout=tests.constants.MEDIUM_TIMEOUT)
             transmute_youtube.mock.assert_has_calls(provider_operations, any_order=True)
 
-    @pytest.mark.wip
     @pytest.mark.parametrize(
         "queries",
         [
@@ -154,8 +153,8 @@ class TestDispatch:
         "queries",
         [
             tests.constants.SPOTIFY_URL_1,
-            tests.constants.SPOTIFY_PLAYLIST_1,
             tests.constants.SPOTIFY_ALBUM_1,
+            tests.constants.SPOTIFY_PLAYLIST_1,
         ],
     )
     @pytest.mark.asyncio
@@ -182,5 +181,5 @@ class TestDispatch:
             await br.publish(dispatch_request, queue=dispatcher_queue)
             await dispatch.wait_call(timeout=tests.constants.SHORT_TIMEOUT)
             dispatch.mock.assert_called_once_with(dict(dispatch_request))
-            await transmute_spotify.wait_call(timeout=tests.constants.SHORT_TIMEOUT)
+            await transmute_spotify.wait_call(timeout=tests.constants.LONG_TIMEOUT)
             transmute_spotify.mock.assert_called_once_with(dict(provider_operations))

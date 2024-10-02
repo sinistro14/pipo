@@ -62,6 +62,12 @@ format:
 vulture:
 	-$(POETRY) run vulture
 
+.PHONY: metrics
+metrics:
+	$(POETRY) run radon cc -a -s -o SCORE $(APP)
+	$(POETRY) run radon raw -s $(APP)
+	$(POETRY) run radon mi -s $(APP)
+
 .PHONY: lint
 lint: ruff vulture
 

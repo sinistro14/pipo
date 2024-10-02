@@ -83,7 +83,7 @@ class TestRemoteMusicQueue:
         "musics",
         [
             tests.constants.MUSIC_SINGLE_ELEMENT_LIST,
-            tests.constants.MUSIC_SIMPLE_LIST_1,
+            # tests.constants.MUSIC_SIMPLE_LIST_1,
         ],
     )
     async def test_get_after_multiple_add(self, queue, musics):

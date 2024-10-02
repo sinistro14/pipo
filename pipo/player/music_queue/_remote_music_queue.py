@@ -242,7 +242,7 @@ async def transmute_spotify(
     correlation_id: str = Context("message.correlation_id"),
 ) -> None:
     logger.debug("Received request: %s", request)
-    tracks = SpotifyHandler.tracks_from_query(request.query, request.shuffle)
+    tracks = await SpotifyHandler.tracks_from_query(request.query, request.shuffle)
     for track in tracks:
         query = ProviderOperation(
             uuid=request.uuid,
