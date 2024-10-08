@@ -3,7 +3,7 @@ import pytest
 
 import tests.constants
 from pipo.config import settings
-from pipo.cogs.music_bot.input_parser import InputParser
+from pipo.cogs.music_bot import InputParser
 
 
 class TestPlayInputParser:

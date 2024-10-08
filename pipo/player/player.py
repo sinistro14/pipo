@@ -91,6 +91,11 @@ class Player:
         """Player status description."""
         queue_size = self.queue_size()
         if queue_size >= 0:
+            queue_size = (
+                f"{queue_size}+"
+                if queue_size >= settings.player.messages.long_queue
+                else queue_size
+            )
             return f"{25 * '='}\n🎵\tQueue size: {queue_size}\t🎵\n{25 * '='}\n"
         else:
             return settings.player.messages.unavailable_status

@@ -111,5 +111,5 @@ music_queue = __RemoteMusicQueue(
     description="Consumes from hub exchange bound hub client exclusive queue",
 )
 async def consume_music(request: Music, logger: Logger) -> None:
-    logger.info("Received request uuid: %s", request.uuid)
+    logger.info("Received request: %s", request.uuid)
     await music_queue._add_music(request)

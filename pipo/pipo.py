@@ -20,7 +20,6 @@ class Pipo(pipo.states.Context):
     Converts application side logic to Discord requests.
     """
 
-    _logger: logging.Logger
     bot: discord.ext.commands.Bot
     voice_client: discord.VoiceClient
     music_channel: discord.VoiceChannel
@@ -28,7 +27,6 @@ class Pipo(pipo.states.Context):
 
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__(pipo.states.disconnected_state.DisconnectedState())
-        self._logger = logging.getLogger(__name__)
         self.channel_id = None
         self.voice_channel_id = None
         self.bot = bot

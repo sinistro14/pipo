@@ -140,5 +140,5 @@ convention = "numpy"
 [tool.vulture]
 paths = ["pipo/"]
 make_whitelist = true
-min_confidence = 70
+min_confidence = 75
 sort_by_size = true

@@ -19,7 +19,7 @@ class TestIdleState:
         mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())
         state = IdleState(tests.constants.IDLE_TIMEOUT)
         yield state
-        state._stop_idle_tracker()
+        await state._stop_idle_tracker()
 
     @pytest.fixture(scope="function")
     def state_tracker_disabled(self, mocker) -> IdleState:

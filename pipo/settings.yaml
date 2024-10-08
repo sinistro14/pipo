@@ -30,6 +30,7 @@ default:
     task_name: play_music_queue
     messages:
       play_error: Unable to play next music. Skipping.
+      long_queue: "@int @format {this.PLAYER__QUEUE__MAX_LOCAL_MUSIC}"
       unavailable_status: Status unavailable for used queue type.
       disconnect:
         - "Bye bye!!!"
@@ -112,6 +113,8 @@ test:
   dynaconf_merge: true
   log:
     level: DEBUG
+  channel: "test-channel"
+  voice_channel: "test-vchannel"
   server_id: "TEST"
   player:
     queue:

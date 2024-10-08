@@ -4,6 +4,7 @@ from enum import StrEnum
 
 import re
 import httpx
+import yt_dlp
 from yt_dlp import YoutubeDL
 
 from pipo.config import settings
@@ -52,13 +53,20 @@ class YoutubeHandler(BaseHandler):
 
     @staticmethod
     def parse_playlist(url: str) -> Iterator[str]:
-        with YoutubeDL(settings.player.source.youtube.playlist_parser_config) as ydl:
-            playlist_id = ydl.extract_info(url=url, download=False).get("id")
-            playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
-            for url in ydl.extract_info(url=playlist_url, download=False).get(
-                "entries"
-            ):
-                yield url.get("url")
+        try:
+            with YoutubeDL(
+                settings.player.source.youtube.playlist_parser_config
+            ) as ydl:
+                playlist_id = ydl.extract_info(url=url, download=False).get("id")
+                playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+                for url in ydl.extract_info(url=playlist_url, download=False).get(
+                    "entries"
+                ):
+                    yield url.get("url")
+        except yt_dlp.utils.DownloadError:
+            logging.getLogger(__name__).exception(
+                "Unable to obtain information from youtube"
+            )
 
     @staticmethod
     def get_audio(query: str) -> Optional[str]:

@@ -140,7 +140,7 @@ async def dispatch(
             routing_key=provider,
             exchange=provider_exch,
         )
-        logger.info("Published request: %s", request)
+        logger.info("Published request: %s", request.uuid)
 
 
 @broker.subscriber(
@@ -168,7 +168,7 @@ async def transmute_youtube_query(
             operation=YoutubeOperations.URL,
             query=source,
         )
-        logger.info("Resolved youtube query operation: %s", request.uuid)
+        logger.info("Transmuted youtube query: %s", request.uuid)
         return request
 
 
@@ -196,6 +196,7 @@ async def transmute_youtube_playlist(
             query,
             correlation_id=correlation_id,
         )
+    logger.info("Transmuted youtube playlist: %s", request.uuid)
 
 
 @broker.subscriber(
@@ -228,7 +229,7 @@ async def transmute_youtube(
             exchange=hub_exch,
             correlation_id=correlation_id,
         )
-        logger.info("Published music: %s", music.uuid)
+        logger.info("Transmuted youtube music: %s", music.uuid)
 
 
 @broker.subscriber(
@@ -255,4 +256,4 @@ async def transmute_spotify(
             query,
             correlation_id=correlation_id,
         )
-    logger.info("Resolved spotify operation: %s", query.uuid)
+    logger.info("Transmuted spotify request: %s", query.uuid)
