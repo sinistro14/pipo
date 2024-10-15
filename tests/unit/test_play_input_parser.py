@@ -6,6 +6,7 @@ from pipo.config import settings
 from pipo.cogs.music_bot import InputParser
 
 
+@pytest.mark.unit
 class TestPlayInputParser:
     @pytest.fixture(scope="function", autouse=True)
     def parser(self):

@@ -83,7 +83,7 @@ class MusicBot(commands.Cog):
     _logger: logging.Logger
     __input_parser: InputParser
 
-    def __init__(self, bot, channel_id, voice_channel_id):
+    def __init__(self, bot, channel_id: str, voice_channel_id: str):
         self._logger = logging.getLogger(__name__)
         self.bot = bot
         self.__input_parser = InputParser()

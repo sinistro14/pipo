@@ -1,9 +1,9 @@
 import pytest
 
 import pipo.player
-import tests.constants
 
 
+@pytest.mark.e2e
 class TestPlayer:
     @pytest.fixture(scope="function", autouse=True)
     def player(self, mocker):

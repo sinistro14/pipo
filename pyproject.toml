@@ -90,7 +90,14 @@ log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
-    "wip: test suite currently in development",
+    "wip: suite currently in development. not counting for acceptance",
+    "spotify: assert functionality while relying on spotify APIs",
+    "youtube: assert functionality while relying on youtube live APIs",
+    "query: assert query functionality, which currently relies on youtube live APIs",
+    "discord: assert discord functionality",
+    "unit: unit test suite",
+    "integration: integration test suite",
+    "e2e: end to end test suite",
     "remote_queue: remote queue unit and integration suite",
 ]
 
@@ -140,5 +147,5 @@ convention = "numpy"
 [tool.vulture]
 paths = ["pipo/"]
 make_whitelist = true
-min_confidence = 75
+min_confidence = 70
 sort_by_size = true

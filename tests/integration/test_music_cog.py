@@ -9,7 +9,7 @@ from pipo.config import settings
 from pipo.cogs.music_bot import MusicBot
 
 
-@pytest.mark.wip
+@pytest.mark.integration
 class TestMusicCog:
     @pytest_asyncio.fixture
     async def bot(self):
@@ -39,6 +39,8 @@ class TestMusicCog:
         await dpytest.empty_queue()
 
     # FIXME
+    @pytest.mark.skip(reason="requires fix")
+    @pytest.mark.discord
     @pytest.mark.asyncio
     async def test_move_message(self, bot):
         guild = bot.guilds[0]

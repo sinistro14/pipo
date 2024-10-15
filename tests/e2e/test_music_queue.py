@@ -5,18 +5,20 @@ from faststream.rabbit import TestRabbitBroker
 import tests.constants
 from tests.conftest import Helpers
 
+from pipo.config import settings
 from pipo.player.music_queue.music_queue import music_queue
 from pipo.player.music_queue.models.music_request import MusicRequest
 from pipo.player.music_queue._remote_music_queue import broker, server_publisher
 
 
+@pytest.mark.e2e
 @pytest.mark.remote_queue
-@pytest.mark.asyncio
+@pytest.mark.xdist_group(name="serial")
 class TestRemoteMusicQueue:
     @pytest.fixture(scope="function", autouse=True)
     async def queue(self):
         # TODO change to with_real later and add handle.wait_call
-        async with TestRabbitBroker(broker, with_real=False):
+        async with TestRabbitBroker(broker, with_real=settings.player.queue.remote):
             yield music_queue
             music_queue.clear()
 
@@ -28,6 +30,8 @@ class TestRemoteMusicQueue:
             (tests.constants.YOUTUBE_URL_SIMPLE_LIST),
         ],
     )
+    @pytest.mark.youtube
+    @pytest.mark.asyncio
     async def test_queue_add(self, queue, query):
         expected = MusicRequest(
             uuid=Helpers.generate_uuid(),
@@ -49,6 +53,8 @@ class TestRemoteMusicQueue:
             (tests.constants.MUSIC_SIMPLE_LIST_1, 2),
         ],
     )
+    @pytest.mark.query
+    @pytest.mark.asyncio
     async def test_individual_add(self, queue, musics, queue_size):
         [await queue.add(music) for music in musics]
         await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC)
@@ -62,6 +68,8 @@ class TestRemoteMusicQueue:
             (tests.constants.MUSIC_SIMPLE_LIST_1, 2),
         ],
     )
+    @pytest.mark.query
+    @pytest.mark.asyncio
     async def test_multiple_add(self, queue, musics, queue_size):
         await queue.add(musics)
         await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))
@@ -74,6 +82,8 @@ class TestRemoteMusicQueue:
             tests.constants.MUSIC_SIMPLE_LIST_1,
         ],
     )
+    @pytest.mark.query
+    @pytest.mark.asyncio
     async def test_get_after_individual_add(self, queue, musics):
         [await queue.add(music) for music in musics]
         music = await queue.get(tests.constants.TIME_TO_FETCH_MUSIC)
@@ -83,9 +93,11 @@ class TestRemoteMusicQueue:
         "musics",
         [
             tests.constants.MUSIC_SINGLE_ELEMENT_LIST,
-            # tests.constants.MUSIC_SIMPLE_LIST_1,
+            tests.constants.MUSIC_SIMPLE_LIST_1,
         ],
     )
+    @pytest.mark.query
+    @pytest.mark.asyncio
     async def test_get_after_multiple_add(self, queue, musics):
         await queue.add(musics)
         music = await queue.get(tests.constants.TIME_TO_FETCH_MUSIC)
@@ -98,6 +110,8 @@ class TestRemoteMusicQueue:
             tests.constants.MUSIC_SIMPLE_LIST_2,
         ],
     )
+    @pytest.mark.query
+    @pytest.mark.asyncio
     async def test_clear(self, queue, musics):
         await queue.add(musics)
         await asyncio.sleep(tests.constants.TIME_TO_FETCH_MUSIC * len(musics))

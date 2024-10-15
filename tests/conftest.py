@@ -32,6 +32,10 @@ class Helpers:
     def generate_uuid() -> str:
         return str(uuid6.uuid7())
 
+    @staticmethod
+    def generate_server_id(prefix: str, size: int) -> str:
+        return prefix + str(uuid6.uuid7())[:size]
+
 
 @pytest.fixture
 def helpers():

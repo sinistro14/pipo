@@ -120,5 +120,5 @@ class IdleState(pipo.states.state.State):
 
         Resume music and transition to Playing State.
         """
-        self.context.player.resume()
+        await self.context.player.resume()
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())

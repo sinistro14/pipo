@@ -11,6 +11,7 @@ default:
   voice_channel:
   server_id: "@format {this.CHANNEL}"
   bot_description: Discord Music Bot
+  main_task_name: "main_task"
   commands:
     prefix: "-"
     # ensure same values are used in help messages
@@ -39,10 +40,6 @@ default:
       timeout: 1800  # 30 minutes
     queue:
       broker:
-        url:
-        host:
-        port:
-        vhost:
         timeout: 240
         graceful_timeout: 480     # TODO check if (mili)seconds
         max_consumers: 10
@@ -54,9 +51,22 @@ default:
         get_op: 30                # seconds
         consume: 900              # 15 minutes
       service:
+        dead_letter:
+          exchange:
+            name: dlx
+            durable: true
+          queue:
+            name: dlq
+            routing_key: "dl.#"
+            durable: true
+            args:
+              x-queue-type: quorum
+              x-delivery-limit: 3
         dispatcher:
           queue: dispatcher
           args:
+            x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
+            x-dead-letter-routing-key: "dl.dispatch"
             message-ttl: 3600000  # 1 hour
         transmuter:
           exchange: providers
@@ -65,30 +75,43 @@ default:
             queue: youtube
             routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.url"
             args:
+              x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
+              x-dead-letter-routing-key: "dl.youtube"
+              x-delivery-limit: 3
               message-ttl: 43200000 # 12 hours
           youtube_query:
             queue: youtube_query
             routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.query"
             message_priority: 1
             args:
+              x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
+              x-dead-letter-routing-key: "dl.youtube_query"
               message-ttl: 3600000 # 1 hour
           youtube_playlist:
             queue: youtube_playlist
             routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.youtube.playlist"
             message_priority: 1
             args:
+              x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
+              x-dead-letter-routing-key: "dl.youtube_playlist"
               message-ttl: 3600000 # 1 hour
           spotify:
             queue: spotify
             routing_key: "@format {this.PLAYER__QUEUE__SERVICE__TRANSMUTER__ROUTING_KEY}.spotify.*"
             args:
+              x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
+              x-dead-letter-routing-key: "dl.spotify"
               message-ttl: 3600000 # 1 hour
         hub:
           queue: "@format hub_{this.SERVER_ID}"
           base_routing_key: "hub"
           routing_key: "@format hub.{this.SERVER_ID}"
           exchange: processed_music
+          exclusive: true
+          durable: true
           args:
+            x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
+            x-dead-letter-routing-key: "dl.hub"
             message-ttl: 43200000 # 12 hours
             x-expires: 86400000   # 24 hours
     url_fetch:
@@ -118,4 +141,5 @@ test:
   server_id: "TEST"
   player:
     queue:
+      remote: false
       max_local_music: 100

@@ -1,6 +1,5 @@
 #!usr/bin/env python3
 import asyncio
-import logging
 import signal
 from typing import List
 
@@ -63,7 +62,7 @@ class Pipo(pipo.states.Context):
             channel_id = self.voice_client.channel.id
         elif ctx and ctx.author.voice:
             self._logger.info(
-                "User '%s' requested join to '%s'",
+                "User '%s' requested join to channel %s",
                 ctx.author.name,
                 ctx.author.voice.channel.name,
             )

@@ -10,10 +10,10 @@ from pipo.states.playing_state import PlayingState
 from pipo.states.disconnected_state import DisconnectedState
 
 
+@pytest.mark.unit
 class TestIdleState:
     __state_name = "idle"
 
-    @pytest.mark.asyncio
     @pytest.fixture(scope="function")
     async def initial_state(self, mocker) -> IdleState:
         mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())

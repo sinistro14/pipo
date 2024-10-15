@@ -4,6 +4,8 @@ import pipo.player
 import tests.constants
 
 
+@pytest.mark.unit
+@pytest.mark.query
 class TestYoutubeSource:
     @pytest.fixture(scope="function", autouse=True)
     def music_handler(self, mocker):

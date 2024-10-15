@@ -7,6 +7,8 @@ from pipo.player.music_queue.models.provider import ProviderOperation
 import tests.constants
 from tests.conftest import Helpers
 
+from pipo.config import settings
+
 from pipo.player.music_queue.models.music_request import MusicRequest
 from pipo.player.music_queue._remote_music_queue import (
     broker,
@@ -19,6 +21,7 @@ from pipo.player.music_queue._remote_music_queue import (
 )
 
 
+@pytest.mark.integration
 @pytest.mark.remote_queue
 class TestDispatch:
     @pytest.mark.asyncio
@@ -26,7 +29,9 @@ class TestDispatch:
         server_id = "0"
         uuid = Helpers.generate_uuid()
 
-        async with TestRabbitBroker(broker) as br:
+        async with TestRabbitBroker(
+            broker, with_real=settings.player.queue.remote
+        ) as br:
             dispatch_request = MusicRequest(
                 server_id=server_id,
                 uuid=uuid,
@@ -45,13 +50,16 @@ class TestDispatch:
             tests.constants.YOUTUBE_URL_SIMPLE_LIST,
         ],
     )
+    @pytest.mark.youtube
     @pytest.mark.asyncio
     async def test_dispatch_youtube_url(self, queries):
         server_id = "0"
         uuid = Helpers.generate_uuid()
         queries = [queries] if isinstance(queries, str) else queries
 
-        async with TestRabbitBroker(broker) as br:
+        async with TestRabbitBroker(
+            broker, with_real=settings.player.queue.remote
+        ) as br:
             dispatch_request = MusicRequest(
                 server_id=server_id,
                 uuid=uuid,
@@ -85,13 +93,16 @@ class TestDispatch:
             tests.constants.YOUTUBE_PLAYLIST_1,
         ],
     )
+    @pytest.mark.youtube
     @pytest.mark.asyncio
     async def test_dispatch_youtube_playlist(self, queries):
         server_id = "0"
         uuid = Helpers.generate_uuid()
         queries = [queries] if isinstance(queries, str) else queries
 
-        async with TestRabbitBroker(broker) as br:
+        async with TestRabbitBroker(
+            broker, with_real=settings.player.queue.remote
+        ) as br:
             dispatch_request = MusicRequest(
                 server_id=server_id,
                 uuid=uuid,
@@ -118,13 +129,16 @@ class TestDispatch:
                 provider_operations,
             )
 
+    @pytest.mark.query
     @pytest.mark.asyncio
     async def test_dispatch_youtube_query(self):
         uuid = Helpers.generate_uuid()
         server_id = "0"
         query = tests.constants.YOUTUBE_QUERY_1
 
-        async with TestRabbitBroker(broker) as br:
+        async with TestRabbitBroker(
+            broker, with_real=settings.player.queue.remote
+        ) as br:
             dispatch_request = MusicRequest(
                 server_id=server_id,
                 uuid=uuid,
@@ -157,13 +171,16 @@ class TestDispatch:
             tests.constants.SPOTIFY_PLAYLIST_1,
         ],
     )
+    @pytest.mark.spotify
     @pytest.mark.asyncio
     async def test_dispatch_spotify(self, queries):
         server_id = "0"
         uuid = Helpers.generate_uuid()
         queries = [queries] if isinstance(queries, str) else queries
 
-        async with TestRabbitBroker(broker) as br:
+        async with TestRabbitBroker(
+            broker, with_real=settings.player.queue.remote
+        ) as br:
             dispatch_request = MusicRequest(
                 server_id=server_id,
                 uuid=uuid,

@@ -5,15 +5,17 @@ from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from faststream import Context, Logger
-from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
+from faststream.rabbit import (
+    ExchangeType,
+    RabbitBroker,
+    RabbitExchange,
+    RabbitQueue,
+)
 from faststream.rabbit.opentelemetry import RabbitTelemetryMiddleware
 from faststream.security import BaseSecurity
 
 from pipo.config import settings
-from pipo.player.audio_source.source_factory import SourceFactory
 from pipo.player.audio_source.source_oracle import SourceOracle
-from pipo.player.audio_source.source_pair import SourcePair
-from pipo.player.audio_source.source_type import SourceType
 from pipo.player.audio_source.spotify_handler import SpotifyHandler
 from pipo.player.audio_source.youtube_handler import (
     YoutubeHandler,
@@ -40,6 +42,23 @@ broker = RabbitBroker(
     security=BaseSecurity(ssl_context=ssl.create_default_context()),
     middlewares=(RabbitTelemetryMiddleware(tracer_provider=tracer_provider),),
 )
+
+dlx = RabbitExchange(
+    name=settings.player.queue.service.dead_letter.exchange.name,
+    type=ExchangeType.TOPIC,
+    durable=settings.player.queue.service.dead_letter.exchange.durable,
+)
+
+dlq = RabbitQueue(
+    name=settings.player.queue.service.dead_letter.queue.name,
+    durable=settings.player.queue.service.dead_letter.queue.durable,
+    routing_key=settings.player.queue.service.dead_letter.queue.routing_key,
+    arguments=settings.player.queue.service.dead_letter.queue.args,
+)
+
+async def declare_dlx(b: RabbitBroker):
+    await b.declare_exchange(dlx)
+    await b.declare_queue(dlq)
 
 dispatcher_queue = RabbitQueue(
     settings.player.queue.service.dispatcher.queue,
@@ -107,8 +126,8 @@ hub_exch = RabbitExchange(
 hub_queue = RabbitQueue(
     settings.player.queue.service.hub.queue,
     routing_key=settings.player.queue.service.hub.routing_key,
-    durable=True,
-    exclusive=True,
+    durable=settings.player.queue.service.hub.durable,
+    exclusive=settings.player.queue.service.hub.exclusive,
     arguments=settings.player.queue.service.hub.args,
 )
 
@@ -216,8 +235,6 @@ async def transmute_youtube(
         music = Music(
             uuid=request.uuid,
             server_id=request.server_id,
-            provider=request.provider,
-            operation=request.operation,
             source=source,
         )
         routing_key = (
@@ -249,7 +266,7 @@ async def transmute_spotify(
             uuid=request.uuid,
             server_id=request.server_id,
             provider=settings.player.queue.service.transmuter.youtube_query.routing_key,
-            operation=YoutubeOperations.URL,
+            operation=YoutubeOperations.QUERY,
             query=track.query,
         )
         await spotify_publisher.publish(
