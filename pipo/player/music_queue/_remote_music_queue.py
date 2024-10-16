@@ -43,6 +43,11 @@ broker = RabbitBroker(
     middlewares=(RabbitTelemetryMiddleware(tracer_provider=tracer_provider),),
 )
 
+plq = RabbitQueue(
+    name=settings.player.queue.service.parking_lot.queue,
+    durable=settings.player.queue.service.parking_lot.durable,
+)
+
 dlx = RabbitExchange(
     name=settings.player.queue.service.dead_letter.exchange.name,
     type=ExchangeType.TOPIC,
@@ -57,6 +62,7 @@ dlq = RabbitQueue(
 )
 
 async def declare_dlx(b: RabbitBroker):
+    await b.declare_queue(plq)
     await b.declare_exchange(dlx)
     await b.declare_queue(dlq)
 

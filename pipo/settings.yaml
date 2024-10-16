@@ -51,6 +51,9 @@ default:
         get_op: 30                # seconds
         consume: 900              # 15 minutes
       service:
+        parking_lot:
+          queue: plq
+          durable: true
         dead_letter:
           exchange:
             name: dlx
@@ -62,11 +65,15 @@ default:
             args:
               x-queue-type: quorum
               x-delivery-limit: 3
+              x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__PARKING_LOT__QUEUE}"
+              message-ttl: 86400000 # 24 hour
         dispatcher:
           queue: dispatcher
           args:
             x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
             x-dead-letter-routing-key: "dl.dispatch"
+            x-queue-type: quorum
+            x-delivery-limit: 3
             message-ttl: 3600000  # 1 hour
         transmuter:
           exchange: providers
@@ -77,6 +84,7 @@ default:
             args:
               x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
               x-dead-letter-routing-key: "dl.youtube"
+              x-queue-type: quorum
               x-delivery-limit: 3
               message-ttl: 43200000 # 12 hours
           youtube_query:
@@ -86,6 +94,8 @@ default:
             args:
               x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
               x-dead-letter-routing-key: "dl.youtube_query"
+              x-queue-type: quorum
+              x-delivery-limit: 3
               message-ttl: 3600000 # 1 hour
           youtube_playlist:
             queue: youtube_playlist
@@ -94,6 +104,8 @@ default:
             args:
               x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
               x-dead-letter-routing-key: "dl.youtube_playlist"
+              x-queue-type: quorum
+              x-delivery-limit: 3
               message-ttl: 3600000 # 1 hour
           spotify:
             queue: spotify
@@ -101,6 +113,8 @@ default:
             args:
               x-dead-letter-exchange: "@format {this.PLAYER__QUEUE__SERVICE__DEAD_LETTER__EXCHANGE__NAME}"
               x-dead-letter-routing-key: "dl.spotify"
+              x-queue-type: quorum
+              x-delivery-limit: 3
               message-ttl: 3600000 # 1 hour
         hub:
           queue: "@format hub_{this.SERVER_ID}"
