@@ -40,6 +40,9 @@ default:
       timeout: 1800  # 30 minutes
     queue:
       broker:
+        host:
+        vhost:
+        port:
         timeout: 240
         graceful_timeout: 480     # TODO check if (mili)seconds
         max_consumers: 10

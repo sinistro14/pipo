@@ -31,7 +31,7 @@ trace.set_tracer_provider(tracer_provider)
 
 broker = RabbitBroker(
     app_id=settings.app,
-    url=settings.player.queue.broker.url,
+    url=settings.queue_broker_url,
     host=settings.player.queue.broker.host,
     virtualhost=settings.player.queue.broker.vhost,
     port=settings.player.queue.broker.port,
