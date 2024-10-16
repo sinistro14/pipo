@@ -13,6 +13,14 @@ from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
 
 
+try:
+    from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+
+    HTTPXClientInstrumentor().instrument()
+except ImportError:
+    logging.getLogger(__name__).warning("Unable to import HTTPXClientInstrumentor")
+
+
 class YoutubeOperations(StrEnum):
     """Youtube operation types."""
 

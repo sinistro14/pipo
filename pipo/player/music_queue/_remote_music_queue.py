@@ -61,10 +61,12 @@ dlq = RabbitQueue(
     arguments=settings.player.queue.service.dead_letter.queue.args,
 )
 
+
 async def declare_dlx(b: RabbitBroker):
     await b.declare_queue(plq)
     await b.declare_exchange(dlx)
     await b.declare_queue(dlq)
+
 
 dispatcher_queue = RabbitQueue(
     settings.player.queue.service.dispatcher.queue,

@@ -84,6 +84,6 @@ jobs:
       run: |
         poetry run dynaconf write yaml -y -p ./tests/ -e test \
           -s spotify_client=${{ secrets.TEST_SPOTIFY_CLIENT }} \
-          -s spotify_secret=${{ secrets.TEST_SPOTIFY_SECRET }}; \
+          -s spotify_secret=${{ secrets.TEST_SPOTIFY_SECRET }} \
           -s player__queue__broker__url=${{ secrets.TEST_RABBITMQ_URL }}; \
         make test
