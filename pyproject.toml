@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pipo"
-version = "0.0.0" # managed from CI only
+version = "0.0.0" # managed from CI
 description = "Bot to play music in a discord channel"
 
 license = "MIT"
@@ -118,6 +118,8 @@ source = ["pipo"]
 [tool.coverage.report]
 fail_under = 70
 omit = [
+    "*__init__.py",
+    "*__main__.py",
     "*__init__.py",
     "*__main__.py",
 ]

@@ -102,3 +102,8 @@ IDLE_TIMEOUT = 2
 DUMMY_0 = "dummy"
 DUMMY_1 = "a"
 DUMMY_2 = "b"
+
+### Cogs ###
+DUMMY_0 = "dummy"
+DUMMY_1 = "a"
+DUMMY_2 = "b"

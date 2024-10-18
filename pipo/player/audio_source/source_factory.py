@@ -12,6 +12,7 @@ class SourceFactory:
         """Get source by name."""
         handlers = (
             SpotifyHandler,
+            SpotifyHandler,
             YoutubeHandler,
             YoutubeQueryHandler,
             NullHandler,

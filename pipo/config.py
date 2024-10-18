@@ -3,6 +3,7 @@
 Load importable settings from configuration files.
 """
 
+
 import os
 
 from dynaconf import Dynaconf, Validator
@@ -38,12 +39,6 @@ settings.validators.register(
             neq="",
             must_exist=True,
             when=Validator("spotify.client", neq="", must_exist=True),
-        ),
-        Validator(
-            "spotify_secret",
-            neq="",
-            must_exist=True,
-            when=Validator("spotify_client", neq="", must_exist=True),
         ),
         Validator("server_id_size", gt=0, lte=64),
     ],

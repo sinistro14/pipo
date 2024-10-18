@@ -38,6 +38,7 @@ class YoutubeHandler(BaseHandler):
     def __valid_source(source: Iterable[str]) -> bool:
         """Check whether source is a youtube url."""
         return source and ("youtube" in source and source.startswith(("https", "http")))
+        return source and ("youtube" in source and source.startswith(("https", "http")))
 
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):
