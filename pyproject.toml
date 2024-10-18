@@ -120,8 +120,6 @@ fail_under = 70
 omit = [
     "*__init__.py",
     "*__main__.py",
-    "*__init__.py",
-    "*__main__.py",
 ]
 
 [tool.ruff]
