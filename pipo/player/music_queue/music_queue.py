@@ -5,6 +5,7 @@ from faststream import Logger
 import uuid6
 import faststream.rabbit
 from expiringdict import ExpiringDict
+import hashlib
 
 from pipo.config import settings
 from pipo.player.queue import PlayerQueue
@@ -32,19 +33,23 @@ class __RemoteMusicQueue(PlayerQueue):
     __publisher: faststream.rabbit.RabbitPublisher
     __requests: Dict[str, int]
 
-    def __init__(self, server_id: str, queue_size: int) -> None:
+    def __init__(self, server: str, queue_size: int) -> None:
         super().__init__()
         self.__requests = ExpiringDict(
             max_len=settings.player.queue.requests.max,
             max_age_seconds=settings.player.queue.requests.timeout,
         )
-        self.server_id = server_id
+        self.server_id = self.__generate_server_id(server)
         self.__publisher = server_publisher
         self.__playable_music = asyncio.Queue(queue_size)
 
     @staticmethod
     def __generate_uuid() -> str:
         return str(uuid6.uuid7())
+
+    @staticmethod
+    def __generate_server_id(server: str) -> str:
+        return hashlib.sha3_256(server.encode()).hexdigest()[: settings.server_id_size]
 
     async def add(self, query: str | Iterable[str], shuffle: bool = False) -> None:
         query = [query] if isinstance(query, str) else query

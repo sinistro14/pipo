@@ -10,6 +10,7 @@ default:
   # Discord default voice channel
   voice_channel:
   server_id: "@format {this.CHANNEL}"
+  server_id_size: 8
   bot_description: Discord Music Bot
   main_task_name: "main_task"
   commands:
