@@ -40,7 +40,7 @@ class PlayingState(pipo.states.state.State):
 
         Pause currently playing music and transition to Idle State.
         """
-        await self.context.player.pause()
+        self.context.player.pause()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def leave(self) -> None:
@@ -71,4 +71,4 @@ class PlayingState(pipo.states.state.State):
         Skips currently playing music by stopping the voice client, currently playing
         the music.
         """
-        await self.context.player.skip()
+        self.context.player.skip()

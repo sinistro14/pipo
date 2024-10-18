@@ -81,8 +81,8 @@ class IdleState(pipo.states.state.State):
     async def join(self, ctx: Dctx) -> None:  # noqa: D102
         pass
 
-    async def skip(self) -> None:  # noqa: D102
-        pass
+    async def skip(self) -> None:
+        self.context.player.skip()
 
     async def clear(self) -> None:  # noqa: D102
         pass
@@ -120,5 +120,5 @@ class IdleState(pipo.states.state.State):
 
         Resume music and transition to Playing State.
         """
-        await self.context.player.resume()
+        self.context.player.resume()
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())
