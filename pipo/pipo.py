@@ -1,6 +1,5 @@
 #!usr/bin/env python3
 import asyncio
-import logging
 import signal
 from typing import List
 
@@ -20,7 +19,6 @@ class Pipo(pipo.states.Context):
     Converts application side logic to Discord requests.
     """
 
-    _logger: logging.Logger
     bot: discord.ext.commands.Bot
     voice_client: discord.VoiceClient
     music_channel: discord.VoiceChannel
@@ -28,7 +26,6 @@ class Pipo(pipo.states.Context):
 
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__(pipo.states.disconnected_state.DisconnectedState())
-        self._logger = logging.getLogger(__name__)
         self.channel_id = None
         self.voice_channel_id = None
         self.bot = bot
@@ -65,7 +62,7 @@ class Pipo(pipo.states.Context):
             channel_id = self.voice_client.channel.id
         elif ctx and ctx.author.voice:
             self._logger.info(
-                "User '%s' requested join to '%s'",
+                "User '%s' requested join to channel %s",
                 ctx.author.name,
                 ctx.author.voice.channel.name,
             )
@@ -117,7 +114,7 @@ class Pipo(pipo.states.Context):
                     url, method="fallback", **settings.pipo.ffmpeg_config
                 )
             )
-            while self.voice_client.is_playing() or self.voice_client.is_paused():
+            while self.voice_client.is_playing() or self.voice_client.is_paused():  # noqa
                 await asyncio.sleep(settings.pipo.check_if_playing_frequency)
         except asyncio.CancelledError:
             self._logger.debug("Cancelling asyncio sleep")
@@ -184,7 +181,7 @@ class Pipo(pipo.states.Context):
 
     async def reboot(self, ctx: Dctx):
         """Reboot bot."""
-        await self._state.leave()  # transitions to Disconnected state
+        await self._state.leave()  # transition to Disconnected state
         self._logger.info("Rebooting")
         signal.raise_signal(signal.SIGUSR1)
 

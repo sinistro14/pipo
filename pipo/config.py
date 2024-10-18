@@ -18,19 +18,33 @@ settings = Dynaconf(
     load_dotenv=True,
     dotenv_override=True,
     ignore_unknown_envvars=True,
-    settings_files=["settings.yaml"],
-    secrets=[".secrets.yaml"],
+    settings_files=["settings.yaml", ".secrets.yaml"],
 )
 
 # lazy evaluation, check on usage only
 settings.validators.register(
     validators=[
-        Validator("app", "channel", "voice_channel", "token", must_exist=True, neq=""),
+        Validator(
+            "app",
+            "channel",
+            "voice_channel",
+            "token",
+            "queue_broker_url",
+            must_exist=True,
+            neq="",
+        ),
         Validator(
             "spotify.secret",
             neq="",
             must_exist=True,
             when=Validator("spotify.client", neq="", must_exist=True),
         ),
+        Validator(
+            "spotify_secret",
+            neq="",
+            must_exist=True,
+            when=Validator("spotify_client", neq="", must_exist=True),
+        ),
+        Validator("server_id_size", gt=0, lte=64),
     ],
 )

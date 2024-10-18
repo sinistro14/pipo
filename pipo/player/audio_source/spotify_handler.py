@@ -1,5 +1,8 @@
+import asyncio
+from enum import StrEnum
 import logging
-from typing import Iterable
+import random
+from typing import Iterable, Iterator, List
 
 import spotipy
 
@@ -12,7 +15,13 @@ from pipo.player.audio_source.schemas.spotify import (
 )
 from pipo.player.audio_source.source_pair import SourcePair
 from pipo.player.audio_source.source_type import SourceType
-from pipo.player.audio_source.youtube_query_handler import YoutubeQueryHandler
+from pipo.player.audio_source.youtube_handler import YoutubeQueryHandler
+
+
+class SpotifyOperations(StrEnum):
+    """Spotify operation types."""
+
+    URL = "url"
 
 
 class SpotifyHandler(BaseHandler):
@@ -30,21 +39,62 @@ class SpotifyHandler(BaseHandler):
             logging.getLogger(__name__).info(
                 "Processing spotify audio source '%s'", source
             )
-            return SourcePair(query=source, handler_type=SpotifyHandler.name)
+            return SourcePair(
+                query=source, handler_type=SpotifyHandler.name, operation="url"
+            )
         else:
             return super().handle(source)
 
     @staticmethod
-    def __parse(track: SpotifyTrack) -> SourcePair:
+    def __format_query(track: SpotifyTrack) -> SourcePair:
         song = track.name
         artist = track.artists[0].name if track.artists else ""
         entry = f"{song} - {artist}" if artist else song
-        return SourcePair(entry, YoutubeQueryHandler.name)
+        return SourcePair(
+            query=entry,
+            handler_type=YoutubeQueryHandler.name,
+        )
 
     @staticmethod
-    def parse(pair: SourcePair) -> Iterable[SourcePair]:
+    def _get_playlist(
+        client: spotipy.Spotify, query: str, fields: Iterable[str], limit: int
+    ) -> List[SpotifyTrack]:
+        tracks = client.playlist_items(
+            query,
+            fields=fields,
+            limit=limit,
+            additional_types="track",
+        )
+        return SpotifyPlaylist(**tracks).items
+
+    @staticmethod
+    def _get_album(
+        client: spotipy.Spotify, query: str, limit: int
+    ) -> List[SpotifyTrack]:
+        tracks = client.album_tracks(
+            query,
+            limit=limit,
+        )
+        return SpotifyAlbum(**tracks).items
+
+    @staticmethod
+    def _get_track(client: spotipy.Spotify, query: str) -> List[SpotifyTrack]:
+        track = client.track(
+            query,
+        )
+        return [SpotifyTrack(**track)]
+
+    @staticmethod
+    async def tracks_from_query(
+        query: str, shuffle: bool = False
+    ) -> Iterable[SourcePair]:
+        """
+        TODO
+
+        asyncio.to_thread is used to avoid blocking asyncio event loop, considering Spotipy
+        library is not CPU nor asyncio friendly.
+        """
         tracks = []
-        query = pair.query
         try:
             spotify = spotipy.Spotify(
                 client_credentials_manager=spotipy.SpotifyClientCredentials(
@@ -56,23 +106,25 @@ class SpotifyHandler(BaseHandler):
                 logging.getLogger(__name__).info(
                     "Processing spotify playlist '%s'", query
                 )
-                tracks = spotify.playlist_items(
+                task = asyncio.to_thread(
+                    SpotifyHandler._get_playlist,
+                    spotify,
                     query,
-                    fields=[settings.player.source.spotify.playlist.filter],
-                    limit=settings.player.source.spotify.playlist.limit,
+                    [settings.player.source.spotify.playlist.filter],
+                    settings.player.source.spotify.playlist.limit,
                 )
-                tracks = SpotifyPlaylist(**tracks).items
             elif "album" in query:
                 logging.getLogger(__name__).info("Processing spotify album '%s'", query)
-                tracks = spotify.album_tracks(
+                task = asyncio.to_thread(
+                    SpotifyHandler._get_album,
+                    spotify,
                     query,
-                    limit=settings.player.source.spotify.album.limit,
+                    settings.player.source.spotify.album.limit,
                 )
-                tracks = SpotifyAlbum(**tracks).items
             else:
                 logging.getLogger(__name__).info("Processing spotify track '%s'", query)
-                track = spotify.track(query)
-                tracks = [SpotifyTrack(**track)]
+                task = asyncio.to_thread(SpotifyHandler._get_track, spotify, query)
+            tracks = (await asyncio.gather(task))[0]
         except spotipy.oauth2.SpotifyOauthError:
             logging.getLogger(__name__).exception(
                 "Unable to access spotify API. \
@@ -82,5 +134,6 @@ class SpotifyHandler(BaseHandler):
             logging.getLogger(__name__).exception(
                 "Unable to process spotify query '%s'", query
             )
-        tracks = tracks or []
-        return [SpotifyHandler.__parse(track) for track in tracks]
+        if shuffle:
+            random.shuffle(tracks)
+        return [SpotifyHandler.__format_query(track) for track in tracks]

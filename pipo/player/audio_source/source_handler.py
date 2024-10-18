@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Iterable, Optional
+from typing import Iterable
 
 from pipo.player.audio_source.source_pair import SourcePair
 
@@ -26,9 +26,4 @@ class SourceHandler(ABC):
     @abstractmethod
     def handle(self, source: Iterable[str]) -> SourcePair:
         """Check whether handler is able to process source."""
-        pass
-
-    @abstractmethod
-    def fetch(self, source: str) -> Optional[str]:
-        """Process source."""
         pass

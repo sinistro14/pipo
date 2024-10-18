@@ -27,9 +27,12 @@ class TestCommandQueue:
     def command_queue(self):
         return pipo.command.command_queue.CommandQueue()
 
-    def test_add_command(self, command_queue: pipo.command.command_queue.CommandQueue):
+    @pytest.mark.asyncio
+    async def test_add_command(
+        self, command_queue: pipo.command.command_queue.CommandQueue
+    ):
         command = DummyCommand()
-        command_queue.add(command)
+        await command_queue.add(command)
 
     @pytest.mark.asyncio
     async def test_add_async_command(

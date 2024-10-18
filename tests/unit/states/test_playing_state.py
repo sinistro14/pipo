@@ -7,6 +7,7 @@ from pipo.states.playing_state import PlayingState
 from pipo.states.disconnected_state import DisconnectedState
 
 
+@pytest.mark.unit
 class TestPlayingState:
     __state_name = "playing"
 

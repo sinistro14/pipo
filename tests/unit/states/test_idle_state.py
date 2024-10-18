@@ -10,15 +10,16 @@ from pipo.states.playing_state import PlayingState
 from pipo.states.disconnected_state import DisconnectedState
 
 
+@pytest.mark.unit
 class TestIdleState:
     __state_name = "idle"
 
     @pytest.fixture(scope="function")
-    def initial_state(self, mocker) -> IdleState:
+    async def initial_state(self, mocker) -> IdleState:
         mocker.patch("pipo.states.idle_state.IdleState.context", new=mock.AsyncMock())
         state = IdleState(tests.constants.IDLE_TIMEOUT)
         yield state
-        state._stop_idle_tracker()
+        await state._stop_idle_tracker()
 
     @pytest.fixture(scope="function")
     def state_tracker_disabled(self, mocker) -> IdleState:
@@ -34,7 +35,6 @@ class TestIdleState:
         await state_tracker_disabled.pause()
         await state_tracker_disabled.clear()
 
-    @pytest.mark.xfail(reason="fails stating asyncio loop not running")
     @pytest.mark.asyncio
     async def test_idle_timeout(self, initial_state: IdleState):
         assert initial_state.name == self.__state_name

@@ -1,211 +1,115 @@
-import logging
-import multiprocessing
-import random
-from abc import ABC, abstractmethod
-from typing import Any, Iterable, Optional, Union
+import asyncio
+from typing import Dict, Iterable, Optional
+
+from faststream import Logger
+import uuid6
+import faststream.rabbit
+from expiringdict import ExpiringDict
 
 from pipo.config import settings
-from pipo.player.audio_source.source_factory import SourceFactory
-from pipo.player.audio_source.source_oracle import SourceOracle
-from pipo.player.audio_source.source_pair import SourcePair
+from pipo.player.queue import PlayerQueue
+from pipo.player.music_queue.models.music import Music
+from pipo.player.music_queue.models.music_request import MusicRequest
+from pipo.player.music_queue._remote_music_queue import (
+    broker,
+    hub_queue,
+    hub_exch,
+    server_publisher,
+)
 
 
-class MusicQueue(ABC):
-    """Music queue.
+class __RemoteMusicQueue(PlayerQueue):
+    """Remote music queue.
 
-    Handles added music prefetch and storage.
-    Prefetch operations are transparently scheduled by the music queue but such method's
-    are implemented by _submit_fetch and _add.
-    Music queries are initially sent to prefetch queue from where initial information
-    will be extracted. Afterwards music is obtained up to defined __prefetch_limit value
-    until a music is extract from the queue.
+    Attributes
+    ----------
+    __broker : faststream.rabbit.RabbitBroker
+        Controls connection to remote queues.
     """
 
-    _logger: logging.Logger
-    _audio_queue: Any
-    _audio_fetch_queue: Any
-    __prefect_limit: int
-    __fetch_pool_enabled: multiprocessing.Event
-    __fetch_limit: multiprocessing.Semaphore
+    server_id: str
+    __playable_music: asyncio.Queue[str]
+    __publisher: faststream.rabbit.RabbitPublisher
+    __requests: Dict[str, int]
 
-    def __init__(
-        self, prefetch_limit: int, audio_fetch_queue: Any, audio_queue: Any
-    ) -> None:
-        self._logger = logging.getLogger(__name__)
-        self._audio_fetch_queue = audio_fetch_queue
-        self._audio_queue = audio_queue
-        self.__prefect_limit = prefetch_limit
-        self.__start_queue()
-
-    def __start_queue(self):
-        """Initialize music queue."""
-        self.__fetch_pool_enabled = multiprocessing.Event()
-        self.__fetch_pool_enabled.set()
-        self.__fetch_limit = multiprocessing.Semaphore(self.__prefect_limit)
-        self.__audio_fetch_pool = multiprocessing.Pool(
-            settings.player.url_fetch.pool_size,
-            MusicQueue.fetch_music,
-            (
-                self.__fetch_pool_enabled,
-                self.__fetch_limit,
-                self._audio_fetch_queue,
-                self,
-            ),
+    def __init__(self, server_id: str, queue_size: int) -> None:
+        super().__init__()
+        self.__requests = ExpiringDict(
+            max_len=settings.player.queue.requests.max,
+            max_age_seconds=settings.player.queue.requests.timeout,
         )
+        self.server_id = server_id
+        self.__publisher = server_publisher
+        self.__playable_music = asyncio.Queue(queue_size)
 
     @staticmethod
-    def fetch_music(
-        worker_enabled: multiprocessing.Event,
-        fetch_limit: multiprocessing.Semaphore,
-        source_queue: multiprocessing.Queue,  # FIXME temporary type, change later
-        music_queue: Any,
-    ):
-        """Fetch music task.
+    def __generate_uuid() -> str:
+        return str(uuid6.uuid7())
 
-        Task used by workers to process source data into music urls.
+    async def add(self, query: str | Iterable[str], shuffle: bool = False) -> None:
+        query = [query] if isinstance(query, str) else query
+        uuid = self.__generate_uuid()
+        request = MusicRequest(
+            uuid=uuid,
+            server_id=self.server_id,
+            shuffle=shuffle,
+            query=query,
+        )
+        self.__requests[request.uuid] = 0
+        self._logger.info("Adding request: %s", request.uuid)
+        await self.__publisher.publish(request)
 
-        Parameters
-        ----------
-        worker_enabled : multiprocessing.Event
-            Controls whether workers are enabled.
-        fetch_limit : multiprocessing.Semaphore
-            Defines max music queries to process.
-        source_queue : multiprocessing.Queue
-            Queue from were to obtain source data.
-        music_queue : Any
-            Queue were resultant music is added.
-        """
-        while True:
-            if worker_enabled.wait() and fetch_limit.acquire(
-                block=True, timeout=settings.player.url_fetch.lock_timeout
-            ):  # block until new music can be fetched
-                source_pair = source_queue.get()
-                handler = SourceFactory.get_source(source_pair.handler_type)
-                music = handler.fetch(source_pair.query)
-                music_queue._add(music)
+    async def _add_music(self, request: Music):
+        music = str(request.source)
+        if request.uuid in self.__requests:
+            self._logger.debug("Item obtained from remote music queue: %s", music)
+            try:
+                self.__requests[request.uuid] = +1
+                await asyncio.wait_for(
+                    self.__playable_music.put(music),
+                    timeout=settings.player.queue.timeout.consume,
+                )
+                self._logger.debug("Item stored in local music queue: %s", music)
+            except asyncio.TimeoutError:
+                self._logger.warning(
+                    "Item consumption from remote queue timed out: %s", request.uuid
+                )
+        else:
+            self._logger.warning("Item obtained was discarded: %s", music)
 
-    def add(
-        self,
-        query: Union[str, Iterable[str]],
-        shuffle: bool = False,
-    ) -> None:
-        """Add music query to queue.
-
-        Parameters
-        ----------
-        query : Union[str, Iterable[str]]
-            Music query to add.
-        shuffle : bool, optional
-            Whether to shuffle music order, by default False.
-        """
-        query = list(query) if not isinstance(query, list) else query
-        sources = SourceOracle.process_queries(query)
-        sources = self._parse(sources)
-        if shuffle:
-            random.shuffle(sources)
-        if sources:
-            self._submit_fetch(sources)
-
-    def _parse(self, sources: Iterable[SourcePair]) -> Iterable[SourcePair]:
-        """Parse source pairs.
-
-        Prepare request to be submitted, depending on queue type. Override if needed.
-
-        Parameters
-        ----------
-        sources : Iterable[SourcePair]
-            _description_
-
-        Returns
-        -------
-        Iterable[SourcePair]
-            _description_
-        """
-        parsed_sources = []
-        for source in sources:
-            parsed_sources.extend(
-                SourceFactory.get_source(source.handler_type).parse(source)
-            )
-        return parsed_sources
-
-    @abstractmethod
-    def _submit_fetch(self, sources: Iterable[SourcePair]) -> None:
-        """Submit request to fetch queue."""
-        pass
-
-    @abstractmethod
-    def _add(self, music: str) -> None:
-        pass
-
-    def get(self) -> Optional[str]:
-        """Get one music from queue."""
-        self.__fetch_limit.release()
-        music = self._get()
-        self._logger.debug("Item obtained from music queue: %s", music)
-        return music
-
-    @abstractmethod
-    def _get(self) -> Optional[str]:
-        pass
-
-    @abstractmethod
-    def get_all(self) -> Any:
-        """Get all musics from queue."""
-        pass
+    async def get(self, timeout: int = 0) -> Optional[str]:
+        timeout = timeout if timeout > 0 else settings.player.queue.timeout.get_op
+        try:
+            music = await asyncio.wait_for(self.__playable_music.get(), timeout=timeout)
+            self._logger.debug("Item obtained from music queue: %s", music)
+            return music
+        except asyncio.TimeoutError:
+            self._logger.debug("Get operation timed out.")
+        return None
 
     def size(self) -> int:
-        """Music to be played.
-
-        Sum of enqueued and yet to process music.
-        Estimates queue size calculating the average of several samples, solving method
-        correctness issues without locks.
-
-        Returns
-        -------
-        int
-            Queue size.
-        """
-        return self.fetch_queue_size() + self.audio_queue_size()
-
-    @abstractmethod
-    def fetch_queue_size(self) -> int:
-        """Queue of yet to process music size.
-
-        Returns
-        -------
-        int
-            Queue size.
-        """
-        return -1
-
-    @abstractmethod
-    def audio_queue_size(self) -> int:
-        """Queue of processed music size.
-
-        Returns
-        -------
-        int
-            Queue size.
-        """
-        return -1
+        return self.__playable_music.qsize()
 
     def clear(self) -> None:
-        """Clear all queues."""
+        self.__requests.clear()
         try:
-            self._logger.info("Clearing music queue")
-            self._logger.debug("Temporarily disabling queues")
-            self.__fetch_pool_enabled.clear()
-            self._logger.debug("Clearing queues")
-            self._clear()
-            self._logger.debug("Resetting fetch semaphore")
-            [self.__fetch_limit.release() for _ in range(self.__prefect_limit)]
-            self._logger.debug("Enabling queues")
-            self.__fetch_pool_enabled.set()
-            self._logger.info("Clear operation concluded")
-        except Exception:
-            self._logger.exception("Unable to clear music queue")
-            raise
+            while not self.__playable_music.empty():
+                self.__playable_music.get_nowait()
+        except asyncio.QueueEmpty:
+            self._logger.warning("There was an error cleaning locally stored music.")
+        self._logger.info("Locally stored music cleaned.")
 
-    @abstractmethod
-    def _clear(self) -> None:
-        pass
+
+music_queue = __RemoteMusicQueue(
+    settings.server_id, settings.player.queue.max_local_music
+)
+
+
+@broker.subscriber(
+    queue=hub_queue,
+    exchange=hub_exch,
+    description="Consumes from hub exchange bound hub client exclusive queue",
+)
+async def consume_music(request: Music, logger: Logger) -> None:
+    logger.info("Received request: %s", request.uuid)
+    await music_queue._add_music(request)
