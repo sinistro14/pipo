@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 import pytest
 from pipo.config import settings
+from tests import constants
 
 
 class Helpers:
@@ -49,7 +50,9 @@ def random():
 
 @pytest.fixture(scope="session", autouse=True)
 def set_test_settings():
-    settings.configure(FORCE_ENV_FOR_DYNACONF="test")
+    settings.configure(
+        FORCE_ENV_FOR_DYNACONF=constants.TEST_ENVIRONMENT,
+    )
     logging.basicConfig(
         level=settings.log.level,
         format=settings.log.format,

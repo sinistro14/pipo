@@ -1,5 +1,8 @@
 #!usr/bin/env python3
 
+### Test Suite ###
+TEST_ENVIRONMENT = "test"
+
 ### MusicQueue  ###
 SHORT_TIMEOUT = 5  # seconds
 MEDIUM_TIMEOUT = 10  # seconds
