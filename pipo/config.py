@@ -30,7 +30,6 @@ settings.validators.register(
             "channel",
             "voice_channel",
             "token",
-            "queue_broker_url",
             must_exist=True,
             neq="",
         ),
