@@ -4,7 +4,7 @@ import pipo.player
 import tests.constants
 
 
-@pytest.mark.query
+@pytest.mark.wip
 @pytest.mark.unit
 @pytest.mark.query
 class TestYoutubeSource:
