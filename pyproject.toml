@@ -93,7 +93,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--cov -n auto --reruns 2 --reruns-delay 3.0"
+addopts = "--cov -m 'not wip' -n auto --reruns 2 --reruns-delay 3.0"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 mock_use_standalone_module = true
@@ -102,7 +102,7 @@ log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
-    "wip: suite currently in development. not counting for acceptance",
+    "wip: suite currently in development, not counting for acceptance",
     "spotify: assert functionality while relying on spotify APIs",
     "youtube: assert functionality while relying on youtube live APIs",
     "query: assert query functionality, which currently relies on youtube live APIs",

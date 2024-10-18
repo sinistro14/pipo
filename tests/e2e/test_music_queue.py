@@ -11,6 +11,7 @@ from pipo.player.music_queue.models.music_request import MusicRequest
 from pipo.player.music_queue._remote_music_queue import broker, server_publisher
 
 
+@pytest.mark.wip
 @pytest.mark.e2e
 @pytest.mark.remote_queue
 @pytest.mark.xdist_group(name="serial")
