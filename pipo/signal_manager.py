@@ -9,7 +9,9 @@ class SignalManager:
     """Manage program signals."""
 
     @staticmethod
-    async def __shutdown(signal, loop: asyncio.AbstractEventLoop) -> None:
+    async def __shutdown(
+        signal, main_task: str, loop: asyncio.AbstractEventLoop
+    ) -> None:
         """Cancel all running async tasks.
 
         Cancel running asyncio tasks, except this one, so they can perform necessary
@@ -30,10 +32,7 @@ class SignalManager:
         tasks = [
             task
             for task in asyncio.all_tasks()
-            if (
-                (task is not asyncio.current_task())
-                and (task.get_name() != "main_task")
-            )
+            if ((task is not asyncio.current_task()) and (task.get_name() != main_task))
         ]
 
         for task in tasks:
@@ -49,13 +48,16 @@ class SignalManager:
 
     @staticmethod
     def add_handlers(
-        loop: asyncio.AbstractEventLoop, signals: Iterable[signal.Signals]
+        loop: asyncio.AbstractEventLoop,
+        main_task: str,
+        signals: Iterable[signal.Signals],
     ) -> None:
         """Add signal handlers to manage program execution."""
         for sig in signals:
             loop.add_signal_handler(
                 sig,
                 lambda sig=sig: asyncio.create_task(
-                    SignalManager.__shutdown(sig, loop), name="signal_shutdown"
+                    SignalManager.__shutdown(sig, main_task, loop),
+                    name="signal_shutdown",
                 ),
             )

@@ -7,8 +7,8 @@ import logging
 from typing import List, Union
 
 from pipo.config import settings
-from pipo.player.music_queue.music_queue import MusicQueue
-from pipo.player.music_queue.music_queue_factory import MusicQueueFactory
+from pipo.player.music_queue.music_queue import music_queue
+from pipo.player.queue import PlayerQueue
 
 
 class Player:
@@ -37,7 +37,7 @@ class Player:
     __bot: None
     __logger: logging.Logger
     __player_thread: asyncio.Task
-    _music_queue: MusicQueue
+    _player_queue: PlayerQueue
     can_play: asyncio.Event
 
     def __init__(self, bot) -> None:
@@ -48,16 +48,16 @@ class Player:
         bot : :class:`~pipo.bot.PipoBot`
             Client Discord bot.
         """
-        self.__bot = bot
         self.__logger = logging.getLogger(__name__)
+        self.__bot = bot
+        self._player_queue = music_queue
         self.__player_thread = None
         self.can_play = asyncio.Event()
-        self._music_queue = MusicQueueFactory.get(settings.player.queue.type)
 
     def clear(self) -> None:
         """Reset music queue and halt currently playing audio."""
         self.__logger.info("Clearing Player state...")
-        self._music_queue.clear()
+        self._player_queue.clear()
         self.__logger.info("Cleared queues")
         if self.__player_thread:
             self.__player_thread.cancel()
@@ -85,29 +85,22 @@ class Player:
 
     def queue_size(self) -> int:
         """Get music queue size."""
-        return self._music_queue.size()
-
-    def fetch_queue_size(self) -> int:
-        """Get yet to process music queue size."""
-        return self._music_queue.fetch_queue_size()
-
-    def audio_queue_size(self) -> int:
-        """Get processed music queue size."""
-        return self._music_queue.audio_queue_size()
+        return self._player_queue.size()
 
     def player_status(self) -> str:
         """Player status description."""
-        audio_queue_size = self.audio_queue_size()
-        fetch_queue_size = self.fetch_queue_size()
-        if audio_queue_size >= 0 and fetch_queue_size >= 0:
-            return (
-                f"{25 * '='}\n🎵\tReady to play: {audio_queue_size}\n"
-                f"🎵\tPending processing: {fetch_queue_size}\n{25 * '='}\n"
+        queue_size = self.queue_size()
+        if queue_size >= 0:
+            queue_size = (
+                f"{queue_size}+"
+                if queue_size >= settings.player.messages.long_queue
+                else queue_size
             )
+            return f"{25 * '='}\n🎵\tQueue size: {queue_size}\t🎵\n{25 * '='}\n"
         else:
             return settings.player.messages.unavailable_status
 
-    def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
+    async def play(self, queries: Union[str, List[str]], shuffle: bool = False) -> None:
         """Add music to play.
 
         Enqueues music to be played when player thread is free and broadcasts such
@@ -130,9 +123,9 @@ class Player:
             queries = [
                 queries,
             ]
-        self.__add_music(queries, shuffle)
+        await self.__add_music(queries, shuffle)
 
-    def __add_music(self, queries: List[str], shuffle: bool) -> None:
+    async def __add_music(self, queries: List[str], shuffle: bool) -> None:
         """Add music to play queue.
 
         Enqueues music to be played when player thread is free and broadcasts such
@@ -146,11 +139,8 @@ class Player:
         shuffle : bool
             Randomize order by which queries are added to play queue.
         """
-        self.__logger.info("Processing music query %s", queries)
-        self._music_queue.add(
-            queries,
-            shuffle,
-        )
+        self.__logger.info("Processing music query: %s", queries)
+        await self._player_queue.add(queries, shuffle)
 
     def _start_music_queue(self) -> None:
         """Initialize music thread.
@@ -176,7 +166,7 @@ class Player:
         while await self.can_play.wait():
             self.can_play.clear()
             self.__logger.debug("Music queue size: %s", self.queue_size())
-            url = self._music_queue.get()
+            url = await self._player_queue.get(settings.player.get_music_timeout)
             if url:
                 try:
                     self.__logger.info(
@@ -192,9 +182,7 @@ class Player:
                 except Exception:
                     self.__logger.warning("Unable to play music %s", url, exc_info=True)
                     await self.__bot.send_message(settings.player.messages.play_error)
-            # FIXME possible race check condition, None could be returned due to
-            # empty queue and still not enter this condition
-            elif not self.queue_size():
+            elif url == None:
                 self.__logger.info("Exiting music play loop due to empty queue")
                 break
             else:

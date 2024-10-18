@@ -6,7 +6,7 @@
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 [![Sphinx](https://img.shields.io/badge/Docs-Sphinx-%230000?style=flat&logo=sphinx&color=%230A507A)](https://www.sphinx-doc.org/)
 
-Bot to play music in a discord channel based on user input.
+Bot to interactively play music in your Discord channel.
 
 ## Installation
 

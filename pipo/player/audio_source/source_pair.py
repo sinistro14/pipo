@@ -7,3 +7,4 @@ class SourcePair:
 
     query: str
     handler_type: str
+    operation: str = "url"  # TODO define operation types

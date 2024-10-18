@@ -1,3 +1,4 @@
+import random
 import asyncio
 from typing import List
 
@@ -53,6 +54,10 @@ class IdleState(pipo.states.state.State):
             await self.idle_tracker
             self.idle_tracker = None
 
+    @staticmethod
+    def __disconnect_message():
+        return random.choice(settings.player.messages.disconnect)
+
     async def _idle_tracker_task(self, cancel_event: asyncio.Event):
         try:
             await asyncio.wait_for(cancel_event.wait(), timeout=self._idle_timeout)
@@ -60,7 +65,7 @@ class IdleState(pipo.states.state.State):
             self.context.transition_to(
                 pipo.states.disconnected_state.DisconnectedState()
             )
-            await self.context.music_channel.send(settings.player.messages.disconnect)
+            await self.context.music_channel.send(self.__disconnect_message())
             await self.context.voice_client.disconnect()
         except asyncio.CancelledError:
             self._logger.debug("Cancelling task 'idle_tracker'")
@@ -76,8 +81,8 @@ class IdleState(pipo.states.state.State):
     async def join(self, ctx: Dctx) -> None:  # noqa: D102
         pass
 
-    async def skip(self) -> None:  # noqa: D102
-        pass
+    async def skip(self) -> None:
+        self.context.player.skip()
 
     async def clear(self) -> None:  # noqa: D102
         pass
@@ -99,7 +104,7 @@ class IdleState(pipo.states.state.State):
         shuffle : bool, optional
             Randomize play order when multiple musics are provided.
         """
-        self.context.player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
         await self._clean_transition_to(pipo.states.playing_state.PlayingState())
 
     async def leave(self) -> None:

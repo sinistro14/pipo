@@ -7,6 +7,7 @@ import pytest
 from pipo.config import settings
 
 
+@pytest.mark.unit
 class TestPytest:
     def test_pytest(self):
         assert True

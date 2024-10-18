@@ -4,13 +4,16 @@ import pipo.player
 import tests.constants
 
 
+@pytest.mark.wip
+@pytest.mark.unit
+@pytest.mark.query
 class TestYoutubeSource:
     @pytest.fixture(scope="function", autouse=True)
     def music_handler(self, mocker):
         return pipo.player.audio_source.youtube_handler.YoutubeHandler()
 
     def test_empty_url(self, music_handler):
-        assert not music_handler.fetch("")
+        assert not music_handler.get_audio("")
 
     @pytest.mark.parametrize(
         "url",
@@ -23,4 +26,4 @@ class TestYoutubeSource:
         ],
     )
     def test_url(self, music_handler, url):
-        assert music_handler.fetch(url)
+        assert music_handler.get_audio(url)
