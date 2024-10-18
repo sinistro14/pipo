@@ -25,7 +25,15 @@ settings = Dynaconf(
 # lazy evaluation, check on usage only
 settings.validators.register(
     validators=[
-        Validator("app", "channel", "voice_channel", "token", must_exist=True, neq=""),
+        Validator(
+            "app",
+            "channel",
+            "voice_channel",
+            "token",
+            "queue_broker_url",
+            must_exist=True,
+            neq="",
+        ),
         Validator(
             "spotify.secret",
             neq="",
