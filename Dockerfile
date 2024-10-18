@@ -16,7 +16,7 @@ ENV APP_NAME="pipo" \
     \
     # poetry
     # https://python-poetry.org/docs/configuration/#using-environment-variables
-    POETRY_VERSION=1.8.3 \
+    POETRY_VERSION=1.8.4 \
     # make poetry install to this location
     POETRY_HOME="/opt/poetry" \
     # make poetry create the virtual environment in the project's root
@@ -37,18 +37,15 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 FROM base AS builder-base
 
 # install required system dependencies
-RUN apk add --no-cache \
-        ffmpeg \
-        git \
-    && pip install --upgrade pip setuptools wheel \
+RUN pip install --upgrade pip setuptools wheel \
     && apk add --no-cache --virtual .build-deps \
+        git \
         build-base \
         musl-dev \
         libffi-dev \
         openssl-dev \
         python3-dev \
-        && pip install --ignore-installed distlib --disable-pip-version-check \
-        cryptography==3.4.6 \
+    && pip install --ignore-installed distlib --disable-pip-version-check \
         poetry==$POETRY_VERSION
 
 # copy project requirement files to ensure they will be cached
@@ -63,9 +60,6 @@ RUN poetry install -n --no-cache --all-extras --without dev
 # `production` image used for runtime
 FROM base AS production
 
-# install runtime dependencies
-RUN apk add --no-cache --virtual .build-deps ffmpeg
-
 # app configuration
 ENV ENV=production \
     USERNAME=appuser \
@@ -76,7 +70,11 @@ RUN addgroup -g $USER_GID $USERNAME \
     && adduser -D -u $USER_UID -G $USERNAME $USERNAME
 USER $USERNAME
 
+# install runtime dependencies
+COPY --from=mwader/static-ffmpeg:7.1 --chown=$USERNAME:$USERNAME /ffmpeg /usr/local/bin/
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
+
+# install application
 COPY ./${APP_NAME} /${APP_NAME}/
 
-ENTRYPOINT "${VENV_PATH}/bin/python" "-m" "pipo"
+ENTRYPOINT "${VENV_PATH}/bin/python" "-m" "${APP_NAME}"

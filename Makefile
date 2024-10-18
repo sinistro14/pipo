@@ -3,7 +3,7 @@
 APP=$(PIPO_APP)
 CONFIG_PATH=pyproject.toml
 POETRY=poetry
-POETRY_VERSION=1.8.3
+POETRY_VERSION=1.8.4
 PRINT=python -c "import sys; print(str(sys.argv[1]))"
 DOCUMENTATION=docs
 DIAGRAMS_FORMAT=plantuml
