@@ -1,4 +1,4 @@
-FROM python:3.11.10-alpine AS base
+FROM python:3.13.0-alpine AS base
 
 # python
 ENV APP_NAME="pipo" \
