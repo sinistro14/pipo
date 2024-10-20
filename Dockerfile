@@ -71,7 +71,7 @@ RUN addgroup -g $USER_GID $USERNAME \
 USER $USERNAME
 
 # install runtime dependencies
-COPY --from=mwader/static-ffmpeg:7.1 --chown=$USERNAME:$USERNAME /ffmpeg /usr/local/bin/
+RUN apk add --no-cache --virtual .runtime-deps ffmpeg
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 
 # install application
