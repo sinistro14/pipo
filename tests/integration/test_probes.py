@@ -14,12 +14,10 @@ class TestHealthProbes:
         with server.run_in_thread():
             yield f"http://{server.config.host}:{server.config.port}"
 
-    @pytest.mark.asyncio
-    async def test_healthz(self, server_url):
+    def test_healthz(self, server_url):
         response = requests.get(f"{server_url}/healthz")
         assert response.status_code == 200
 
-    @pytest.mark.asyncio
-    async def test_readyz(self, server_url):
+    def test_readyz(self, server_url):
         response = requests.get(f"{server_url}/readyz")
         assert response.status_code == 200
