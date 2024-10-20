@@ -46,6 +46,7 @@ RUN pip install --upgrade pip setuptools wheel \
         openssl-dev \
         python3-dev \
     && pip install --ignore-installed distlib --disable-pip-version-check \
+        cryptography==3.4.6 \
         poetry==$POETRY_VERSION
 
 # copy project requirement files to ensure they will be cached
