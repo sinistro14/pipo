@@ -44,7 +44,7 @@ jobs:
     - name: Create platforms matrix
       id: platforms
       run: |
-        echo "matrix=$(docker buildx bake image-all --print -f dockerfile-bake.hcl | jq -cr '.target."image-all".platforms | join(",")')"
+        echo "matrix=$(docker buildx bake image-all --print -f dockerfile-bake.hcl | jq -cr '.target."image-all".platforms | join(",")')" >> $GITHUB_OUTPUT
 
     - name: Set variables
       if: success()
@@ -52,11 +52,10 @@ jobs:
       shell: bash
       run: |
         echo image=${GITHUB_REPOSITORY@L} >> $GITHUB_OUTPUT
-        echo platforms=${PLATFORMS} >> $GITHUB_OUTPUT
+        echo platforms=${{ steps.platforms.outputs.matrix }} >> $GITHUB_OUTPUT
         echo version=${TAG%%-*} >> $GITHUB_OUTPUT
       env:
         TAG: ${{ steps.version.outputs.version }}
-        PLATFORMS: ${{ steps.platforms.outputs.matrix }}
 
     - name: Extract metadata for Docker
       id: meta
