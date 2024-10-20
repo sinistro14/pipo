@@ -3,9 +3,6 @@
 ### Test Suite ###
 TEST_ENVIRONMENT = "test"
 
-### Health Probes ###
-HEALTH_SERVER_PORT = 81
-
 ### MusicQueue  ###
 SHORT_TIMEOUT = 5  # seconds
 MEDIUM_TIMEOUT = 10  # seconds
