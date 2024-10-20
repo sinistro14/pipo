@@ -23,7 +23,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
     groups:
       github-actions:
         patterns:

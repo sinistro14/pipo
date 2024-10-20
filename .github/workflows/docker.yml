@@ -9,14 +9,14 @@ on:
   workflow_run:
     workflows: [ "Test Application" ]
     types: [ "completed" ]
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
 
 jobs:
   docker:
     name: Build + Publish Docker Image
     runs-on: ubuntu-22.04
     env:
-      PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'}}
+      PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success' && github.event_name != 'pull_request' }}
       REGISTRY: docker.io
       TARGET_PLATFORMS: linux/amd64,linux/arm/v7,linux/arm64
     permissions:
@@ -78,7 +78,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push to Docker Hub
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         sbom: true
