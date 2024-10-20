@@ -18,7 +18,6 @@ jobs:
     env:
       PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success' && github.event_name != 'pull_request' }}
       REGISTRY: docker.io
-      TARGET_PLATFORMS: linux/amd64,linux/arm/v7,linux/arm64
     permissions:
       contents: write
       packages: write
@@ -42,13 +41,20 @@ jobs:
       with:
         version: latest
 
+    - name: Create platforms matrix
+      id: platforms
+      run: |
+        echo "matrix=$(docker buildx bake image-all --print -f dockerfile-bake.hcl |
+          jq -cr '.target."image-all".platforms') |
+          join(',')"
+
     - name: Set variables
       if: success()
       id: prepare
       shell: bash
       run: |
         echo image=${GITHUB_REPOSITORY@L} >> $GITHUB_OUTPUT
-        echo platforms=${TARGET_PLATFORMS} >> $GITHUB_OUTPUT
+        echo platforms=${steps.platforms.outputs.matrix} >> $GITHUB_OUTPUT
         echo version=${TAG%%-*} >> $GITHUB_OUTPUT
       env:
         TAG: ${{ steps.version.outputs.version }}
