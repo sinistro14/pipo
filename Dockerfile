@@ -66,12 +66,13 @@ ENV ENV=production \
     USER_UID=1000 \
     USER_GID=1000
 
+# install runtime dependencies
+RUN apk add --no-cache --virtual .runtime-deps ffmpeg
+
 RUN addgroup -g $USER_GID $USERNAME \
     && adduser -D -u $USER_UID -G $USERNAME $USERNAME
 USER $USERNAME
 
-# install runtime dependencies
-RUN apk add --no-cache --virtual .runtime-deps ffmpeg
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 
 # install application
