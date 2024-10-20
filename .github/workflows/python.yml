@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+        python-version: [ "3.11", "3.12" ]
 
     steps:
     - uses: actions/checkout@v4
@@ -82,7 +82,8 @@ jobs:
 
     - name: Test
       run: |
-        echo "y" | poetry run dynaconf write yaml -p ./tests/ -e test \
+        poetry run dynaconf write yaml -y -p ./tests/ -e test \
           -s spotify_client=${{ secrets.TEST_SPOTIFY_CLIENT }} \
-          -s spotify_secret=${{ secrets.TEST_SPOTIFY_SECRET }}; \
+          -s spotify_secret=${{ secrets.TEST_SPOTIFY_SECRET }} \
+          -s queue_broker_url=${{ secrets.TEST_RABBITMQ_URL }}; \
         make test

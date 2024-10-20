@@ -3,4 +3,5 @@
 Discord bot to play music in a voice channel using online sources.
 Available sources include:
 - Youtube
+- Spotify
 """

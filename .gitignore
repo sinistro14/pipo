@@ -1,4 +1,5 @@
 ### Custom ###
+poetry.toml
 poetry.lock
 .ruff_cache
 docs/_build

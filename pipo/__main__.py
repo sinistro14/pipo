@@ -7,8 +7,9 @@ import signal
 
 from pipo.signal_manager import SignalManager
 from pipo.bot import PipoBot
-from pipo.cogs import MusicBot
+from pipo.cogs.music_bot import MusicBot
 from pipo.config import settings
+from pipo.player.music_queue._remote_music_queue import broker, declare_dlx
 
 
 async def run_bot():
@@ -16,15 +17,19 @@ async def run_bot():
     voice_channel = settings.voice_channel
     token = settings.token
 
-    asyncio.current_task().set_name("main_task")
+    asyncio.current_task().set_name(settings.main_task_name)
     SignalManager.add_handlers(
         asyncio.get_event_loop(),
+        settings.main_task_name,
         (signal.SIGUSR1, signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT),
     )
 
     bot = PipoBot(
         command_prefix=settings.commands.prefix, description=settings.bot_description
     )
+    await broker.connect()
+    await declare_dlx(broker)
+    await broker.start()
 
     async with bot:
         await bot.add_cog(MusicBot(bot, channel, voice_channel))

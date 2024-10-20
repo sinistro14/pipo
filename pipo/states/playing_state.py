@@ -32,7 +32,7 @@ class PlayingState(pipo.states.state.State):
 
         Music is stopped and bot transition to Idle State.
         """
-        self.context.player.clear()
+        await self.context.player.clear()
         self.context.transition_to(pipo.states.idle_state.IdleState())
 
     async def pause(self) -> None:
@@ -63,7 +63,7 @@ class PlayingState(pipo.states.state.State):
         shuffle : bool, optional
             Randomize play order when multiple musics are provided.
         """
-        self.context.player.play(query, shuffle)
+        await self.context.player.play(query, shuffle)
 
     async def skip(self) -> None:
         """Skip currently playing music.
