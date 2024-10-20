@@ -44,7 +44,7 @@ jobs:
     - name: Create platforms matrix
       id: platforms
       run: |
-        echo "matrix=$(docker buildx bake image-all --print -f dockerfile-bake.hcl | jq -cr '.target."image-all".platforms' | join(','))"
+        echo "matrix=$(docker buildx bake image-all --print -f dockerfile-bake.hcl | jq -cr '.target."image-all".platforms | join(",")')"
 
     - name: Set variables
       if: success()
