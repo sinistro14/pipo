@@ -87,4 +87,5 @@ COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
 # install application
 COPY ./${APP_NAME} /${APP_NAME}/
 
+EXPOSE 80
 ENTRYPOINT "${VENV_PATH}/bin/python" "-m" "${APP_NAME}"

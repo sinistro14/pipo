@@ -5,6 +5,7 @@ import os
 import sys
 import signal
 
+from pipo.probes import get_probe_server
 from pipo.signal_manager import SignalManager
 from pipo.bot import PipoBot
 from pipo.cogs.music_bot import MusicBot
@@ -13,10 +14,6 @@ from pipo.player.music_queue._remote_music_queue import broker, declare_dlx
 
 
 async def run_bot():
-    channel = settings.channel
-    voice_channel = settings.voice_channel
-    token = settings.token
-
     asyncio.current_task().set_name(settings.main_task_name)
     SignalManager.add_handlers(
         asyncio.get_event_loop(),
@@ -31,9 +28,12 @@ async def run_bot():
     await declare_dlx(broker)
     await broker.start()
 
-    async with bot:
-        await bot.add_cog(MusicBot(bot, channel, voice_channel))
-        await bot.start(token)
+    server = get_probe_server(settings.probes.port, settings.probes.log_level)
+
+    with server.run_in_thread():
+        async with bot:
+            await bot.add_cog(MusicBot(bot, settings.channel, settings.voice_channel))
+            await bot.start(settings.token)
 
 
 def main():

@@ -4,6 +4,7 @@ import functools
 import uuid6
 from typing import Iterable, List
 from pydantic import BaseModel
+import socket
 
 import pytest
 from pipo.config import settings
@@ -36,6 +37,14 @@ class Helpers:
     @staticmethod
     def generate_server_id(prefix: str, size: int) -> str:
         return prefix + str(uuid6.uuid7())[:size]
+
+    @staticmethod
+    def get_available_port() -> int:
+        sock = socket.socket()
+        sock.bind(("", 0))
+        port = sock.getsockname()[1]
+        sock.close()
+        return port
 
 
 @pytest.fixture
