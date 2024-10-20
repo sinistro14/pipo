@@ -117,7 +117,7 @@ markers = [
 [tool.coverage.run]
 source = ["pipo"]
 [tool.coverage.report]
-fail_under = 65
+fail_under = 70
 omit = [
     "*__init__.py",
     "*__main__.py",

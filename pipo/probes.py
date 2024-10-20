@@ -25,7 +25,7 @@ class ProbeServer(uvicorn.Server):
             thread.join()
 
 
-def get_probe_server(port: int, log_level: str) -> uvicorn.Server:
+def get_probe_server(port: int, log_level: str = "info") -> uvicorn.Server:
     config = uvicorn.Config(
         probe_server,
         port=port,
