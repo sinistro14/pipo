@@ -1,4 +1,4 @@
-FROM python:3.11.10-alpine AS base
+FROM python:3.11.10-slim-bookworm AS base
 
 # python
 ENV APP_NAME="pipo" \
@@ -33,18 +33,29 @@ ENV APP_NAME="pipo" \
 # prepend poetry and venv to path
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
+# install required system dependencies
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get --no-install-recommends install -y \
+        ffmpeg \
+    && pip install --upgrade pip setuptools wheel \
+    && apt-get clean
+
 # `builder-base` stage is used to build deps + create virtual environment
 FROM base AS builder-base
 
 # install required system dependencies
-RUN pip install --upgrade pip setuptools wheel \
-    && apk add --no-cache --virtual .build-deps \
-        git \
-        build-base \
-        musl-dev \
-        libffi-dev \
-        openssl-dev \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends -y \
+        build-essential \
+        libc-dev \
+        libssl-dev \
+        # discord.py[voice] dependencies
         python3-dev \
+        libffi-dev \
+        libnacl-dev \
+    && apt-get clean \
     && pip install --ignore-installed distlib --disable-pip-version-check \
         cryptography==3.4.6 \
         poetry==$POETRY_VERSION
@@ -67,11 +78,8 @@ ENV ENV=production \
     USER_UID=1000 \
     USER_GID=1000
 
-# install runtime dependencies
-RUN apk add --no-cache --virtual .runtime-deps ffmpeg
-
-RUN addgroup -g $USER_GID $USERNAME \
-    && adduser -D -u $USER_UID -G $USERNAME $USERNAME
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 USER $USERNAME
 
 COPY --from=builder-base --chown=$USERNAME:$USERNAME $PYSETUP_PATH $PYSETUP_PATH
