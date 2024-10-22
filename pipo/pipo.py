@@ -193,6 +193,6 @@ class Pipo(pipo.states.Context):
     async def move_message(self, ctx: Dctx):
         """Move discord processed message request to default music channel."""
         msg = ctx.message
-        content = msg.content.encode("ascii", "ignore").decode()
+        content = msg.content.encode("utf-8", "ignore").decode()
         await msg.delete(delay=settings.pipo.move_message_delay)
         await self.send_message(f"{msg.author.name} {content}")
