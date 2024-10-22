@@ -32,7 +32,7 @@ class SpotifyHandler(BaseHandler):
     @staticmethod
     def __valid_source(source: Iterable[str]) -> bool:
         """Check whether source is a spotify url."""
-        return source and ("spotify" in source and source.startswith(("https", "http")))
+        return source and ("spotify" in source) and SpotifyHandler.is_url(source)
 
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):

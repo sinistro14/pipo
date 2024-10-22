@@ -6,6 +6,7 @@ import re
 import httpx
 import yt_dlp
 from yt_dlp import YoutubeDL
+from requests.utils import requote_uri
 
 from pipo.config import settings
 from pipo.player.audio_source.base_handler import BaseHandler
@@ -37,7 +38,7 @@ class YoutubeHandler(BaseHandler):
     @staticmethod
     def __valid_source(source: Iterable[str]) -> bool:
         """Check whether source is a youtube url."""
-        return source and ("youtube" in source and source.startswith(("https", "http")))
+        return source and ("youtube" in source) and YoutubeHandler.is_url(source)
 
     def handle(self, source: str) -> SourcePair:
         if self.__valid_source(source):
@@ -147,6 +148,10 @@ class YoutubeQueryHandler(BaseHandler):
             return super().handle(source)
 
     @staticmethod
+    def encode_url(url: str) -> str:
+        return requote_uri(url)
+
+    @staticmethod
     async def url_from_query(query: str) -> Optional[str]:
         """Get youtube audio url based on search query.
 
@@ -164,12 +169,13 @@ class YoutubeQueryHandler(BaseHandler):
         """
         url = None
         if query:
-            query = query.replace(" ", "+").encode("ascii", "ignore").decode()
+            uri = YoutubeQueryHandler.encode_url(
+                f"https://www.youtube.com/results?search_query={query}"
+            )
             async with httpx.AsyncClient() as client:
                 try:
                     response = await client.get(
-                        f"https://www.youtube.com/results?search_query={query}",
-                        timeout=settings.player.url_fetch.timeout,
+                        uri, timeout=settings.player.url_fetch.timeout
                     )
                     video_id = re.search(r"watch\?v=(\S{11})", response.text).group(1)
                     url = (
@@ -178,5 +184,7 @@ class YoutubeQueryHandler(BaseHandler):
                         else None
                     )
                 except httpx.TimeoutException:
-                    logging.getLogger(__name__).exception("Unable to search for query")
+                    logging.getLogger(__name__).exception(
+                        "Unable to search for query: %s", query
+                    )
         return url

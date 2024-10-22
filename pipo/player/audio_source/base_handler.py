@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from urllib.parse import urlparse
 
 from pipo.player.audio_source.source_handler import SourceHandler
 from pipo.player.audio_source.source_pair import SourcePair
@@ -20,3 +21,11 @@ class BaseHandler(SourceHandler):
         if self._next_handler:
             return self._next_handler.handle(source)
         return None
+
+    @staticmethod
+    def is_url(url: str) -> bool:
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
