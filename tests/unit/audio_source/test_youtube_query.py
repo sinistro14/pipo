@@ -17,7 +17,9 @@ class TestYoutubeQuerySource:
             ("/", "/"),
             ("//", "//"),
             (" ", "%20"),
+            ("á", "%C3%A1"),
             ("ç", "%C3%A7"),
+            ("ö", "%C3%B6"),
         ],
     )
     def test_url_encoding(self, music_handler, url, expected):
